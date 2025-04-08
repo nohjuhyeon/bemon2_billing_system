@@ -1,0 +1,17 @@
+[
+    {
+        "user_id": "UN-0001",
+        "user_name": "개인정보위원회",
+        "cloud_list": [{"cloud_id":"10395","cloud_name":"NAVER","cloud_class":"공공","start_date":"2025-03"}]
+    },
+    {
+        "user_id": "UN-0002",
+        "user_name": "소프트보울",
+        "cloud_list": [{"cloud_id":"zinwu@softbowl.co.kr","cloud_name":"KT","cloud_class":"민간","start_date":"2020-04"}]
+    },
+    {
+        "user_id": "UN-0003",
+        "user_name": "비이랩",
+        "cloud_list": [{"cloud_id":"belab_cloud@belab.co.kr","cloud_name":"KT","cloud_class":"민간","start_date":"2025-02"}]
+    }
+]

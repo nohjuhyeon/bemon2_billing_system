@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>청구 상세 정보</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">청구 상세 정보</h1>
+
+        <!-- 고객 정보 -->
+        <div class="card p-4 mb-4">
+            <h2>고객 정보</h2>
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th>고객명</th>
+                        <td>고객사 1</td>
+                    </tr>
+                    <tr>
+                        <th>고객 번호</th>
+                        <td>UN-0001</td>
+                    </tr>
+                    <tr>
+                        <th>구분</th>
+                        <td>공공</td>
+                    </tr>
+                    <tr>
+                        <th>사용 클라우드</th>
+                        <td>KT 클라우드</td>
+                    </tr>
+                    <tr>
+                        <th>사용 기간</th>
+                        <td>2025.02.01 ~ 2025.02.28</td>
+                    </tr>
+                    <tr>
+                        <th>납부 기한</th>
+                        <td>2025.03.15</td>
+                    </tr>
+                    <tr>
+                        <th>총 납부 금액(VAT 포함)</th>
+                        <td>₩</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 비용 요약 -->
+        <div class="card p-4 mb-4">
+            <div class="d-flex align-items-center justify-content-between">
+                <h2>비용 요약</h2>
+                <button type="button" class="btn btn-warning btn-sm">수정하기</button>
+            </div>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>구분</th>
+                        <th>항목</th>
+                        <th>정상가</th>
+                        <th>제공가</th>
+                        <th>비고</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>클라우드 사용</td>
+                        <td>-</td>
+                        <td>₩</td>
+                        <td>₩</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>3rd Party S/W</td>
+                        <td>-</td>
+                        <td>₩</td>
+                        <td>₩</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>서비스 사용 요금</td>
+                        <td>매니지드 서비스</td>
+                        <td>₩</td>
+                        <td>₩</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>기타</td>
+                        <td>-</td>
+                        <td>₩</td>
+                        <td>₩</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>소계</td>
+                        <td>-</td>
+                        <td>₩</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>영업 할인</td>
+                        <td>-</td>
+                        <td>₩</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>크레딧</td>
+                        <td>-</td>
+                        <td>₩</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>납부 금액</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>부가세</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>총 납부 금액(VAT 포함)</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 클라우드 사용 내역 -->
+        <div class="card p-4 mb-4">
+            <div class="d-flex align-items-center justify-content-between">
+                <h2>클라우드 사용 내역</h2>
+                <button type="button" class="btn btn-warning btn-sm">수정하기</button>
+            </div>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>서비스명</th>
+                        <th>항목</th>
+                        <th>상세</th>
+                        <th>정상가</th>
+                        <th>제공가</th>
+                        <th>비고</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Server</td>
+                        <td>web01</td>
+                        <td>-</td>
+                        <td>₩</td>
+                        <td>₩</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Server</td>
+                        <td>web02</td>
+                        <td>-</td>
+                        <td>₩</td>
+                        <td>₩</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Server</td>
+                        <td>db01</td>
+                        <td>-</td>
+                        <td>₩</td>
+                        <td>₩</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Disk</td>
+                        <td>web0101</td>
+                        <td>-</td>
+                        <td>₩</td>
+                        <td>₩</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Disk</td>
+                        <td>web0201</td>
+                        <td>-</td>
+                        <td>₩</td>
+                        <td>₩</td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 버튼 -->
+        <div class="text-end">
+            <button type="button" class="btn btn-primary">출력하기</button>
+            <button type="button" class="btn btn-secondary">목록</button>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

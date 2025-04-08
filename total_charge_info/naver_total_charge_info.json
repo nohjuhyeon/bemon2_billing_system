@@ -1,0 +1,24 @@
+[
+    {
+        "member_id": "10395",
+        "bill_month": "202503",
+        "use_amt": 37422510,
+        "total_discount_amt": 16278710,
+        "coin_use_amt": 0,
+        "default_amt": 0,
+        "pay_amt": 21143800,
+        "vat_amt": 2114380,
+        "pay_amt_including_vat": 23258180
+    },
+    {
+        "member_id": "10395",
+        "bill_month": "202504",
+        "use_amt": 8694450,
+        "total_discount_amt": -2829750,
+        "coin_use_amt": 0,
+        "default_amt": 0,
+        "pay_amt": 11524200,
+        "vat_amt": 1152420,
+        "pay_amt_including_vat": 12676620
+    }
+]

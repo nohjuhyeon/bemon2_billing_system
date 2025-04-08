@@ -1,0 +1,146 @@
+[
+    {
+        "service_code": "S1820",
+        "service": "Server (G1/G2)",
+        "use_amt": 665410,
+        "total_dicount_amt": 665410,
+        "pay_amt": 0,
+        "service_list": [
+            {
+                "name": "db01",
+                "type": "DISK",
+                "use_amt": 9333,
+                "reg_dttm": "2020-04-21 11:29:56"
+            },
+            {
+                "name": "db02",
+                "type": "DISK",
+                "use_amt": 9333,
+                "reg_dttm": "2020-04-21 11:30:15"
+            },
+            {
+                "name": "web0101",
+                "type": "DISK",
+                "use_amt": 11666,
+                "reg_dttm": "2020-04-21 11:27:17"
+            },
+            {
+                "name": "web0102",
+                "type": "DISK",
+                "use_amt": 2333,
+                "reg_dttm": "2020-04-21 11:27:34"
+            },
+            {
+                "name": "web0201",
+                "type": "DISK",
+                "use_amt": 11666,
+                "reg_dttm": "2020-04-21 11:27:58"
+            },
+            {
+                "name": "web0202",
+                "type": "DISK",
+                "use_amt": 2333,
+                "reg_dttm": "2020-04-21 11:29:19"
+            },
+            {
+                "name": "enterprise security domain",
+                "type": "enterprise security domain",
+                "use_amt": 150000,
+                "reg_dttm": ""
+            },
+            {
+                "name": "0GB",
+                "type": "N/W traffic",
+                "use_amt": 0,
+                "reg_dttm": ""
+            },
+            {
+                "name": "db01",
+                "type": "VM",
+                "use_amt": 170353,
+                "reg_dttm": "2020-04-20 10:11:25"
+            },
+            {
+                "name": "db02",
+                "type": "VM",
+                "use_amt": 170353,
+                "reg_dttm": "2020-04-20 10:12:58"
+            },
+            {
+                "name": "web01",
+                "type": "VM",
+                "use_amt": 64020,
+                "reg_dttm": "2020-04-20 10:07:40"
+            },
+            {
+                "name": "web02",
+                "type": "VM",
+                "use_amt": 64020,
+                "reg_dttm": "2020-04-20 10:09:53"
+            }
+        ]
+    },
+    {
+        "service_code": "S1879",
+        "service": "로드밸런서",
+        "use_amt": 4020,
+        "total_dicount_amt": 4020,
+        "pay_amt": 0,
+        "service_list": [
+            {
+                "name": "lb_inje_80",
+                "type": "MPX",
+                "use_amt": 4020,
+                "reg_dttm": "2020-04-22 15:00:42"
+            }
+        ]
+    },
+    {
+        "service_code": "S3009",
+        "service": "enterprise zone 보안관제",
+        "use_amt": 54264,
+        "total_dicount_amt": 54264,
+        "pay_amt": 0,
+        "service_list": [
+            {
+                "name": "db01",
+                "type": "enterprise 보안관제",
+                "use_amt": 13566,
+                "reg_dttm": "2020-04-20 10:11:25"
+            },
+            {
+                "name": "db02",
+                "type": "enterprise 보안관제",
+                "use_amt": 13566,
+                "reg_dttm": "2020-04-20 10:12:58"
+            },
+            {
+                "name": "web01",
+                "type": "enterprise 보안관제",
+                "use_amt": 13566,
+                "reg_dttm": "2020-04-20 10:07:40"
+            },
+            {
+                "name": "web02",
+                "type": "enterprise 보안관제",
+                "use_amt": 13566,
+                "reg_dttm": "2020-04-20 10:09:53"
+            }
+        ]
+    },
+    {
+        "service_code": "S3684",
+        "service": "Avast(마켓)",
+        "use_amt": 28800,
+        "total_dicount_amt": 28800,
+        "pay_amt": 0,
+        "service_list": [
+            {
+                "name": "AVAST CLOUD WINDOWS SERVER용",
+                "type": "Avast(마켓)",
+                "use_amt": 28800,
+                "reg_dttm": "2020-04-23 13:24:08"
+            }
+        ]
+    }
+]
