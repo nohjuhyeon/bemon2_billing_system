@@ -5,7 +5,22 @@ import json
 from datetime import datetime, timedelta
 from api_func.gov import gov_naver_cloud_api, gov_kt_cloud_api, gov_nhn_cloud_api
 from api_func.private import private_kt_cloud_api, private_naver_cloud_api, private_nhn_cloud_api
+from databases.connections import Settings
+from beanie import PydanticObjectId
+import datetime
+
+
 app = FastAPI()
+
+settings = Settings()
+@app.on_event("startup")
+async def init_db():
+    await settings.initialize_database()
+    
+from databases.connections import Database
+
+from models.user_list import User_list # 컬랙션을 연결하고, 컬렉션에 저장/불러오기 하는 방법 
+collection_user_list = Database(User_list)
 
 # Set up Jinja2 templates
 templates = Jinja2Templates(directory="templates")
