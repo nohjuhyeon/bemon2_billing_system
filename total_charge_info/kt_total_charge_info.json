@@ -1,90 +1,20 @@
 [
     {
-        "member_id": "zinwu@softbowl.co.kr",
-        "bill_month": "202404",
-        "use_amt": 4119565,
-        "total_discount_amt": 917450,
-        "pay_amt": 3202115
-    },
-    {
-        "member_id": "zinwu@softbowl.co.kr",
-        "bill_month": "202405",
-        "use_amt": 4080230,
-        "total_discount_amt": 917647,
-        "pay_amt": 3162583
-    },
-    {
-        "member_id": "zinwu@softbowl.co.kr",
-        "bill_month": "202406",
-        "use_amt": 4061966,
-        "total_discount_amt": 916503,
-        "pay_amt": 3145463
-    },
-    {
-        "member_id": "zinwu@softbowl.co.kr",
-        "bill_month": "202407",
-        "use_amt": 4064319,
-        "total_discount_amt": 916728,
-        "pay_amt": 3147591
-    },
-    {
-        "member_id": "zinwu@softbowl.co.kr",
-        "bill_month": "202408",
-        "use_amt": 4064236,
-        "total_discount_amt": 916287,
-        "pay_amt": 3147949
-    },
-    {
-        "member_id": "zinwu@softbowl.co.kr",
-        "bill_month": "202409",
-        "use_amt": 4064033,
-        "total_discount_amt": 915623,
-        "pay_amt": 3148410
-    },
-    {
-        "member_id": "zinwu@softbowl.co.kr",
-        "bill_month": "202410",
-        "use_amt": 4064158,
-        "total_discount_amt": 915325,
-        "pay_amt": 3148833
-    },
-    {
-        "member_id": "zinwu@softbowl.co.kr",
-        "bill_month": "202411",
-        "use_amt": 4060997,
-        "total_discount_amt": 914141,
-        "pay_amt": 3146856
-    },
-    {
-        "member_id": "zinwu@softbowl.co.kr",
-        "bill_month": "202412",
-        "use_amt": 4063474,
-        "total_discount_amt": 914047,
-        "pay_amt": 3149427
-    },
-    {
-        "member_id": "zinwu@softbowl.co.kr",
-        "bill_month": "202501",
-        "use_amt": 3586722,
-        "total_discount_amt": 1691462,
-        "pay_amt": 1895260
-    },
-    {
-        "member_id": "zinwu@softbowl.co.kr",
+        "cloud_id": "zinwu@softbowl.co.kr",
         "bill_month": "202502",
         "use_amt": 3144267,
         "total_discount_amt": 623379,
         "pay_amt": 2520888
     },
     {
-        "member_id": "zinwu@softbowl.co.kr",
+        "cloud_id": "zinwu@softbowl.co.kr",
         "bill_month": "202503",
         "use_amt": 2712134,
         "total_discount_amt": 581292,
         "pay_amt": 2130842
     },
     {
-        "member_id": "zinwu@softbowl.co.kr",
+        "cloud_id": "zinwu@softbowl.co.kr",
         "bill_month": "202504",
         "use_amt": 604756,
         "total_discount_amt": 135535,

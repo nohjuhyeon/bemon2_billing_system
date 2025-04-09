@@ -7,7 +7,9 @@ from api_func.gov import gov_naver_cloud_api, gov_kt_cloud_api, gov_nhn_cloud_ap
 from api_func.private import private_kt_cloud_api, private_naver_cloud_api, private_nhn_cloud_api
 from databases.connections import Settings
 from beanie import PydanticObjectId
-import datetime
+from databases.connections import Database
+from models.user_list import User_list # 컬랙션을 연결하고, 컬렉션에 저장/불러오기 하는 방법 
+from models.total_charge import Total_charge # 컬랙션을 연결하고, 컬렉션에 저장/불러오기 하는 방법 
 
 
 app = FastAPI()
@@ -17,10 +19,8 @@ settings = Settings()
 async def init_db():
     await settings.initialize_database()
     
-from databases.connections import Database
-
-from models.user_list import User_list # 컬랙션을 연결하고, 컬렉션에 저장/불러오기 하는 방법 
 collection_user_list = Database(User_list)
+collection_total_charge = Database(Total_charge)
 
 # Set up Jinja2 templates
 templates = Jinja2Templates(directory="templates")
@@ -63,8 +63,9 @@ def load_json(file_path: str) -> list:
 @app.get("/", response_class=HTMLResponse)
 async def main(request: Request):
     """메인 페이지"""
-    # Load user data from JSON
-    user_data = load_json("member_list/member_info.json")
+    # # Load user data from JSON
+    user_data = await collection_user_list.get_all()
+    user_data = [dict(i) for i in user_data]
     for i in user_data:
         i['cloud_id']= [j['cloud_id'] for j in i['cloud_list']]
         i['cloud_name']= [j['cloud_name'] for j in i['cloud_list']]
@@ -79,6 +80,11 @@ async def user_info(
     end_date: str = Query(None)     # 종료 날짜 (YYYY-MM 형식)
 ):
     """고객 정보 페이지"""
+    
+    total_charge_list = await collection_total_charge.getsbyconditions({"user_id":user_id})
+    user_data = [dict(i) for i in user_data]
+
+
     user_data = load_json("member_list/member_info.json")
     user_detail = next((user for user in user_data if user["user_id"] == user_id), None)
     user_detail['cloud_id']= [j['cloud_id'] for j in user_detail['cloud_list']]

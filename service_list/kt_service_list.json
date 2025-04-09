@@ -2,41 +2,5 @@
     {
         "code_name": "Server (G1/G2)",
         "code": "S1820"
-    },
-    {
-        "code_name": "enterprise zone 보안관제",
-        "code": "S3009"
-    },
-    {
-        "code_name": "웹방화벽",
-        "code": "S1963"
-    },
-    {
-        "code_name": "로드밸런서",
-        "code": "S1879"
-    },
-    {
-        "code_name": "NAS",
-        "code": "S2248"
-    },
-    {
-        "code_name": "Backup (구)",
-        "code": "S1851"
-    },
-    {
-        "code_name": "M.Avast",
-        "code": "S5398"
-    },
-    {
-        "code_name": "M.MCCS(마켓)",
-        "code": "S5374"
-    },
-    {
-        "code_name": "Connect Hub",
-        "code": "S4330"
-    },
-    {
-        "code_name": "Backup",
-        "code": "S5015"
     }
 ]

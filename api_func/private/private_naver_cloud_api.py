@@ -80,7 +80,7 @@ def member_list(startMonth,endMonth):
     data_dict = call_api(command_uri,params_list)
     naver_member_list = []
     for i in data_dict['getPartnerDemandCostListResponse']['partnerDemandCostList']:
-        naver_member_list.append({'member_id':i['memberNo']})
+        naver_member_list.append({'cloud_id':i['memberNo']})
     # 결과를 XML 파일로 저장
     save_json(naver_member_list, "member_list/naver_member_list.json")
     return naver_member_list
@@ -102,7 +102,7 @@ def service_list(memberNoList,contractMonth):
     save_json(naver_service_list, "service_list/naver_service_list.json")
     return naver_service_list
 
-def total_charge_info(startMonth,endMonth,memberNoList):
+def total_charge_info(memberNoList,startMonth,endMonth):
     command_uri = "/billing/v1/cost/getPartnerDemandCostList"
     params_list = {"startMonth": startMonth,"endMonth": endMonth,"memberNoList":memberNoList}
 
@@ -111,11 +111,11 @@ def total_charge_info(startMonth,endMonth,memberNoList):
     naver_total_charge_info = []
     for i in data_dict['getPartnerDemandCostListResponse']['partnerDemandCostList']:
         total_discount_amt = i['promiseDiscountAmount']+i['promotionDiscountAmount']+i['etcDiscountAmount']+i['memberPromiseDiscountAddAmount']+i['memberPriceDiscountAmount']+i['customerDiscountAmount']+i['productDiscountAmount']+i['creditDiscountAmount']+i['rounddownDiscountAmount']+i['currencyDiscountAmount']
-        naver_total_charge_info.append({'member_id':i['memberNo'],'bill_month':i['demandMonth'],'use_amt':i['useAmount'],'total_discount_amt':total_discount_amt,'coin_use_amt':i['coinUseAmount'],'default_amt':i['defaultAmount'],'pay_amt':i['currencyPartnerTotalDemandAmount'],'vat_amt':i['currencyPartnerTotalDemandVatAmount'],'pay_amt_including_vat':i['currencyPartnerTotalDemandAmountIncludingVat'],})
+        naver_total_charge_info.append({'cloud_id':i['memberNo'],'bill_month':i['demandMonth'],'use_amt':i['useAmount'],'total_discount_amt':total_discount_amt,'coin_use_amt':i['coinUseAmount'],'default_amt':i['defaultAmount'],'pay_amt':i['currencyPartnerTotalDemandAmount'],'vat_amt':i['currencyPartnerTotalDemandVatAmount'],'pay_amt_including_vat':i['currencyPartnerTotalDemandAmountIncludingVat'],})
     # 결과를 XML 파일로 저장
     save_json(naver_total_charge_info, "total_charge_info/naver_total_charge_info.json")
     return naver_total_charge_info
-def service_charge_list(startMonth,endMonth,memberNoList):
+def service_charge_list(memberNoList,startMonth,endMonth):
     command_uri = "/billing/v1/cost/getContractDemandCostList"
     params_list = {"startMonth": startMonth,"endMonth": endMonth,"isPartner":"true","memberNoList":memberNoList}
 

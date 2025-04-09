@@ -53,7 +53,7 @@ def member_list():
     response = call_api(command,param_list)
     kt_member_list = []
     for i in response['memberinforesponse']['memberids']:
-        kt_member_list.append({'member_id':i['id']})
+        kt_member_list.append({'cloud_id':i['id']})
     save_json(kt_member_list,"member_list/kt_member_list.json")
     return kt_member_list
 
@@ -68,18 +68,18 @@ def service_list(user_id):
     save_json(kt_service_list,"service_list/kt_service_list.json")
     return kt_service_list
 
-def total_charge_info(start_date,end_date,user_id):
+def total_charge_info(user_id,start_date,end_date):
     command = "listCharges"
     param_list = {'type':'billingInfoListAccounts','emailId':user_id,'startDate':start_date,'endDate':end_date}
 
     response = call_api(command,param_list)
     kt_total_charge_info = []
     for i in response['billinginfolistaccountsresponse']['chargeaccountlists']:
-        kt_total_charge_info.append({'member_id':i['account'],'bill_month':i['bill_month'].replace('-',''),'use_amt':i['pay_amt']+i['total_discount_amt'],'total_discount_amt':i['total_discount_amt'],'pay_amt':i['pay_amt']})
+        kt_total_charge_info.append({'cloud_id':i['account'],'bill_month':i['bill_month'].replace('-',''),'use_amt':i['pay_amt']+i['total_discount_amt'],'total_discount_amt':i['total_discount_amt'],'pay_amt':i['pay_amt']})
     save_json(kt_total_charge_info,"total_charge_info/kt_total_charge_info.json")
     return kt_total_charge_info
 
-def service_charge_list(start_date,end_date,user_id):
+def service_charge_list(user_id,start_date,end_date):
     command = "listCharges"
     param_list = {'type':'serviceChargeInfoAccount','emailId':user_id,'startDate':start_date,'endDate':end_date}
 
@@ -92,7 +92,7 @@ def service_charge_list(start_date,end_date,user_id):
             if j['mdcode'] == mdcode:
                 service_list.append({'name':j['name'],'type':j['type'],'use_amt':j['pay_amt'],'reg_dttm':j['reg_dttm']})
         i['service_list'] = service_list
-        kt_service_charge_list.append({'service_code':i['mdcode'],'service':i['service'],'use_amt':i['pay_amt']+i['total_discount_amt'],'total_dicount_amt':i['total_discount_amt'],'pay_amt':i['pay_amt'],'service_list':service_list})
+        kt_service_charge_list.append({'service_code':i['mdcode'],'service':i['service'],'bill_month':i['bill_month'],'use_amt':i['pay_amt']+i['total_discount_amt'],'total_dicount_amt':i['total_discount_amt'],'pay_amt':i['pay_amt'],'service_list':service_list})
     save_json(kt_service_charge_list,"service_charge_list/kt_service_charge_list.json")
     return kt_service_charge_list
 
