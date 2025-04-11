@@ -1,5 +1,6 @@
 [
     {
+        "cloud_id": "10395",
         "service_code": "BST",
         "service": "Block Storage",
         "bill_month": "202503",
@@ -754,6 +755,7 @@
         ]
     },
     {
+        "cloud_id": "10395",
         "service_code": "CLASM",
         "service": "Cloud Log Analytics",
         "bill_month": "202503",
@@ -788,6 +790,7 @@
         ]
     },
     {
+        "cloud_id": "10395",
         "service_code": "CM",
         "service": "Certificate Manager",
         "bill_month": "202503",
@@ -816,6 +819,7 @@
         ]
     },
     {
+        "cloud_id": "10395",
         "service_code": "CWSUM",
         "service": "Cloud Insight",
         "bill_month": "202503",
@@ -880,6 +884,7 @@
         ]
     },
     {
+        "cloud_id": "10395",
         "service_code": "EMAIL",
         "service": "Cloud Outbound Mailer",
         "bill_month": "202503",
@@ -896,6 +901,7 @@
         ]
     },
     {
+        "cloud_id": "10395",
         "service_code": "NAS",
         "service": "NAS",
         "bill_month": "202503",
@@ -948,6 +954,7 @@
         ]
     },
     {
+        "cloud_id": "10395",
         "service_code": "NATSM",
         "service": "NAT Gateway",
         "bill_month": "202503",
@@ -964,6 +971,7 @@
         ]
     },
     {
+        "cloud_id": "10395",
         "service_code": "NTISM",
         "service": "Network IN",
         "bill_month": "202503",
@@ -992,6 +1000,7 @@
         ]
     },
     {
+        "cloud_id": "10395",
         "service_code": "NTOSM",
         "service": "Network OUT",
         "bill_month": "202503",
@@ -1038,6 +1047,7 @@
         ]
     },
     {
+        "cloud_id": "10395",
         "service_code": "OSSM",
         "service": "Object Storage",
         "bill_month": "202503",
@@ -1096,6 +1106,7 @@
         ]
     },
     {
+        "cloud_id": "10395",
         "service_code": "PBLIP",
         "service": "Public IP",
         "bill_month": "202503",
@@ -1286,6 +1297,7 @@
         ]
     },
     {
+        "cloud_id": "10395",
         "service_code": "SCMTR",
         "service": "Security Monitoring",
         "bill_month": "202503",
@@ -1320,6 +1332,7 @@
         ]
     },
     {
+        "cloud_id": "10395",
         "service_code": "SW",
         "service": "Software",
         "bill_month": "202503",
@@ -2032,6 +2045,7 @@
         ]
     },
     {
+        "cloud_id": "10395",
         "service_code": "TVPCC",
         "service": "Transit VPC Connect",
         "bill_month": "202503",
@@ -2048,6 +2062,7 @@
         ]
     },
     {
+        "cloud_id": "10395",
         "service_code": "VLB",
         "service": "Load Balancer (VPC)",
         "bill_month": "202503",
@@ -2190,6 +2205,7 @@
         ]
     },
     {
+        "cloud_id": "10395",
         "service_code": "VNKS",
         "service": "Ncloud Kubernetes Service (VPC)",
         "bill_month": "202503",
@@ -2218,6 +2234,7 @@
         ]
     },
     {
+        "cloud_id": "10395",
         "service_code": "VPC",
         "service": "Virtual Private Cloud",
         "bill_month": "202503",
@@ -2234,6 +2251,7 @@
         ]
     },
     {
+        "cloud_id": "10395",
         "service_code": "VRDS",
         "service": "Cloud DB for Redis (VPC)",
         "bill_month": "202503",
@@ -2268,6 +2286,7 @@
         ]
     },
     {
+        "cloud_id": "10395",
         "service_code": "VSVPN",
         "service": "SSL VPN (VPC)",
         "bill_month": "202503",
@@ -2284,6 +2303,7 @@
         ]
     },
     {
+        "cloud_id": "10395",
         "service_code": "VSVR",
         "service": "Server (VPC)",
         "bill_month": "202503",

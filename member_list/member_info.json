@@ -1,17 +1,17 @@
 [
     {
-        "user_id": "UN-0001",
+        "user_id": "A0001",
         "user_name": "개인정보위원회",
-        "cloud_list": [{"cloud_id":"10395","cloud_name":"NAVER","cloud_class":"공공","start_date":"2025-03"}]
+        "cloud_list": [{"cloud_key":"10395","cloud_name":"NAVER","cloud_class":"공공","start_date":202503}]
     },
     {
-        "user_id": "UN-0002",
+        "user_id": "A0002",
         "user_name": "소프트보울",
-        "cloud_list": [{"cloud_id":"zinwu@softbowl.co.kr","cloud_name":"KT","cloud_class":"민간","start_date":"2020-04"}]
+        "cloud_list": [{"cloud_key":"zinwu@softbowl.co.kr","cloud_name":"KT","cloud_class":"민간","start_date":202004}]
     },
     {
-        "user_id": "UN-0003",
+        "user_id": "A0003",
         "user_name": "비이랩",
-        "cloud_list": [{"cloud_id":"belab_cloud@belab.co.kr","cloud_name":"KT","cloud_class":"민간","start_date":"2025-02"}]
+        "cloud_list": [{"cloud_key":"belab_cloud@belab.co.kr","cloud_name":"KT","cloud_class":"민간","start_date":202502}]
     }
 ]

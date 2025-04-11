@@ -99,7 +99,7 @@
                     <td>{{ bill.use_amt_str }}</td>
                     <td>{{ bill.total_discount_amt_str }}</td>
                     <td>{{ bill.pay_amt_str }}</td>
-                    <td><button class="btn btn-info btn-sm" onclick="viewDetails('{{ bill.bill_number }}')">상세 보기</button></td>
+                    <td><button class="btn btn-info btn-sm" onclick="viewDetails('{{ bill.charge_id }}')">상세 보기</button></td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -112,56 +112,76 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr@latest/dist/plugins/monthSelect/index.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Flatpickr 초기화
-            flatpickr("#start_date", {
-                dateFormat: "Y-m", // 연도와 월만 표시
-                plugins: [
-                    new monthSelectPlugin({
-                        shorthand: true, // 월 이름 간략화
-                        dateFormat: "Y-m", // 포맷 설정
-                    })
-                ]
-            });
-
-            flatpickr("#end_date", {
-                dateFormat: "Y-m", // 연도와 월만 표시
-                plugins: [
-                    new monthSelectPlugin({
-                        shorthand: true,
-                        dateFormat: "Y-m",
-                    })
-                ]
-            });
-        });
-
-        function validateDates() {
-            const startDate = document.getElementById('start_date').value;
-            const endDate = document.getElementById('end_date').value;
-
-            if (startDate > endDate) {
-                alert('시작 날짜가 종료 날짜보다 늦을 수 없습니다.');
-                return false;
-            }
-
-            return true;
+document.addEventListener('DOMContentLoaded', function () {
+    // Flatpickr 초기화
+    flatpickr("#start_date", {
+        dateFormat: "Y-m", // 기본 형식은 "Y-m"
+        plugins: [
+            new monthSelectPlugin({
+                shorthand: true,
+                dateFormat: "Y-m",
+            })
+        ],
+        onChange: function (selectedDates, dateStr) {
+            // 선택된 날짜를 int 값으로 변환
+            const intDate = dateStr.replace("-", ""); // "2025-04" -> "202504"
+            document.getElementById('start_date').dataset.intValue = intDate; // 데이터 속성에 저장
         }
+    });
 
-        function resetDate() {
-            const today = new Date();
-            const oneYearAgo = new Date(today.getFullYear() - 1, today.getMonth());
-        
-            // 날짜를 "Y-m" 형식으로 직접 변환
-            const formatDate = (date) => {
-                const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
-                return `${year}-${month}`;
-            };
-        
-            document.getElementById('start_date').value = formatDate(oneYearAgo);
-            document.getElementById('end_date').value = formatDate(today);
+    flatpickr("#end_date", {
+        dateFormat: "Y-m",
+        plugins: [
+            new monthSelectPlugin({
+                shorthand: true,
+                dateFormat: "Y-m",
+            })
+        ],
+        onChange: function (selectedDates, dateStr) {
+            const intDate = dateStr.replace("-", ""); // "2025-04" -> "202504"
+            document.getElementById('end_date').dataset.intValue = intDate; // 데이터 속성에 저장
         }
-        
+    });
+});
+
+function viewDetails(customerId) {
+    // 상세 보기 페이지로 이동
+    window.location.href = `/billing_info/${customerId}`;
+}
+
+function validateDates() {
+    const startInt = parseInt(document.getElementById('start_date').dataset.intValue, 10);
+    const endInt = parseInt(document.getElementById('end_date').dataset.intValue, 10);
+
+    if (startInt > endInt) {
+        alert('시작 날짜가 종료 날짜보다 늦을 수 없습니다.');
+        return false;
+    }
+
+    return true;
+}
+
+function resetDate() {
+    const today = new Date();
+    const oneYearAgo = new Date(today.getFullYear() - 1, today.getMonth());
+
+    // 날짜를 "Ym" 형식으로 변환
+    const formatDateToInt = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
+        return parseInt(`${year}${month}`, 10); // 정수로 변환
+    };
+
+    const startInt = formatDateToInt(oneYearAgo); // 1년 전
+    const endInt = formatDateToInt(today);       // 현재
+
+    // input 요소에 값을 설정
+    document.getElementById('start_date').value = `${oneYearAgo.getFullYear()}-${String(oneYearAgo.getMonth() + 1).padStart(2, '0')}`;
+    document.getElementById('start_date').dataset.intValue = startInt; // int 값 저장
+
+    document.getElementById('end_date').value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    document.getElementById('end_date').dataset.intValue = endInt; // int 값 저장
+}        
 
         function search() {
             const form = document.querySelector('form');

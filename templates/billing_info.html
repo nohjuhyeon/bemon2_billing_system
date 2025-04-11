@@ -18,31 +18,31 @@
                 <tbody>
                     <tr>
                         <th>고객명</th>
-                        <td>고객사 1</td>
+                        <td>{{ user.user_name }}</td>
                     </tr>
                     <tr>
                         <th>고객 번호</th>
-                        <td>UN-0001</td>
+                        <td>{{ user.user_id }}</td>
                     </tr>
                     <tr>
                         <th>구분</th>
-                        <td>공공</td>
+                        <td>{{ user.cloud_class }}</td>
                     </tr>
                     <tr>
                         <th>사용 클라우드</th>
-                        <td>KT 클라우드</td>
+                        <td>{{ user.cloud_name }} Cloud</td>
                     </tr>
                     <tr>
                         <th>사용 기간</th>
-                        <td>2025.02.01 ~ 2025.02.28</td>
+                        <td>{{ total_charge_info.bill_month_str }}</td>
                     </tr>
                     <tr>
                         <th>납부 기한</th>
-                        <td>2025.03.15</td>
+                        <td>{{ total_charge_info.bill_month_str }} 15일</td>
                     </tr>
                     <tr>
-                        <th>총 납부 금액(VAT 포함)</th>
-                        <td>₩</td>
+                        <th>총 납부 금액(VAT 제외)</th>
+                        <td>₩ {{ total_charge_info.pay_amt_str }}</td>
                     </tr>
                 </tbody>
             </table>

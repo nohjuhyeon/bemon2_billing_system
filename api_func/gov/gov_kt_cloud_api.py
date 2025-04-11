@@ -1,6 +1,8 @@
 import os
 import requests
 import json
+from datetime import datetime, timedelta
+
 # API 호출 함수
 def call_api(command,param_list):
     reseller_key = os.environ.get("KT_CLOUD_RESELLER_KEY")
@@ -18,10 +20,6 @@ def call_api(command,param_list):
     # GET 요청 보내기
     response = requests.get(uri, params=query_params)
     response_url = requests.Request('GET', uri, params=query_params).prepare().url
-    print("Request URL:", response_url)  # 디버깅용 출력
-
-    # 응답 결과 출력
-    print("Status Code:", response.status_code)
     if response.status_code == 200:
         # JSON 문자열을 딕셔너리로 변환
         json_data = json.loads(response.text)
@@ -54,7 +52,6 @@ def member_list():
     kt_member_list = []
     for i in response['memberinforesponse']['memberids']:
         kt_member_list.append({'cloud_id':i['id']})
-    save_json(kt_member_list,"member_list/kt_member_list.json")
     return kt_member_list
 
 def service_list(user_id):
@@ -65,21 +62,29 @@ def service_list(user_id):
     kt_service_list = []
     for i in response['serviceinforesponse']['servicecodes']:
         kt_service_list.append({'code_name':i['code_nm'],'code':i['code']})
-    save_json(kt_service_list,"service_list/kt_service_list.json")
     return kt_service_list
 
 def total_charge_info(user_id,start_date,end_date):
+    start_date = datetime.strptime(str(start_date), "%Y%m")
+    start_date = start_date.strftime("%Y-%m")  # 1년 전
+    end_date = datetime.strptime(str(end_date), "%Y%m")
+    end_date = end_date.strftime("%Y-%m")  # 1년 전
+
     command = "listCharges"
     param_list = {'type':'billingInfoListAccounts','emailId':user_id,'startDate':start_date,'endDate':end_date}
 
     response = call_api(command,param_list)
     kt_total_charge_info = []
     for i in response['billinginfolistaccountsresponse']['chargeaccountlists']:
-        kt_total_charge_info.append({'cloud_id':i['account'],'bill_month':i['bill_month'].replace('-',''),'use_amt':i['pay_amt']+i['total_discount_amt'],'total_discount_amt':i['total_discount_amt'],'pay_amt':i['pay_amt']})
-    save_json(kt_total_charge_info,"total_charge_info/kt_total_charge_info.json")
+        if user_id == i['account']:
+            kt_total_charge_info.append({'cloud_id':user_id,'bill_month':int(i['bill_month'].replace('-','')),'use_amt':i['pay_amt']+i['total_discount_amt'],'total_discount_amt':i['total_discount_amt'],'pay_amt':i['pay_amt']})
     return kt_total_charge_info
 
 def service_charge_list(user_id,start_date,end_date):
+    start_date = datetime.strptime(str(start_date), "%Y%m")
+    start_date = start_date.strftime("%Y-%m")  # 1년 전
+    end_date = datetime.strptime(str(end_date), "%Y%m")
+    end_date = end_date.strftime("%Y-%m")  # 1년 전
     command = "listCharges"
     param_list = {'type':'serviceChargeInfoAccount','emailId':user_id,'startDate':start_date,'endDate':end_date}
 
@@ -92,8 +97,7 @@ def service_charge_list(user_id,start_date,end_date):
             if j['mdcode'] == mdcode:
                 service_list.append({'name':j['name'],'type':j['type'],'use_amt':j['pay_amt'],'reg_dttm':j['reg_dttm']})
         i['service_list'] = service_list
-        kt_service_charge_list.append({'service_code':i['mdcode'],'service':i['service'],'bill_month':i['bill_month'],'use_amt':i['pay_amt']+i['total_discount_amt'],'total_dicount_amt':i['total_discount_amt'],'pay_amt':i['pay_amt'],'service_list':service_list})
-    save_json(kt_service_charge_list,"service_charge_list/kt_service_charge_list.json")
+        kt_service_charge_list.append({'cloud_id':user_id,'service_code':i['mdcode'],'service':i['service'],'bill_month':int(i['bill_month'].replace('-','')),'use_amt':i['pay_amt']+i['total_discount_amt'],'total_dicount_amt':i['total_discount_amt'],'pay_amt':i['pay_amt'],'service_list':service_list})
     return kt_service_charge_list
 
 
@@ -102,22 +106,10 @@ def service_charge_list(user_id,start_date,end_date):
 if __name__ == "__main__":
     # Reseller Key 설정
     user_id = 'zinwu@softbowl.co.kr'
-    start_date = '2025-01'
-    end_date = '2025-03'
+    start_date = 202003
+    end_date = 202004
     # API 호출
     member_list()
     service_list(user_id)
     total_charge_info(user_id,start_date,end_date)
     service_charge_list(user_id,start_date,end_date)
-# memberInfo
-    # command = "memberInfo"
-    # param_list = {}
-
-# serviceInfo
-    # command = "serviceInfo"
-    # param_list = {'emailId':'zinwu@softbowl.co.kr'}
-
-# listCharges
-    # command = "listCharges"
-    # param_list = {'type':'billingInfoListAccounts','emailId':'zinwu@softbowl.co.kr','startDate':'202503','endDate':'202503'}
-
