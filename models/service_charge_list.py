@@ -7,20 +7,19 @@ from beanie import Document, Link  # 데이터베이스의 데이터를 문서�
 
 
 # 개발자 실수로 들어가는 field 제한
-class Total_charge(
+class Service_charge_list(
     Document
 ):  # 상속을 위한 것                 # 데이터 베이스에서 이용할 값들을 설정
     cloud_key: Optional[str] = None
+    service_code: Optional[str] = None
+    service: Optional[str] = None
     bill_month: Optional[int] = None
     use_amt: Optional[int] = None
     total_discount_amt: Optional[int] = None
-    coin_use_amt: Optional[int] = None
-    default_amt: Optional[int] = None
     pay_amt: Optional[int] = None
-    vat_amt: Optional[int] = None
-    pay_amt_including_vat: Optional[int] = None
-    charge_id: Optional[str] = None
+    service_list: Optional[List] = None
     user_id: Optional[str] = None
+    charge_id: Optional[str] = None
 
     class Settings:  # 데이터 베이스에서 이용할 collection을 지정
-        name = "total_charge_list"  # collection의 이름
+        name = "service_charge_list"  # collection의 이름

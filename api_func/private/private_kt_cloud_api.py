@@ -51,7 +51,7 @@ def member_list():
     response = call_api(command,param_list)
     kt_member_list = []
     for i in response['memberinforesponse']['memberids']:
-        kt_member_list.append({'cloud_id':i['id']})
+        kt_member_list.append({'cloud_key':i['id']})
     return kt_member_list
 
 def service_list(user_id):
@@ -77,7 +77,7 @@ def total_charge_info(user_id,start_date,end_date):
     kt_total_charge_info = []
     for i in response['billinginfolistaccountsresponse']['chargeaccountlists']:
         if user_id == i['account']:
-            kt_total_charge_info.append({'cloud_id':user_id,'bill_month':int(i['bill_month'].replace('-','')),'use_amt':i['pay_amt']+i['total_discount_amt'],'total_discount_amt':i['total_discount_amt'],'pay_amt':i['pay_amt']})
+            kt_total_charge_info.append({'cloud_key':user_id,'bill_month':int(i['bill_month'].replace('-','')),'use_amt':i['pay_amt']+i['total_discount_amt'],'total_discount_amt':i['total_discount_amt'],'pay_amt':i['pay_amt']})
     return kt_total_charge_info
 
 def service_charge_list(user_id,start_date,end_date):
@@ -97,7 +97,7 @@ def service_charge_list(user_id,start_date,end_date):
             if j['mdcode'] == mdcode:
                 service_list.append({'name':j['name'],'type':j['type'],'use_amt':j['pay_amt'],'reg_dttm':j['reg_dttm']})
         i['service_list'] = service_list
-        kt_service_charge_list.append({'cloud_id':user_id,'service_code':i['mdcode'],'service':i['service'],'bill_month':int(i['bill_month'].replace('-','')),'use_amt':i['pay_amt']+i['total_discount_amt'],'total_dicount_amt':i['total_discount_amt'],'pay_amt':i['pay_amt'],'service_list':service_list})
+        kt_service_charge_list.append({'cloud_key':user_id,'service_code':i['mdcode'],'service':i['service'],'bill_month':int(i['bill_month'].replace('-','')),'use_amt':i['pay_amt']+i['total_discount_amt'],'total_discount_amt':i['total_discount_amt'],'pay_amt':i['pay_amt'],'service_list':service_list})
     return kt_service_charge_list
 
 
@@ -106,8 +106,8 @@ def service_charge_list(user_id,start_date,end_date):
 if __name__ == "__main__":
     # Reseller Key 설정
     user_id = 'zinwu@softbowl.co.kr'
-    start_date = 202003
-    end_date = 202004
+    start_date = 202503
+    end_date = 202503
     # API 호출
     member_list()
     service_list(user_id)

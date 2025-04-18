@@ -14,6 +14,7 @@ from beanie import PydanticObjectId
 from databases.connections import Database
 from models.user_list import User_list
 from models.cloud_list import Cloud_list
+from models.service_charge_list import Service_charge_list
 from models.total_charge import Total_charge
 
 app = FastAPI()
@@ -29,7 +30,7 @@ async def init_db():
 collection_user_list = Database(User_list)
 collection_cloud_list = Database(Cloud_list)
 collection_total_charge = Database(Total_charge)
-
+collection_service_charge = Database(Service_charge_list)
 # Set up Jinja2 templates
 templates = Jinja2Templates(directory="templates")
 
@@ -116,6 +117,31 @@ def period_check(start_date,end_date, today_date):
         end_date = today_date  # 오늘
     return start_date, end_date
 
+def charge_info_str(total_charge_info):
+    total_charge_info["bill_month_str"] = (
+        str(total_charge_info["bill_month"])[:4]
+        + "년 "
+        + str(total_charge_info["bill_month"])[4:]
+        + "월"
+    )
+    total_charge_info["pay_amt_str"] = format_currency(total_charge_info["pay_amt"])
+    total_charge_info["total_discount_amt_str"] = format_currency(total_charge_info["total_discount_amt"])
+    total_charge_info["use_amt_str"] = format_currency(total_charge_info["use_amt"])
+    return total_charge_info
+
+
+async def user_dict_crate(charge_id,cloud_id_class_dict):
+    user_id = charge_id.split("-")[0]
+    cloud_name = charge_id.split("-")[1]
+    cloud_class = cloud_id_class_dict[charge_id.split("-")[2]]
+    bill_month = charge_id.split("-")[3]
+    cloud_id = user_id + "-" + cloud_name
+    conditions = {"cloud_id": {"$regex": cloud_id}}
+    cloud_list = await collection_cloud_list.getsbyconditions(conditions)
+    user_dict = dict(cloud_list[0])
+    user_dict['bill_month'] = bill_month
+    return user_dict
+
 
 # Routes
 @app.get("/", response_class=HTMLResponse)
@@ -175,7 +201,7 @@ async def user_info(
         total_charge_list = [dict(i) for i in total_charge_list]
 
     mongodb_total_charge_list = [
-        {"cloud_key": i["cloud_id"], "bill_month": i["bill_month"]}
+        {"cloud_key": i["cloud_key"], "bill_month": i["bill_month"]}
         for i in total_charge_list
     ]
 
@@ -217,17 +243,7 @@ async def user_info(
             charge_info["user_name"] = user_detail["user_name"]
             charge_info["cloud_name"] = cloud_info["cloud_name"]
             charge_info["cloud_class"] = cloud_info["cloud_class"]
-            charge_info["bill_month_str"] = (
-                str(charge_info["bill_month"])[:4]
-                + "년 "
-                + str(charge_info["bill_month"])[4:]
-                + "월"
-            )
-            charge_info["use_amt_str"] = format_currency(charge_info["use_amt"])
-            charge_info["total_discount_amt_str"] = format_currency(
-                charge_info["total_discount_amt"]
-            )
-            charge_info["pay_amt_str"] = format_currency(charge_info["pay_amt"])
+            charge_info = charge_info_str(charge_info)
         pass
 
     sorted_charge_list = sorted(
@@ -265,39 +281,59 @@ async def billing_info(
     cloud_name_class_dict = {"공공": "G", "민간": "P", "금융": "F"}
     cloud_id_class_dict = {"G": "공공", "P": "민간", "F": "금융"}
 
-    request_dict = dict(await request.form())
     conditions = {"charge_id": {"$regex": charge_id}}
     total_charge_list = await collection_total_charge.getsbyconditions(conditions)
+    user_dict = await user_dict_crate(charge_id,cloud_id_class_dict)
     if total_charge_list is False:
-        user_id = charge_id.split("-")[0]
-        cloud_name = charge_id.split("-")[1]
-        cloud_class = cloud_id_class_dict[charge_id.split("-")[2]]
-        bill_month = charge_id.split("-")[3]
-        cloud_id = user_id + "-" + cloud_name
-        conditions = {"cloud_id": {"$regex": cloud_id}}
-        cloud_list = await collection_cloud_list.getsbyconditions(conditions)
-        user_dict = dict(cloud_list[0])
         api_selector = api_select(
-            {"cloud_name": cloud_name, "cloud_class": cloud_class}
+            {"cloud_name": user_dict['cloud_name'], "cloud_class": user_dict['cloud_class']}
         )
         total_charge_list = api_selector.total_charge_info(
-            user_dict["cloud_key"], bill_month, bill_month
+            user_dict["cloud_key"], user_dict['bill_month'], user_dict['bill_month']
         )
     else:
         total_charge_list = [dict(i) for i in total_charge_list]
     total_charge_info = total_charge_list[0]
-    total_charge_info["bill_month_str"] = (
-        str(total_charge_info["bill_month"])[:4]
-        + "년 "
-        + str(total_charge_info["bill_month"])[4:]
-        + "월"
-    )
-    total_charge_info["pay_amt_str"] = format_currency(total_charge_info["pay_amt"])
+    total_charge_info = charge_info_str(total_charge_info)
+
+    conditions = {"charge_id": {"$regex": charge_id}}
+    service_charge_list = await collection_service_charge.getsbyconditions(conditions)
+    if service_charge_list is False:
+        api_selector = api_select(
+            {"cloud_name": user_dict['cloud_name'], "cloud_class": user_dict['cloud_class']}
+        )
+        service_charge_list = api_selector.service_charge_list(
+            user_dict["cloud_key"], user_dict['bill_month'], user_dict['bill_month']
+        )
+    else:
+        service_charge_list = [dict(i) for i in service_charge_list]
+
+
+    for service_charge_info in service_charge_list:
+        service_list = service_charge_info['service_list']      
+        type_list = []
+        service_length = 1
+        for service_element in service_list:
+            type_elements = [i['type'] for i in type_list]
+            if service_element['type'] not in type_elements:
+                type_list.append({'type':service_element['type'],'total_use_amt':service_element['use_amt'],'type_list':[{'name':service_element['name'],'use_amt':service_element['use_amt'], 'use_amt_str': format_currency(service_element["use_amt"])}]})
+            else:
+                type_list[type_elements.index(service_element['type'])]['total_use_amt'] += service_element['use_amt']
+                type_list[type_elements.index(service_element['type'])]['type_list'].append({'name':service_element['name'],'use_amt':service_element['use_amt'], 'use_amt_str': format_currency(service_element["use_amt"])})
+        for type_element in type_list:
+            type_element['total_use_amt_str'] = format_currency(type_element["total_use_amt"])
+            type_length = len(type_element['type_list']) + 1
+            type_element['type_length'] = type_length
+            service_length += type_length
+        service_charge_info['service_list'] = type_list
+        service_charge_info['service_length'] = service_length
+        service_charge_info = charge_info_str(service_charge_info)
+
 
     pass
     return templates.TemplateResponse(
         "billing_info.html",
-        {"request": request, "user": user_dict, "total_charge_info": total_charge_info},
+        {"request": request, "user": user_dict, "total_charge_info": total_charge_info, "service_charge_list":service_charge_list},
     )
 
 

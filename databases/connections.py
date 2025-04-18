@@ -3,6 +3,7 @@ from beanie import init_beanie, PydanticObjectId
 from models.user_list import User_list
 from models.total_charge import Total_charge
 from models.cloud_list import Cloud_list
+from models.service_charge_list import Service_charge_list
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic_settings import BaseSettings
 import numpy
@@ -26,7 +27,7 @@ class Settings(BaseSettings):
         client = AsyncIOMotorClient(self.DATABASE_URL)
         await init_beanie(
             database=client.get_default_database(),
-            document_models=[User_list, Total_charge,Cloud_list],
+            document_models=[User_list, Total_charge,Cloud_list,Service_charge_list],
         )
 
     class Config:

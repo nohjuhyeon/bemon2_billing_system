@@ -76,14 +76,14 @@ def member_list(startMonth,endMonth):
     data_dict = call_api(command_uri,params_list)
     naver_member_list = []
     for i in data_dict['getPartnerDemandCostListResponse']['partnerDemandCostList']:
-        naver_member_list.append({'cloud_id':i['memberNo']})
+        naver_member_list.append({'cloud_key':i['memberNo']})
     return naver_member_list
 
 def service_list(memberNoList,contractMonth):
     command_uri = "/billing/v1/cost/getContractSummaryList"
     params_list = {"contractMonth":str(contractMonth),"isPartner":"true","memberNoList":memberNoList}
 
-    with open('contract_dict.json', "r", encoding="utf-8") as file:
+    with open('contract_product_category.json', "r", encoding="utf-8") as file:
         contract_dict = json.load(file)
 
     # API 호출 및 결과 처리
@@ -104,12 +104,15 @@ def total_charge_info(memberNoList,start_date,end_date):
     naver_total_charge_info = []
     for i in data_dict['getPartnerDemandCostListResponse']['partnerDemandCostList']:
         total_discount_amt = i['promiseDiscountAmount']+i['promotionDiscountAmount']+i['etcDiscountAmount']+i['memberPromiseDiscountAddAmount']+i['memberPriceDiscountAmount']+i['customerDiscountAmount']+i['productDiscountAmount']+i['creditDiscountAmount']+i['rounddownDiscountAmount']+i['currencyDiscountAmount']
-        naver_total_charge_info.append({'cloud_id':i['memberNo'],'bill_month':int(i['demandMonth']),'use_amt':i['useAmount'],'total_discount_amt':total_discount_amt,'coin_use_amt':i['coinUseAmount'],'default_amt':i['defaultAmount'],'pay_amt':i['currencyPartnerTotalDemandAmount'],'vat_amt':i['currencyPartnerTotalDemandVatAmount'],'pay_amt_including_vat':i['currencyPartnerTotalDemandAmountIncludingVat'],})
+        naver_total_charge_info.append({'cloud_key':i['memberNo'],'bill_month':int(i['demandMonth']),'use_amt':i['useAmount'],'total_discount_amt':total_discount_amt,'coin_use_amt':i['coinUseAmount'],'default_amt':i['defaultAmount'],'pay_amt':i['currencyPartnerTotalDemandAmount'],'vat_amt':i['currencyPartnerTotalDemandVatAmount'],'pay_amt_including_vat':i['currencyPartnerTotalDemandAmountIncludingVat'],})
     return naver_total_charge_info
 
 def service_charge_list(memberNoList,start_date,end_date):
     command_uri = "/billing/v1/cost/getContractDemandCostList"
     params_list = {"startMonth": str(start_date),"endMonth": str(end_date),"isPartner":"true","memberNoList":memberNoList}
+
+    with open('demand_product_category.json', "r", encoding="utf-8") as file:
+        demand_product_category = json.load(file)
 
     # API 호출 및 결과 처리
     data_dict = call_api(command_uri,params_list)
@@ -121,14 +124,14 @@ def service_charge_list(memberNoList,start_date,end_date):
                 name = i['demandTypeDetail']['codeName']
             else:
                 name = i['contract']['instanceName']
-            naver_service_charge_list.append({'cloud_id':i['memberNo'],'mdcode':i['contract']['contractType']['code'],'service':i['contract']['contractType']['codeName'],'bill_month':int(i['demandMonth']),'name':name,'region':i['regionCode'],'use_amt':i['useAmount'],'total_discount_amt':total_discount_amt,'pay_amt':i['demandAmount'],'contract_start_date':i['contract']['contractStartDate'],'contract_end_date':i['contract']['contractEndDate']})
+            naver_service_charge_list.append({'cloud_key':i['memberNo'],'mdcode':demand_product_category[i['demandType']['codeName']]['code'],'service':demand_product_category[i['demandType']['codeName']]['codeName'],'bill_month':int(i['demandMonth']),'type':i['demandType']['codeName'],'name':name,'region':i['regionCode'],'use_amt':i['useAmount'],'total_discount_amt':total_discount_amt,'pay_amt':i['demandAmount'],'contract_start_date':i['contract']['contractStartDate'],'contract_end_date':i['contract']['contractEndDate']})
 
         except:
-            naver_service_charge_list.append({'cloud_id':i['memberNo'],'mdcode':i['demandType']['code'],'service':i['demandType']['codeName'],'bill_month':int(i['demandMonth']),'name':i['demandTypeDetail']['codeName'],'region':i['regionCode'],'use_amt':i['useAmount'],'total_discount_amt':total_discount_amt,'pay_amt':i['demandAmount'],'contract_start_date':'', 'contract_end_date':''})
+            naver_service_charge_list.append({'cloud_key':i['memberNo'],'mdcode':i['demandType']['code'],'service':i['demandType']['codeName'],'bill_month':int(i['demandMonth']),'name':i['demandTypeDetail']['codeName'],'region':i['regionCode'],'use_amt':i['useAmount'],'total_discount_amt':total_discount_amt,'pay_amt':i['demandAmount'],'contract_start_date':'', 'contract_end_date':''})
     service_charge_df = pd.DataFrame(naver_service_charge_list)
     # mdcode, service, name, region, contract_start_date, contract_end_date가 같은 값들 그룹화 후 use_amt, total_discount_amt, pay_amt 합산
     unique_df = service_charge_df.groupby(
-        ['cloud_id','mdcode', 'service','bill_month', 'name', 'region', 'contract_start_date', 'contract_end_date'],
+        ['cloud_key','mdcode', 'service','bill_month','type','name', 'region', 'contract_start_date', 'contract_end_date'],
         as_index=False
     ).agg({
         'use_amt': 'sum',
@@ -136,17 +139,20 @@ def service_charge_list(memberNoList,start_date,end_date):
         'pay_amt': 'sum'
     })
     unique_list = unique_df.to_dict(orient='records')
+
     result_list = []
     for unique_element in unique_list:
         code_list = [i['service'] for i in result_list]
         if unique_element['service'] not in code_list:
-            result_list.append({'cloud_id':unique_element['cloud_id'],'service_code':unique_element['mdcode'],'service':unique_element['service'],'bill_month':unique_element['bill_month'],'use_amt':unique_element['use_amt'],'total_discount_amt':unique_element['total_discount_amt'],'pay_amt':unique_element['pay_amt'],'service_list':[{'name':unique_element['name'],'region':unique_element['region'],'use_amt':unique_element['use_amt'],'contract_start_date':unique_element['contract_start_date']}]})
+            result_list.append({'cloud_key':unique_element['cloud_key'],'service_code':unique_element['mdcode'],'service':unique_element['service'],'bill_month':unique_element['bill_month'],'use_amt':unique_element['use_amt'],'total_discount_amt':unique_element['total_discount_amt'],'pay_amt':unique_element['pay_amt'],'service_list':[{'type': unique_element['type'],'name': unique_element['name'],'region':unique_element['region'],'use_amt':unique_element['use_amt'],'contract_start_date':unique_element['contract_start_date']}]})
         else:
             list_index = code_list.index(unique_element['service'])
             result_list[list_index]['use_amt'] += unique_element['use_amt']
             result_list[list_index]['total_discount_amt'] += unique_element['total_discount_amt']
             result_list[list_index]['pay_amt'] += unique_element['pay_amt']
-            result_list[list_index]['service_list'].append({'name':unique_element['name'],'region':unique_element['region'],'use_amt':unique_element['use_amt'],'contract_start_date':unique_element['contract_start_date']})
+            result_list[list_index]['service_list'].append({'type': unique_element['type'],'name': unique_element['name'],'region':unique_element['region'],'use_amt':unique_element['use_amt'],'contract_start_date':unique_element['contract_start_date']})
+
+
     return result_list
     
 # Main 실행

@@ -1,0 +1,354 @@
+{
+    "API Gateway": {
+        "code": "APP-SERVICES",
+        "codeName": "Application Services"
+    },
+    "Archive Storage": {
+        "code": "STORAGE",
+        "codeName": "Storage"
+    },
+    "Network IN": {
+        "code": "NETWORKING",
+        "codeName": "Networking"
+    },
+    "Network OUT": {
+        "code": "NETWORKING",
+        "codeName": "Networking"
+    },
+    "App Security Checker (Deprecated)": {
+        "code": "SECURITY",
+        "codeName": "Security"
+    },
+    "Backup": {
+        "code": "STORAGE",
+        "codeName": "Storage"
+    },
+    "Blockchain Service": {
+        "code": "BLOCKCHAIN",
+        "codeName": "Blockchain"
+    },
+    "Block Storage": {
+        "code": "STORAGE",
+        "codeName": "Storage"
+    },
+    "Cloud Activity Tracer": {
+        "code": "MANAGE-GOVERNANCE",
+        "codeName": "Management & Governance"
+    },
+    "Cloud Desktop": {
+        "code": "BUSINESS-APP",
+        "codeName": "Business Applications"
+    },
+    "CDN+": {
+        "code": "CONTENT-DELIVERY",
+        "codeName": "Content Delivery"
+    },
+    "Cloud Functions": {
+        "code": "COMPUTE",
+        "codeName": "Compute"
+    },
+    "Cloud Hadoop": {
+        "code": "BIG-DATA-ANALYTICS",
+        "codeName": "Big Data & Analytics"
+    },
+    "CLOVA Chatbot": {
+        "code": "AI-SERVICES",
+        "codeName": "AI Services"
+    },
+    "CLOVA Chatbot Sum": {
+        "code": "AI-SERVICES",
+        "codeName": "AI Services"
+    },
+    "Cloud Log Analytics": {
+        "code": "MANAGE-GOVERNANCE",
+        "codeName": "Management & Governance"
+    },
+    "Cloud Connect": {
+        "code": "NETWORKING",
+        "codeName": "Networking"
+    },
+    "CLOVA OCR": {
+        "code": "AI-SERVICES",
+        "codeName": "AI Services"
+    },
+    "CLOVA Studio": {
+        "code": "AI-SERVICES",
+        "codeName": "AI Services"
+    },
+    "Cloud Insight": {
+        "code": "MANAGE-GOVERNANCE",
+        "codeName": "Management & Governance"
+    },
+    "Certificate Manager": {
+        "code": "SECURITY",
+        "codeName": "Security"
+    },
+    "Classic Path": {
+        "code": "NETWORKING",
+        "codeName": "Networking"
+    },
+    "Cloud Security Watcher": {
+        "code": "SECURITY",
+        "codeName": "Security"
+    },
+    "Container Registry": {
+        "code": "CONTAINERS",
+        "codeName": "Containers"
+    },
+    "Data Teleporter": {
+        "code": "STORAGE",
+        "codeName": "Storage"
+    },
+    "Cloud Outbound Mailer": {
+        "code": "APP-SERVICES",
+        "codeName": "Application Services"
+    },
+    "File Safer": {
+        "code": "SECURITY",
+        "codeName": "Security"
+    },
+    "Global CDN": {
+        "code": "CONTENT-DELIVERY",
+        "codeName": "Content Delivery"
+    },
+    "Global DNS": {
+        "code": "NETWORKING",
+        "codeName": "Networking"
+    },
+    "GeoLocation": {
+        "code": "APP-SERVICES",
+        "codeName": "Application Services"
+    },
+    "Global Traffic Manager": {
+        "code": "NETWORKING",
+        "codeName": "Networking"
+    },
+    "Hardware Security Module": {
+        "code": "SECURITY",
+        "codeName": "Security"
+    },
+    "Key Management Service": {
+        "code": "SECURITY",
+        "codeName": "Security"
+    },
+    "Load Balancer": {
+        "code": "NETWORKING",
+        "codeName": "Networking"
+    },
+    "Managed IPsec VPN": {
+        "code": "NETWORKING",
+        "codeName": "Networking"
+    },
+    "Monitoring": {
+        "code": "MANAGE-GOVERNANCE",
+        "codeName": "Management & Governance"
+    },
+    "One Click Multi DRM": {
+        "code": "MEDIA",
+        "codeName": "Media"
+    },
+    "Cloud DB for MySQL": {
+        "code": "DATABASE",
+        "codeName": "Database"
+    },
+    "NAS": {
+        "code": "STORAGE",
+        "codeName": "Storage"
+    },
+    "NAT Gateway": {
+        "code": "NETWORKING",
+        "codeName": "Networking"
+    },
+    "Clous Search": {
+        "code": "BIG-DATA-ANALYTICS",
+        "codeName": "Big Data & Analytics"
+    },
+    "Simple & Easy Notification Service": {
+        "code": "APP-SERVICES",
+        "codeName": "Application Services"
+    },
+    "Ncloud Single Sign-On": {
+        "code": "MANAGE-GOVERNANCE",
+        "codeName": "Management & Governance"
+    },
+    "Object Storage": {
+        "code": "STORAGE",
+        "codeName": "Storage"
+    },
+    "AI·NAVER API": {
+        "code": "AI-NAVER-API",
+        "codeName": "AI·NAVER API"
+    },
+    "PaaS-TA on Ncloud (VPC) (Deprecated)": {
+        "code": "HYBRID-PRIV-CLOUD",
+        "codeName": "Hybrid & Private Cloud"
+    },
+    "Public IP": {
+        "code": "COMPUTE",
+        "codeName": "Compute"
+    },
+    "Private CA": {
+        "code": "SECURITY",
+        "codeName": "Security"
+    },
+    "Packet Mirroring": {
+        "code": "NETWORKING",
+        "codeName": "Networking"
+    },
+    "Papago Translation": {
+        "code": "AI-SERVICES",
+        "codeName": "AI Services"
+    },
+    "Private Subnet": {
+        "code": "COMPUTE",
+        "codeName": "Compute"
+    },
+    "Private Link": {
+        "code": "NETWORKING",
+        "codeName": "Networking"
+    },
+    "SourceBuild": {
+        "code": "DEV-TOOLS",
+        "codeName": "Developer Tools"
+    },
+    "SourceCommit": {
+        "code": "DEV-TOOLS",
+        "codeName": "Developer Tools"
+    },
+    "SourceDeploy": {
+        "code": "DEV-TOOLS",
+        "codeName": "Developer Tools"
+    },
+    "Security Monitoring": {
+        "code": "SECURITY",
+        "codeName": "Security"
+    },
+    "SourcePipeline": {
+        "code": "DEV-TOOLS",
+        "codeName": "Developer Tools"
+    },
+    "Secure Access": {
+        "code": "SECURITY",
+        "codeName": "Security"
+    },
+    "Secure Zone": {
+        "code": "SECURITY",
+        "codeName": "Security"
+    },
+    "Site Safer": {
+        "code": "SECURITY",
+        "codeName": "Security"
+    },
+    "SSL VPN": {
+        "code": "SECURITY",
+        "codeName": "Security"
+    },
+    "System Security Checker": {
+        "code": "SECURITY",
+        "codeName": "Security"
+    },
+    "Single Sign-On (Deprecated)": {
+        "code": "MANAGE-GOVERNANCE",
+        "codeName": "Management & Governance"
+    },
+    "Server": {
+        "code": "COMPUTE",
+        "codeName": "Compute"
+    },
+    "Software License": {
+        "code": "COMPUTE",
+        "codeName": "Compute"
+    },
+    "Transit VPC Connect": {
+        "code": "NETWORKING",
+        "codeName": "Networking"
+    },
+    "Cloud Data Streaming Service (VPC)": {
+        "code": "BIG-DATA-ANALYTICS",
+        "codeName": "Big Data & Analytics"
+    },
+    "Cloud Hadoop (VPC)": {
+        "code": "BIG-DATA-ANALYTICS",
+        "codeName": "Big Data & Analytics"
+    },
+    "Search Engine Service (VPC)": {
+        "code": "BIG-DATA-ANALYTICS",
+        "codeName": "Big Data & Analytics"
+    },
+    "IPsec VPN (VPC)": {
+        "code": "NETWORKING",
+        "codeName": "Networking"
+    },
+    "Load Balancer (VPC)": {
+        "code": "NETWORKING",
+        "codeName": "Networking"
+    },
+    "Cloud DB for MongoDB (VPC)": {
+        "code": "DATABASE",
+        "codeName": "Database"
+    },
+    "Cloud DB For MSSQL (VPC)": {
+        "code": "DATABASE",
+        "codeName": "Database"
+    },
+    "Cloud DB For MySQL (VPC)": {
+        "code": "DATABASE",
+        "codeName": "Database"
+    },
+    "Ncloud Kubernetes Service (VPC)": {
+        "code": "CONTAINERS",
+        "codeName": "Containers"
+    },
+    "VOD Station": {
+        "code": "MEDIA",
+        "codeName": "Media"
+    },
+    "Video Player Enhancement": {
+        "code": "MEDIA",
+        "codeName": "Media"
+    },
+    "Virtual Private Cloud": {
+        "code": "NETWORKING",
+        "codeName": "Networking"
+    },
+    "VPC Peering": {
+        "code": "NETWORKING",
+        "codeName": "Networking"
+    },
+    "Cloud DB for PostgreSQL (VPC)": {
+        "code": "DATABASE",
+        "codeName": "Database"
+    },
+    "Cloud DB for Redis (VPC)": {
+        "code": "DATABASE",
+        "codeName": "Database"
+    },
+    "Ncloud Simple RabbitMQ (VPC)": {
+        "code": "COMPUTE",
+        "codeName": "Compute"
+    },
+    "SSL VPN (VPC)": {
+        "code": "SECURITY",
+        "codeName": "Security"
+    },
+    "Server (VPC)": {
+        "code": "COMPUTE",
+        "codeName": "Compute"
+    },
+    "Webshell Behavior Detector": {
+        "code": "SECURITY",
+        "codeName": "Security"
+    },
+    "Web service Monitoring System": {
+        "code": "MANAGE-GOVERNANCE",
+        "codeName": "Management & Governance"
+    },
+    "NAVER WORKS": {
+        "code": "BUSINESS-APP",
+        "codeName": "Business Applications"
+    },
+    "Web Security Checker": {
+        "code": "SECURITY",
+        "codeName": "Security"
+    }
+}
