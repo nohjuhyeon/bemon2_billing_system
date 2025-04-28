@@ -89,6 +89,7 @@ def load_json(file_path: str) -> list:
     except FileNotFoundError:
         return []
 
+
 def user_dict_create(user_list):
     user_list = [dict(i) for i in user_list]
     for i in user_list:
@@ -97,7 +98,8 @@ def user_dict_create(user_list):
         i["cloud_class"] = [j["cloud_class"] for j in i["cloud_list"]]
     return user_list
 
-def period_check(start_date,end_date, today_date):
+
+def period_check(start_date, end_date, today_date):
     if start_date and end_date:
         if "-" in start_date:
             start_date = int(start_date.replace("-", ""))
@@ -117,6 +119,7 @@ def period_check(start_date,end_date, today_date):
         end_date = today_date  # 오늘
     return start_date, end_date
 
+
 def charge_info_str(total_charge_info):
     total_charge_info["bill_month_str"] = (
         str(total_charge_info["bill_month"])[:4]
@@ -125,12 +128,14 @@ def charge_info_str(total_charge_info):
         + "월"
     )
     total_charge_info["pay_amt_str"] = format_currency(total_charge_info["pay_amt"])
-    total_charge_info["total_discount_amt_str"] = format_currency(total_charge_info["total_discount_amt"])
+    total_charge_info["total_discount_amt_str"] = format_currency(
+        total_charge_info["total_discount_amt"]
+    )
     total_charge_info["use_amt_str"] = format_currency(total_charge_info["use_amt"])
     return total_charge_info
 
 
-async def user_dict_crate(charge_id,cloud_id_class_dict):
+async def user_dict_crate(charge_id, cloud_id_class_dict):
     user_id = charge_id.split("-")[0]
     cloud_name = charge_id.split("-")[1]
     cloud_class = cloud_id_class_dict[charge_id.split("-")[2]]
@@ -139,7 +144,7 @@ async def user_dict_crate(charge_id,cloud_id_class_dict):
     conditions = {"cloud_id": {"$regex": cloud_id}}
     cloud_list = await collection_cloud_list.getsbyconditions(conditions)
     user_dict = dict(cloud_list[0])
-    user_dict['bill_month'] = bill_month
+    user_dict["bill_month"] = bill_month
     return user_dict
 
 
@@ -186,7 +191,7 @@ async def user_info(
     today_date = int(today.strftime("%Y%m"))
 
     # 조회 기간 검증
-    start_date, end_date = period_check(start_date, end_date,today_date)
+    start_date, end_date = period_check(start_date, end_date, today_date)
     data_range = {"start_date": start_date, "end_date": end_date}
     # 예시: 청구 내역 추가
 
@@ -265,9 +270,43 @@ async def user_info(
 
 
 @app.get("/billing_list", response_class=HTMLResponse)
-async def billing_list(request: Request):
+async def billing_list(
+    request: Request,
+    start_date: str = Query(None),  # 시작 날짜 (YYYY-MM 형식)
+    end_date: str = Query(None),  # 종료 날짜 (YYYY-MM 형식)
+):
+    request_dict = dict(await request.form())
+    conditions ={}
+    cloud_list = await collection_cloud_list.getsbyconditions(conditions)
+    cloud_dict = {}
+    for cloud_element in cloud_list:
+        cloud_dict[dict(cloud_element)['cloud_id']]= {'cloud_name':dict(cloud_element)['cloud_name'],'cloud_class':dict(cloud_element)['cloud_class'],'user_name':dict(cloud_element)['user_name']}
+
+    today = datetime.today()
+    today_date = int(today.strftime("%Y%m"))
+
+    # 조회 기간 검증
+    start_date, end_date = period_check(start_date, end_date, today_date)
+    date_range = {"start_date": start_date, "end_date": end_date}
+
     """청구 목록 페이지"""
-    return templates.TemplateResponse("billing_list.html", {"request": request})
+    conditions = {
+        "bill_month": {"$gte": start_date, "$lte": end_date},
+    }
+    total_charge_list = await collection_total_charge.getsbyconditions(conditions)
+    total_charge_list = [dict(i) for i in total_charge_list]
+    for total_charge_info in total_charge_list:
+        total_charge_info = charge_info_str(total_charge_info)
+        cloud_id = '-'.join(total_charge_info['charge_id'].split('-')[:2])
+        total_charge_info['user_name'] = cloud_dict[cloud_id]['user_name']
+        total_charge_info['cloud_name'] = cloud_dict[cloud_id]['cloud_name']
+        total_charge_info['cloud_class'] = cloud_dict[cloud_id]['cloud_class']
+    sorted_charge_list = sorted(
+        total_charge_list,
+        key=lambda x: x["bill_month"],
+        reverse=True,
+    )
+    return templates.TemplateResponse("billing_list.html", {"request": request,"date_range":date_range,"total_charge_list":sorted_charge_list})
 
 
 @app.get("/billing_info/{charge_id}", response_class=HTMLResponse)
@@ -283,13 +322,16 @@ async def billing_info(
 
     conditions = {"charge_id": {"$regex": charge_id}}
     total_charge_list = await collection_total_charge.getsbyconditions(conditions)
-    user_dict = await user_dict_crate(charge_id,cloud_id_class_dict)
+    user_dict = await user_dict_crate(charge_id, cloud_id_class_dict)
     if total_charge_list is False:
         api_selector = api_select(
-            {"cloud_name": user_dict['cloud_name'], "cloud_class": user_dict['cloud_class']}
+            {
+                "cloud_name": user_dict["cloud_name"],
+                "cloud_class": user_dict["cloud_class"],
+            }
         )
         total_charge_list = api_selector.total_charge_info(
-            user_dict["cloud_key"], user_dict['bill_month'], user_dict['bill_month']
+            user_dict["cloud_key"], user_dict["bill_month"], user_dict["bill_month"]
         )
     else:
         total_charge_list = [dict(i) for i in total_charge_list]
@@ -300,40 +342,72 @@ async def billing_info(
     service_charge_list = await collection_service_charge.getsbyconditions(conditions)
     if service_charge_list is False:
         api_selector = api_select(
-            {"cloud_name": user_dict['cloud_name'], "cloud_class": user_dict['cloud_class']}
+            {
+                "cloud_name": user_dict["cloud_name"],
+                "cloud_class": user_dict["cloud_class"],
+            }
         )
         service_charge_list = api_selector.service_charge_list(
-            user_dict["cloud_key"], user_dict['bill_month'], user_dict['bill_month']
+            user_dict["cloud_key"], user_dict["bill_month"], user_dict["bill_month"]
         )
     else:
         service_charge_list = [dict(i) for i in service_charge_list]
 
-
     for service_charge_info in service_charge_list:
-        service_list = service_charge_info['service_list']      
+        service_list = service_charge_info["service_list"]
         type_list = []
         service_length = 1
         for service_element in service_list:
-            type_elements = [i['type'] for i in type_list]
-            if service_element['type'] not in type_elements:
-                type_list.append({'type':service_element['type'],'total_use_amt':service_element['use_amt'],'type_list':[{'name':service_element['name'],'use_amt':service_element['use_amt'], 'use_amt_str': format_currency(service_element["use_amt"])}]})
+            type_elements = [i["type"] for i in type_list]
+            if service_element["type"] not in type_elements:
+                type_list.append(
+                    {
+                        "type": service_element["type"],
+                        "total_use_amt": service_element["use_amt"],
+                        "type_list": [
+                            {
+                                "name": service_element["name"],
+                                "use_amt": service_element["use_amt"],
+                                "use_amt_str": format_currency(
+                                    service_element["use_amt"]
+                                ),
+                            }
+                        ],
+                    }
+                )
             else:
-                type_list[type_elements.index(service_element['type'])]['total_use_amt'] += service_element['use_amt']
-                type_list[type_elements.index(service_element['type'])]['type_list'].append({'name':service_element['name'],'use_amt':service_element['use_amt'], 'use_amt_str': format_currency(service_element["use_amt"])})
+                type_list[type_elements.index(service_element["type"])][
+                    "total_use_amt"
+                ] += service_element["use_amt"]
+                type_list[type_elements.index(service_element["type"])][
+                    "type_list"
+                ].append(
+                    {
+                        "name": service_element["name"],
+                        "use_amt": service_element["use_amt"],
+                        "use_amt_str": format_currency(service_element["use_amt"]),
+                    }
+                )
         for type_element in type_list:
-            type_element['total_use_amt_str'] = format_currency(type_element["total_use_amt"])
-            type_length = len(type_element['type_list']) + 1
-            type_element['type_length'] = type_length
+            type_element["total_use_amt_str"] = format_currency(
+                type_element["total_use_amt"]
+            )
+            type_length = len(type_element["type_list"]) + 1
+            type_element["type_length"] = type_length
             service_length += type_length
-        service_charge_info['service_list'] = type_list
-        service_charge_info['service_length'] = service_length
+        service_charge_info["service_list"] = type_list
+        service_charge_info["service_length"] = service_length
         service_charge_info = charge_info_str(service_charge_info)
-
 
     pass
     return templates.TemplateResponse(
         "billing_info.html",
-        {"request": request, "user": user_dict, "total_charge_info": total_charge_info, "service_charge_list":service_charge_list},
+        {
+            "request": request,
+            "user": user_dict,
+            "total_charge_info": total_charge_info,
+            "service_charge_list": service_charge_list,
+        },
     )
 
 
