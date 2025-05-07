@@ -1,103 +1,113 @@
-from typing import Any, List, Optional
-from beanie import init_beanie, PydanticObjectId
-from models.user_list import User_list
-from models.total_charge import Total_charge
-from models.cloud_list import Cloud_list
-from models.service_charge_list import Service_charge_list
-from motor.motor_asyncio import AsyncIOMotorClient
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker, declarative_base
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
-import numpy
+from sqlalchemy.future import select
+from typing import Optional
 
+load_dotenv()
 
 class Settings(BaseSettings):
     DATABASE_URL: Optional[str] = None
     CONTAINER_PREFIX: Optional[str] = None
-    kt_cloud_api_key: Optional[str] = None
-    kt_cloud_secret_key: Optional[str] = None
-    kt_cloud_reseller_key: Optional[str] = None
-    naver_cloud_api_key: Optional[str] = None
-    naver_cloud_secret_key: Optional[str] = None
-    naver_cloud_gov_api_key: Optional[str] = None
-    naver_cloud_gov_secret_key: Optional[str] = None
-    nhn_cloud_api_key: Optional[str] = None
-    nhn_cloud_secret_key: Optional[str] = None
-    nhn_cloud_access_token: Optional[str] = None
-
-    async def initialize_database(self):
-        client = AsyncIOMotorClient(self.DATABASE_URL)
-        await init_beanie(
-            database=client.get_default_database(),
-            document_models=[User_list, Total_charge,Cloud_list,Service_charge_list],
-        )
+    KT_CLOUD_API_KEY: Optional[str] = None
+    KT_CLOUD_SECRET_KEY: Optional[str] = None
+    KT_CLOUD_RESELLER_KEY: Optional[str] = None
+    NAVER_CLOUD_API_KEY: Optional[str] = None
+    NAVER_CLOUD_SECRET_KEY: Optional[str] = None
+    NAVER_CLOUD_GOV_API_KEY: Optional[str] = None
+    NAVER_CLOUD_GOV_SECRET_KEY: Optional[str] = None
+    NHN_CLOUD_API_KEY: Optional[str] = None
+    NHN_CLOUD_SECRET_KEY: Optional[str] = None
+    NHN_CLOUD_ACCESS_TOKEN: Optional[str] = None
+    MYSQL_HOST: Optional[str] = None
+    MYSQL_PORT: Optional[str] = None
+    MYSQL_USER: Optional[str] = None
+    MYSQL_PASSWORD: Optional[str] = None
+    MYSQL_DATABASE: Optional[str] = None
 
     class Config:
         env_file = ".env"
 
+settings = Settings()
 
-class Database:
-    # model 즉 collection
-    def __init__(self, model) -> None:
+Base = declarative_base()
+
+class AsyncDatabase:
+    def __init__(self, model):
+        DB_URL = (
+            f"mysql+aiomysql://{settings.MYSQL_USER}:{settings.MYSQL_PASSWORD}"
+            f"@{settings.MYSQL_HOST}:{settings.MYSQL_PORT}/{settings.MYSQL_DATABASE}?charset=utf8"
+        )
+
+        engine = create_async_engine(DB_URL, echo=True)
+        self.SessionLocal = sessionmaker(
+            bind=engine, class_=AsyncSession, expire_on_commit=False
+        )
         self.model = model
-        pass
 
-    # 전체 리스트
     async def get_all(self):
-        documents = await self.model.find_all().to_list()
-        pass
-        return documents
+        async with self.SessionLocal() as session:
+            result = await session.execute(select(self.model))
+            result_list = result.scalars().all()
+            output_list = []
+            for result_element in result_list:
+                output_list.append({c.name: getattr(result_element, c.name) for c in result_element.__table__.columns})
+            return output_list
 
-    # 상세 보기
-    async def get(self, id: PydanticObjectId) -> Any:
-        doc = await self.model.get(id)
-        if doc:
-            return doc
-        return False
+    async def get(self, id):
+        async with self.SessionLocal() as session:
+            result = await session.execute(
+                select(self.model).where(self.model.id == id)
+            )
+            return result.scalar()
 
-    # 저장
-    async def save(self, document) -> None:
-        await document.create()
-        return None
+    async def save(self, document):
+        async with self.SessionLocal() as session:
+            session.add(document)
+            await session.commit()
 
-    # 업데이트
-    async def update_one(self, id: PydanticObjectId, dic) -> Any:
-        doc = await self.model.get(id)
-        if doc:
-            for key, value in dic.items():
-                setattr(doc, key, value)
-            await doc.save()
-            return True
-        return False
+    async def update_one(self, id_field_name, id_value, dic):
+        async with self.SessionLocal() as session:
+            model_class = self.model
+            id_field = getattr(model_class, id_field_name)
+            
+            result = await session.execute(
+                select(model_class).where(id_field == id_value)
+            )
+            
+            doc = result.scalar()
+            if doc:
+                for key, value in dic.items():
+                    setattr(doc, key, value)
+                await session.commit()
+                return True
+            return False
 
-    # 삭제
-    async def delete_one(self, id: PydanticObjectId) -> bool:
-        doc = await self.model.get(id)
-        if doc:
-            await doc.delete()
-            return True
-        return False
+    async def delete_one(self, id):
+        async with self.SessionLocal() as session:
+            result = await session.execute(
+                select(self.model).where(self.model.id == id)
+            )
+            doc = result.scalar()
+            if doc:
+                await session.delete(doc)
+                await session.commit()
+                return True
+            return False
 
-    async def getsbyconditions(self, conditions: dict) -> [Any]:
-        documents = await self.model.find(conditions).to_list()  # find({})
-        if documents:
-            return documents
-        return False
+    async def gets_by_conditions(self, conditions):
+        async with self.SessionLocal() as session:
+            result = await session.execute(select(self.model).filter_by(**conditions))
+            result_list = result.scalars().all()
+            output_list = []
+            for result_element in result_list:
+                output_list.append({c.name: getattr(result_element, c.name) for c in result_element.__table__.columns})
+            return output_list
 
-    async def getsbyconditionswithpagination(
-        self, conditions: dict, page_number, records_per_page=10
-    ) -> [Any]:
-        # find({})
-        total = await self.model.find(conditions).count()
-        pagination = Paginations(
-            total_records=total,
-            current_page=page_number,
-            records_per_page=records_per_page,
-        )
-        documents = (
-            await self.model.find(conditions)
-            .skip(pagination.start_record_number - 1)
-            .limit(pagination.records_per_page)
-            .to_list()
-        )
-        if documents:
-            return documents, pagination
-        return pagination
+    async def get_by_conditions(self, conditions):
+        async with self.SessionLocal() as session:
+            result = await session.execute(select(self.model).filter_by(**conditions))
+            result_element = result.scalars().one()
+            output = {c.name: getattr(result_element, c.name) for c in result_element.__table__.columns}
+            return output

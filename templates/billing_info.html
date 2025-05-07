@@ -1,276 +1,274 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>청구 상세 정보</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        /* 표 헤더 스타일 */
-        th {
-            background-color: #f8f9fa !important; /* 연한 회색 */
-            color: #343a40 !important; /* 어두운 회색 */
-            vertical-align: middle !important;
-        }
-        /* 표 본문 스타일 */
-        td {
-            background-color: #ffffff !important; /* 흰색 */
-            color: #212529 !important; /* 검정색 */
-            vertical-align: middle !important;
-        }
-        /* 강조된 행 스타일 */
-        .highlight-row {
-            background-color: #e9ecef !important; /* 더 연한 회색 */
-        }
-        /* 중앙 정렬 스타일 */
-        .text-center {
-            text-align: center !important;
-        }
-        /* 오른쪽 정렬 스타일 */
-        .text-right {
-            text-align: right !important;
-        }
-        /* 비고 열 너비 조정 */
-        .remark-column {
-            width: 35% !important; /* 원하는 너비로 조정 */
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>청구 상세 정보</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* 표 헤더 스타일 */
+    th {
+      background-color: #f8f9fa !important;
+      /* 연한 회색 */
+      color: #343a40 !important;
+      /* 어두운 회색 */
+      vertical-align: middle !important;
+    }
 
-    </style>
+    /* 표 본문 스타일 */
+    td {
+      background-color: #ffffff !important;
+      /* 흰색 */
+      color: #212529 !important;
+      /* 검정색 */
+      vertical-align: middle !important;
+    }
+
+    /* 강조된 행 스타일 */
+    .highlight-row {
+      background-color: #e9ecef !important;
+      /* 더 연한 회색 */
+    }
+
+    /* 중앙 정렬 스타일 */
+    .text-center {
+      text-align: center !important;
+    }
+
+    /* 오른쪽 정렬 스타일 */
+    .text-right {
+      text-align: right !important;
+    }
+
+    /* 비고 열 너비 조정 */
+    .remark-column {
+      width: 35% !important;
+      /* 원하는 너비로 조정 */
+    }
+  </style>
 </head>
+
 <body>
-    <div class="container mt-5">
-        <h1 class="mb-4">청구 상세 정보</h1>
+  <div class="container mt-5">
+    <h1 class="mb-4">청구 상세 정보</h1>
 
-        <!-- 고객 정보 -->
-        <div class="card p-4 mb-4">
-            <h2>고객 정보</h2>
-            <table class="table table-bordered">
-                <tbody>
-                    <tr>
-                        <th class="text-center">고객명</th>
-                        <td class="text-center">{{ user.user_name }}</td>
-                        <th class="text-center">고객 번호</th>
-                        <td class="text-center">{{ user.user_id }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-center">구분</th>
-                        <td class="text-center">{{ user.cloud_class }}</td>
-                        <th class="text-center">CSP</th>
-                        <td class="text-center">{{ user.cloud_name }} CLOUD</td>
-                    </tr>
-                    <tr>
-                        <th class="text-center">조회 월</th>
-                        <td class="text-center">{{ total_charge_info.bill_month_str }}</td>
-                        <th class="text-center">납부 기한</th>
-                        <td class="text-center">{{ total_charge_info.bill_month_str }} 15일</td>
-                    </tr>
-                    <tr>
-                        <th class="text-center">총 납부 금액(VAT 제외)</th>
-                        <td colspan="3" class="text-center">  {{ total_charge_info.pay_amt_str }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- 비용 요약 -->
-        <div class="card p-4 mb-4">
-            <div class="d-flex align-items-center justify-content-between">
-                <h2>비용 요약</h2>
-                <button type="button" class="btn btn-warning btn-sm">수정하기</button>
-            </div>
-            <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th class="text-center">구분</th>
-                    <th class="text-center">항목</th>
-                    <th class="text-center">사용 금액</th>
-                    <th class="text-center">청구 금액</th>
-                    <th class="remark-column text-center">비고</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="text-center" rowspan="4">서비스 사용 요금</td>
-                    <td class="text-center">클라우드 사용</td>
-                    <td class="text-right"> {{ total_charge_info.use_amt_str }}</td>
-                    <td class="text-right"> {{ total_charge_info.pay_amt_str }}</td>
-                    <td> </td>
-                  </tr>
-                  <tr>
-                    <td class="text-center">3rd Party S/W</td>
-                    <td class="text-right"></td>
-                    <td class="text-right"></td>
-                    <td> </td>
-                  </tr>
-                  <tr>
-                    <td class="text-center">매니지드 서비스</td>
-                    <td class="text-right"></td>
-                    <td class="text-right"></td>
-                    <td> </td>
-                  </tr>
-                  <tr>
-                    <td class="text-center">기타</td>
-                    <td class="text-right"></td>
-                    <td class="text-right"></td>
-                    <td> </td>
-                  </tr>
-                  <tr class="highlight-row">
-                    <td colspan="2" class="text-center">소계</td>
-                    <td class="text-right"></td>
-                    <td class="text-right"></td>
-                    <td> </td>
-                  </tr>
-                  <tr>
-                    <td rowspan="2" class="text-center">할인 내역</td>
-                    <td class="text-center">영업 할인</td>
-                    <td colspan="2" class="text-right"></td>
-                    <td> </td>
-                  </tr>
-                  <tr>
-                    <td class="text-center">크레딧</td>
-                    <td colspan="2" class="text-right"></td>
-                    <td> </td>
-                  </tr>
-                  <tr class="highlight-row">
-                    <td colspan="2" class="text-center">납부 금액</td>
-                    <td colspan="2" class="text-right"></td>
-                    <td> </td>
-                  </tr>
-                  <tr>
-                    <td colspan="2" class="text-center">부가세</td>
-                    <td colspan="2" class="text-right"></td>
-                    <td> </td>
-                  </tr>
-                  <tr class="highlight-row">
-                    <td colspan="2" class="text-center">총 납부 금액(VAT 포함)</td>
-                    <td colspan="2" class="text-right"></td>
-                    <td> </td>
-                  </tr>
-                </tbody>
-              </table>
-        </div>
-
-
-        <!-- 클라우드 사용 내역 -->
-        <div class="card p-4 mb-4">
-          <div class="d-flex align-items-center justify-content-between">
-              <h2>클라우드 사용 내역</h2>
-              <button type="button" class="btn btn-warning btn-sm">수정하기</button>
-          </div>
-          <table class="table table-bordered">
-              <thead>
-                  <tr>
-                    <th class="text-center" style="width: 10%;">서비스명</th>
-                      <th class="text-center">항목</th>
-                      <th class="text-right">사용 금액</th>
-                      <th class="text-center remark-column">비고</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  {% for service_charge in service_charge_list %}
-                  {% for service_info in service_charge.service_list %}
-                  {% set service_index = loop.index %}
-                  {% set service_length = (service_charge.service_list | length) + 1 %}
-                  <tr class="detail-row">
-                    {% if service_index == 1%}
-                      <td class="text-center" rowspan="{{ service_length }}">{{ service_charge.service }}</td>
-                      {% endif %}
-                      <td class="text-center">{{ service_info.type }}</td>
-                      <td class="text-right"> {{ service_info.total_use_amt_str }}</td>
-                      <td> </td>
-                  </tr>
-                  {% endfor %}
-                <tr>
-                    <td class="text-center">소계</td>
-                    <td class="text-right"> {{ service_charge.use_amt_str }}</td>
-                    <td> </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-          </table>
-      </div>
-
-        <!-- 클라우드 세부 사용 내역 -->
-        <div class="card p-4 mb-4">
-            <div class="d-flex align-items-center justify-content-between">
-                <h2>클라우드 세부 사용 내역</h2>
-                <div>
-                  <button type="button" class="btn btn-info btn-sm" id="toggleDetails">상세 보기</button>
-                  <button type="button" class="btn btn-warning btn-sm">수정하기</button>
-              </div>
-                  </div>
-            <table class="table table-bordered detail-table" style="display: none;">
-                <thead>
-                    <tr>
-                      <th class="text-center" style="width: 10%;">서비스명</th>
-                        <th class="text-center">항목</th>
-                        <th class="text-center">상세</th>
-                        <th class="text-right">사용 금액</th>
-                        <th class="text-center remark-column">비고</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for service_charge in service_charge_list %}
-                    {% for service_info in service_charge.service_list %}
-                    {% set service_index = loop.index %}
-                    {% for type_info in service_info.type_list %}
-                    {% set type_index = loop.index %}
-                    <tr>
-                      {% if service_index == 1 and type_index == 1 %}
-                        <td class="text-center" rowspan="{{ service_charge.service_length }}">{{ service_charge.service }}</td>
-                        {% endif %}
-                        {% if type_index == 1 %}
-                        <td class="text-center" rowspan="{{ service_info.type_length }}">{{ service_info.type }}</td>
-                        {% endif %}
-                        <td class="text-center">{{ type_info.name }}</td>
-                        <td class="text-right"> {{ type_info.use_amt_str }}</td>
-                        <td> </td>
-                    </tr>
-                    {% endfor %}
-                    <tr>
-                        <td class="text-center">소계</td>
-                        <td class="text-right"> {{ service_info.total_use_amt_str }}</td>
-                        <td> </td>
-                    </tr>
-                    {% endfor %}
-                  <tr>
-                      <td class="text-center" colspan="2">소계</td>
-                      <td class="text-right"> {{ service_charge.use_amt_str }}</td>
-                      <td> </td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <!-- 버튼 -->
-        <div class="text-end">
-            <button type="button" class="btn btn-primary">출력하기</button>
-            <button type="button" class="btn btn-secondary" onclick="viewDetails('{{ user.user_id }}')"\>목록</button>
-        </div>
+    <!-- 고객 정보 -->
+    <div class="card p-4 mb-4">
+      <h2>고객 정보</h2>
+      <table class="table table-bordered">
+        <tbody>
+          <tr>
+            <th class="text-center">고객명</th>
+            <td class="text-center">{{ user.USER_NAME }}</td>
+            <th class="text-center">고객 번호</th>
+            <td class="text-center">{{ user.USER_ID }}</td>
+          </tr>
+          <tr>
+            <th class="text-center">구분</th>
+            <td class="text-center">{{ user.CLOUD_CLASS }}</td>
+            <th class="text-center">CSP</th>
+            <td class="text-center">{{ user.CLOUD_NAME }} CLOUD</td>
+          </tr>
+          <tr>
+            <th class="text-center">조회 월</th>
+            <td class="text-center">{{ total_charge_info.BILL_MONTH_STR }}</td>
+            <th class="text-center">납부 기한</th>
+            <td class="text-center">{{ total_charge_info.BILL_MONTH_STR }} 15일</td>
+          </tr>
+          <tr>
+            <th class="text-center">총 납부 금액(VAT 제외)</th>
+            <td colspan="3" class="text-center"> {{ total_charge_info.TOTAL_PAY_AMT_STR }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      document.getElementById('toggleDetails').addEventListener('click', function() {
-          const detailRows = document.querySelectorAll('.detail-table');
-          detailRows.forEach(row => {
-              if (row.style.display === 'none') {
-                  row.style.display = '';
-              } else {
-                  row.style.display = 'none';
-              }
-          });
-      });
-      function viewDetails(userId) {
-        // 상세 보기 페이지로 이동
-        window.location.href = `/user_info/${userId}`;
-    }
-    
-    </script>
-  
-    
+    <!-- 비용 요약 -->
+    <div class="card p-4 mb-4">
+      <div class="d-flex align-items-center justify-content-between">
+        <h2>비용 요약</h2>
+        <button type="button" class="btn btn-warning btn-sm">수정하기</button>
+      </div>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th class="text-center">구분</th>
+            <th class="text-center">항목</th>
+            <th class="text-center">사용 금액</th>
+            <th class="text-center">청구 금액</th>
+            <th class="remark-column text-center">비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center" rowspan="4">서비스 사용 요금</td>
+            <td class="text-center">클라우드 사용</td>
+            <td class="text-right"> {{ total_charge_info.TOTAL_USE_AMT_STR }}</td>
+            <td class="text-right"> {{ total_charge_info.TOTAL_PAY_AMT_STR }}</td>
+            <td> </td>
+          </tr>
+          <tr>
+            <td class="text-center">3rd Party S/W</td>
+            <td class="text-right"></td>
+            <td class="text-right"></td>
+            <td> </td>
+          </tr>
+          <tr>
+            <td class="text-center">매니지드 서비스</td>
+            <td class="text-right"></td>
+            <td class="text-right"></td>
+            <td> </td>
+          </tr>
+          <tr>
+            <td class="text-center">기타</td>
+            <td class="text-right"></td>
+            <td class="text-right"></td>
+            <td> </td>
+          </tr>
+          <tr class="highlight-row">
+            <td colspan="2" class="text-center">소계</td>
+            <td class="text-right"></td>
+            <td class="text-right"></td>
+            <td> </td>
+          </tr>
+          <tr>
+            <td rowspan="2" class="text-center">할인 내역</td>
+            <td class="text-center">영업 할인</td>
+            <td colspan="2" class="text-right"></td>
+            <td> </td>
+          </tr>
+          <tr>
+            <td class="text-center">크레딧</td>
+            <td colspan="2" class="text-right"></td>
+            <td> </td>
+          </tr>
+          <tr class="highlight-row">
+            <td colspan="2" class="text-center">납부 금액</td>
+            <td colspan="2" class="text-right"></td>
+            <td> </td>
+          </tr>
+          <tr>
+            <td colspan="2" class="text-center">부가세</td>
+            <td colspan="2" class="text-right"></td>
+            <td> </td>
+          </tr>
+          <tr class="highlight-row">
+            <td colspan="2" class="text-center">총 납부 금액(VAT 포함)</td>
+            <td colspan="2" class="text-right"></td>
+            <td> </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <!-- 클라우드 사용 내역 -->
+    <div class="card p-4 mb-4">
+      <div class="d-flex align-items-center justify-content-between">
+        <h2>클라우드 사용 내역</h2>
+        <button type="button" class="btn btn-warning btn-sm">수정하기</button>
+      </div>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th class="text-center" style="width: 10%;">서비스명</th>
+            <th class="text-center">항목</th>
+            <th class="text-right">사용 금액</th>
+            <th class="text-center remark-column">비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for service_charge in service_charge_list %}
+          {% for type_info in service_charge.type_list %}
+          {% set type_index = loop.index %}
+          {% set type_length = (service_charge.type_list | length) + 1 %}
+          <tr class="detail-row">
+            {% if type_index == 1%}
+            <td class="text-center" rowspan="{{ type_length }}">{{ service_charge.SERVICE_CHARGE_NAME }}</td>
+            {% endif %}
+            <td class="text-center">{{ type_info.TYPE_NAME }}</td>
+            <td class="text-right"> {{ type_info.TYPE_USE_AMT }}</td>
+            <td> </td>
+          </tr>
+          {% endfor %}
+          <tr>
+            <td class="text-center">소계</td>
+            <td class="text-right"> {{ service_charge.SERVICE_USE_AMT }}</td>
+            <td> </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 클라우드 세부 사용 내역 -->
+    <div class="card p-4 mb-4">
+      <div class="d-flex align-items-center justify-content-between">
+        <h2>클라우드 세부 사용 내역</h2>
+        <div>
+          <button type="button" class="btn btn-info btn-sm" id="toggleDetails">상세 보기</button>
+          <button type="button" class="btn btn-warning btn-sm">수정하기</button>
+        </div>
+      </div>
+      <table class="table table-bordered detail-table" style="display: none;">
+        <thead>
+          <tr>
+            <th class="text-center" style="width: 10%;">서비스명</th>
+            <th class="text-center">항목</th>
+            <th class="text-center">상세</th>
+            <th class="text-right">사용 금액</th>
+            <th class="text-center remark-column">비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for service_charge in service_charge_list %}
+          {% for type_info in service_charge.type_list %}
+          {% set type_index = loop.index %}
+          {% for item_info in type_info.item_list %}
+          {% set item_index = loop.index %}
+          <tr>
+            {% if type_index == 1 and item_index == 1 %}
+            <td class="text-center" rowspan="{{ service_charge.TYPE_CHARGE_LENGH }}">{{
+              service_charge.SERVICE_CHARGE_NAME }}</td>
+            {% endif %}
+            {% if item_index == 1 %}
+            <td class="text-center" rowspan="{{ type_info.ITEM_CHARGE_LENGH }}">{{ type_info.TYPE_NAME }}</td>
+            {% endif %}
+            <td class="text-center">{{ item_info.ITEM_NAME }}</td>
+            <td class="text-right"> {{ item_info.ITEM_USE_AMT }}</td>
+            <td> </td>
+          </tr>
+          {% endfor %}
+          <tr>
+            <td class="text-center">소계</td>
+            <td class="text-right"> {{ type_info.TYPE_USE_AMT }}</td>
+            <td> </td>
+          </tr>
+          {% endfor %}
+          <tr>
+            <td class="text-center" colspan="2">소계</td>
+            <td class="text-right"> {{ service_charge.SERVICE_USE_AMT }}</td>
+            <td> </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 버튼 -->
+    <div class="text-end">
+      <button type="button" class="btn btn-primary">출력하기</button>
+      <button type="button" class="btn btn-secondary" onclick="goBack()">목록</button>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/common.js"></script>
+
+
 </body>
+
 </html>

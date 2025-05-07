@@ -1,4 +1,6 @@
 from fastapi import FastAPI, Request, HTTPException, Query
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 import json
@@ -10,142 +12,110 @@ from api_func.private import (
     private_nhn_cloud_api,
 )
 from databases.connections import Settings
-from beanie import PydanticObjectId
-from databases.connections import Database
-from models.user_list import User_list
-from models.cloud_list import Cloud_list
-from models.service_charge_list import Service_charge_list
-from models.total_charge import Total_charge
+from databases.connections import AsyncDatabase
+from models.model import (
+    UserList,
+    CloudList,
+    ServiceList,
+    CloudTotalChargeList,
+    ServiceChargeList,
+    TypeChargeList,
+    ItemChargeList,
+    ThirdPartyChargeList,
+    ManagedServiceList,
+    OthersServiceList,
+)
+from apscheduler.schedulers.background import BackgroundScheduler
+from mysql_user_data_setting import BillingDatabaseUpdater
 
 app = FastAPI()
-
 settings = Settings()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-@app.on_event("startup")
-async def init_db():
-    await settings.initialize_database()
+# Static files 설정
+app.mount("/css", StaticFiles(directory="resources/css/"), name="static_css")
+app.mount("/js", StaticFiles(directory="resources/js/"), name="static_js")
 
-
-collection_user_list = Database(User_list)
-collection_cloud_list = Database(Cloud_list)
-collection_total_charge = Database(Total_charge)
-collection_service_charge = Database(Service_charge_list)
 # Set up Jinja2 templates
 templates = Jinja2Templates(directory="templates")
 
 
-# 정렬 기준: bill_month을 연도-월 형식으로 변환
-def parse_bill_month(bill_month):
-    return datetime.strptime(bill_month, "%Y년 %m월")
+@app.on_event("startup")
+async def init_scheduler():
+    billing_data_updater = BillingDatabaseUpdater()
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(billing_data_updater.update_database, trigger="cron", minute=0)
+
+    # 스케줄러 시작
+    scheduler.start()
 
 
-def format_currency(value):
-    """금액을 1000 단위로 쉼표를 추가하고 '원'을 붙임"""
-    return f"{int(value):,} 원"
-
-
-def api_select(cloud_info):
-    if cloud_info["cloud_name"] == "NAVER":
-        if cloud_info["cloud_class"] == "공공":
-            return gov_naver_cloud_api
-        else:
-            return private_naver_cloud_api
-    if cloud_info["cloud_name"] == "KT":
-        if cloud_info["cloud_class"] == "공공":
-            return gov_kt_cloud_api
-        else:
-            return private_kt_cloud_api
-    if cloud_info["cloud_name"] == "NHN":
-        if cloud_info["cloud_class"] == "공공":
-            return gov_nhn_cloud_api
-        else:
-            return private_nhn_cloud_api
-
-
-def generate_month_range(start_date, end_date):
-    # 문자열을 datetime 객체로 변환
-    start = datetime.strptime(str(start_date), "%Y%m")
-    end = datetime.strptime(str(end_date), "%Y%m")
-
-    # 결과를 저장할 리스트
-    month_list = []
-
-    # start부터 end까지 월 단위로 증가
-    while start <= end:
-        month_list.append(int(start.strftime("%Y%m")))  # "YYYYMM" 형식으로 저장
-        # 한 달 추가
-        start += timedelta(days=31)  # 31일을 더하면 다음 달로 넘어감
-        start = start.replace(day=1)  # 항상 1일로 설정
-
-    return month_list
-
-
-# Load JSON data
-def load_json(file_path: str) -> list:
-    try:
-        with open(file_path, "r", encoding="utf-8") as file:
-            return json.load(file)
-    except FileNotFoundError:
-        return []
-
-
-def user_dict_create(user_list):
-    user_list = [dict(i) for i in user_list]
-    for i in user_list:
-        i["cloud_id"] = [j["cloud_id"] for j in i["cloud_list"]]
-        i["cloud_name"] = [j["cloud_name"] for j in i["cloud_list"]]
-        i["cloud_class"] = [j["cloud_class"] for j in i["cloud_list"]]
-    return user_list
-
-
-def period_check(start_date, end_date, today_date):
-    if start_date and end_date:
-        if "-" in start_date:
-            start_date = int(start_date.replace("-", ""))
-        if "-" in end_date:
-            end_date = int(end_date.replace("-", ""))
-        if start_date > end_date:
-            raise HTTPException(
-                status_code=400, detail="시작 날짜가 종료 날짜보다 늦을 수 없습니다."
-            )
-        if end_date > today_date:
-            raise HTTPException(
-                status_code=400, detail="조회 종료 날짜는 오늘 날짜 이후일 수 없습니다."
-            )
-    else:
-        one_year_ago = datetime.today() - timedelta(days=365)
-        start_date = int(one_year_ago.strftime("%Y%m"))  # 1년 전
-        end_date = today_date  # 오늘
-    return start_date, end_date
+collection_user_list = AsyncDatabase(UserList)
+collection_cloud_list = AsyncDatabase(CloudList)
+collection_service_list = AsyncDatabase(ServiceList)
+collection_cloud_total_charge_list = AsyncDatabase(CloudTotalChargeList)
+collection_service_charge_list = AsyncDatabase(ServiceChargeList)
+collection_type_charge_list = AsyncDatabase(TypeChargeList)
+collection_item_charge_list = AsyncDatabase(ItemChargeList)
 
 
 def charge_info_str(total_charge_info):
-    total_charge_info["bill_month_str"] = (
-        str(total_charge_info["bill_month"])[:4]
+    total_charge_info["BILL_MONTH_STR"] = (
+        str(total_charge_info["BILL_MONTH"])[:4]
         + "년 "
-        + str(total_charge_info["bill_month"])[4:]
+        + str(total_charge_info["BILL_MONTH"])[4:]
         + "월"
     )
-    total_charge_info["pay_amt_str"] = format_currency(total_charge_info["pay_amt"])
-    total_charge_info["total_discount_amt_str"] = format_currency(
-        total_charge_info["total_discount_amt"]
-    )
-    total_charge_info["use_amt_str"] = format_currency(total_charge_info["use_amt"])
+    dict_key_list = [i for i in total_charge_info.keys()]
+    for dict_key in dict_key_list:
+        if "AMT" in dict_key and total_charge_info[dict_key] is not None:
+            total_charge_info[dict_key + "_STR"] = (
+                f"{int(total_charge_info[dict_key]):,} 원"
+            )
     return total_charge_info
 
 
-async def user_dict_crate(charge_id, cloud_id_class_dict):
-    user_id = charge_id.split("-")[0]
-    cloud_name = charge_id.split("-")[1]
-    cloud_class = cloud_id_class_dict[charge_id.split("-")[2]]
-    bill_month = charge_id.split("-")[3]
-    cloud_id = user_id + "-" + cloud_name
-    conditions = {"cloud_id": {"$regex": cloud_id}}
-    cloud_list = await collection_cloud_list.getsbyconditions(conditions)
-    user_dict = dict(cloud_list[0])
-    user_dict["bill_month"] = bill_month
-    return user_dict
+def filter_dict_create(form_list):
+    form_list = form_list._list
+    category_list = list()
+    cloud_list = list()
+    condition_dict = {}
+    for form_data in form_list:
+        if form_data[0] == "customer_name":
+            condition_dict["user_name"] = form_data[1]
+        elif form_data[0] == "category":
+            category_list.append(form_data[1])
+        elif form_data[0] == "start_date":
+            start_date = int(form_data[1].replace("-", ""))
+            condition_dict["start_date"] = start_date
+        elif form_data[0] == "end_date":
+            end_date = int(form_data[1].replace("-", ""))
+            condition_dict["end_date"] = end_date
+        elif form_data[0] == "cloud-company":
+            cloud_list.append(form_data[1])
+    condition_dict["class_list"] = list(category_list)
+    condition_dict["cloud_list"] = list(cloud_list)
+    return condition_dict
+
+
+async def get_user_info(USER_ID):
+    conditions = {"USER_ID": USER_ID}
+    user_info = await collection_user_list.get_by_conditions(conditions)
+    cloud_list = await collection_cloud_list.gets_by_conditions(conditions)
+    user_detail = {
+        "USER_ID": user_info["USER_ID"],
+        "USER_NAME": user_info["USER_NAME"],
+        "CLOUD_ID": [i["CLOUD_ID"] for i in cloud_list],
+        "CLOUD_CLASS": [i["CLOUD_CLASS"] for i in cloud_list],
+        "CLOUD_NAME": [i["CLOUD_NAME"] for i in cloud_list],
+    }
+    return user_detail
 
 
 # Routes
@@ -153,108 +123,79 @@ async def user_dict_crate(charge_id, cloud_id_class_dict):
 async def main(request: Request):
     """메인 페이지"""
     # # Load user data from JSON
-    user_data = await collection_user_list.get_all()
-    user_list = user_dict_create(user_data)
+    user_list = await collection_user_list.get_all()
+    result_list = []
+    for user_element in user_list:
+        user_element = await get_user_info(user_element["USER_ID"])
+        result_list.append(user_element)
+        pass
     return templates.TemplateResponse(
-        "main.html", {"request": request, "users": user_list}
+        "main.html",
+        {"request": request, "users": result_list, "filter_condition": None},
     )
 
 
-@app.get("/user_info/{user_id}", response_class=HTMLResponse)
-async def user_info(
-    request: Request,
-    user_id: str,
-    start_date: str = Query(None),  # 시작 날짜 (YYYY-MM 형식)
-    end_date: str = Query(None),  # 종료 날짜 (YYYY-MM 형식)
-):
-    cloud_name_class_dict = {"공공": "G", "민간": "P", "금융": "F"}
-    cloud_id_class_dict = {"G": "공공", "P": "민간", "F": "금융"}
-    conditions = {"user_id": {"$regex": user_id}}
-    cloud_list = await collection_cloud_list.getsbyconditions(conditions)
-    cloud_list = [dict(i) for i in cloud_list]
+# Routes
+@app.post("/", response_class=HTMLResponse)
+async def main(request: Request):
+    """메인 페이지"""
+    form_list = await request.form()
+    condition_dict = filter_dict_create(form_list)
 
-    if not cloud_list or len(cloud_list) == 0:
-        return templates.TemplateResponse(
-            "error.html",
-            {"request": request, "message": f"User with ID {user_id} not found."},
+    user_list = await collection_user_list.get_all()
+    result_list = []
+    for user_element in user_list:
+        user_element = await get_user_info(user_element["USER_ID"])
+        class_intersection = set(user_element["CLOUD_CLASS"]) & set(
+            condition_dict["class_list"]
         )
-    else:
-        user_detail = {
-            "user_id": cloud_list[0]["user_id"],
-            "user_name": cloud_list[0]["user_name"],
-            "cloud_class": [i["cloud_class"] for i in cloud_list],
-            "cloud_name": [i["cloud_name"] for i in cloud_list],
-        }
+        cloud_intersection = set(user_element["CLOUD_NAME"]) & set(
+            condition_dict["cloud_list"]
+        )
+        if (
+            condition_dict["user_name"] in user_element["USER_NAME"]
+            and class_intersection
+            and cloud_intersection
+        ):
+            result_list.append(user_element)
+            pass
+    return templates.TemplateResponse(
+        "main.html",
+        {"request": request, "users": result_list, "filter_condition": condition_dict},
+    )
+
+
+@app.get("/user_info/{USER_ID}", response_class=HTMLResponse)
+async def user_info(request: Request, USER_ID: str):
+    user_detail = await get_user_info(USER_ID)
 
     # 오늘 날짜 계산
     today = datetime.today()
     today_date = int(today.strftime("%Y%m"))
+    one_year_ago = today - timedelta(days=365)
+    start_date = int(one_year_ago.strftime("%Y%m"))
 
-    # 조회 기간 검증
-    start_date, end_date = period_check(start_date, end_date, today_date)
-    data_range = {"start_date": start_date, "end_date": end_date}
-    # 예시: 청구 내역 추가
+    date_range = {"start_date": start_date, "end_date": today_date}
 
-    conditions = {
-        "user_id": {"$regex": user_id},
-        "bill_month": {"$gte": start_date, "$lte": end_date},
-    }
-    total_charge_list = await collection_total_charge.getsbyconditions(conditions)
-    if total_charge_list is False:
-        total_charge_list = []
-    else:
-        total_charge_list = [dict(i) for i in total_charge_list]
+    conditions = {"USER_ID": USER_ID}
+    cloud_list = await collection_cloud_list.gets_by_conditions(conditions)
 
-    mongodb_total_charge_list = [
-        {"cloud_key": i["cloud_key"], "bill_month": i["bill_month"]}
-        for i in total_charge_list
-    ]
+    total_charge_list = []
+    for cloud_element in cloud_list:
+        conditions = {"CLOUD_ID": cloud_element["CLOUD_ID"]}
+        total_charge_data = await collection_cloud_total_charge_list.gets_by_conditions(
+            conditions
+        )
 
-    for cloud_info in cloud_list:
-        cloud_id = cloud_info["cloud_id"]
-        cloud_key = cloud_info["cloud_key"]
-        if cloud_info["start_date"] > start_date:
-            start_date = cloud_info["start_date"]
-        period_list = generate_month_range(start_date, end_date)
-        cloud_period_list = [
-            {"cloud_key": cloud_key, "bill_month": period_element}
-            for period_element in period_list
-        ]
-        api_selector = api_select(cloud_info)
-        for cloud_period_element in cloud_period_list:
-            if cloud_period_element not in mongodb_total_charge_list:
-                charge_info_list = api_selector.total_charge_info(
-                    cloud_key,
-                    cloud_period_element["bill_month"],
-                    cloud_period_element["bill_month"],
-                )
-                for charge_info_element in charge_info_list:
-                    charge_info_element["user_id"] = user_id
-                    charge_info_element["charge_id"] = "-".join(
-                        [
-                            user_id,
-                            cloud_info["cloud_name"],
-                            cloud_name_class_dict[cloud_info["cloud_class"]],
-                            str(charge_info_element["bill_month"]),
-                        ]
-                    )
-                    if cloud_period_element["bill_month"] != today_date:
-                        await collection_total_charge.save(
-                            Total_charge(**charge_info_element)
-                        )
-                    total_charge_list.append(charge_info_element)
-
-        for charge_info in total_charge_list:
-            charge_info["user_name"] = user_detail["user_name"]
-            charge_info["cloud_name"] = cloud_info["cloud_name"]
-            charge_info["cloud_class"] = cloud_info["cloud_class"]
-            charge_info = charge_info_str(charge_info)
-        pass
+        for total_charge_element in total_charge_data:
+            total_charge_element = charge_info_str(total_charge_element)
+            total_charge_element["USER_NAME"] = user_detail["USER_NAME"]
+            total_charge_element["CLOUD_CLASS"] = cloud_element["CLOUD_CLASS"]
+            total_charge_element["CLOUD_NAME"] = cloud_element["CLOUD_NAME"]
+            total_charge_list.append(total_charge_element)
 
     sorted_charge_list = sorted(
-        total_charge_list,
-        key=lambda x: x["bill_month"],
-        reverse=True,
+        total_charge_list, key=lambda x: x["BILL_MONTH"], reverse=True
     )
 
     # 조회 기간을 템플릿에 전달
@@ -264,142 +205,222 @@ async def user_info(
             "request": request,
             "user": user_detail,
             "billing_history": sorted_charge_list,
-            "date_range": data_range,
+            "date_range": date_range,
+        },
+    )
+
+
+@app.post("/user_info/{USER_ID}", response_class=HTMLResponse)
+async def user_info(request: Request, USER_ID: str):
+    form_list = await request.form()
+    condition_dict = filter_dict_create(form_list)
+
+    date_range = {
+        "start_date": condition_dict["start_date"],
+        "end_date": condition_dict["end_date"],
+    }
+
+    user_detail = await get_user_info(USER_ID)
+
+    conditions = {"USER_ID": USER_ID}
+    cloud_list = await collection_cloud_list.gets_by_conditions(conditions)
+
+    total_charge_list = []
+    for cloud_element in cloud_list:
+        conditions = {"CLOUD_ID": cloud_element["CLOUD_ID"]}
+        total_charge_data = await collection_cloud_total_charge_list.gets_by_conditions(
+            conditions
+        )
+
+        for total_charge_element in total_charge_data:
+            if (
+                total_charge_element["BILL_MONTH"] >= date_range["start_date"]
+                and total_charge_element["BILL_MONTH"] <= date_range["end_date"]
+            ):
+                total_charge_element = charge_info_str(total_charge_element)
+                total_charge_element["USER_NAME"] = user_detail["USER_NAME"]
+                total_charge_element["CLOUD_CLASS"] = cloud_element["CLOUD_CLASS"]
+                total_charge_element["CLOUD_NAME"] = cloud_element["CLOUD_NAME"]
+                total_charge_list.append(total_charge_element)
+
+    sorted_charge_list = sorted(
+        total_charge_list, key=lambda x: x["BILL_MONTH"], reverse=True
+    )
+
+    # 조회 기간을 템플릿에 전달
+    return templates.TemplateResponse(
+        "user_info.html",
+        {
+            "request": request,
+            "user": user_detail,
+            "billing_history": sorted_charge_list,
+            "date_range": date_range,
         },
     )
 
 
 @app.get("/billing_list", response_class=HTMLResponse)
-async def billing_list(
-    request: Request,
-    start_date: str = Query(None),  # 시작 날짜 (YYYY-MM 형식)
-    end_date: str = Query(None),  # 종료 날짜 (YYYY-MM 형식)
-):
-    request_dict = dict(await request.form())
-    conditions ={}
-    cloud_list = await collection_cloud_list.getsbyconditions(conditions)
-    cloud_dict = {}
-    for cloud_element in cloud_list:
-        cloud_dict[dict(cloud_element)['cloud_id']]= {'cloud_name':dict(cloud_element)['cloud_name'],'cloud_class':dict(cloud_element)['cloud_class'],'user_name':dict(cloud_element)['user_name']}
+async def billing_list(request: Request):
 
+    # 오늘 날짜 계산
     today = datetime.today()
     today_date = int(today.strftime("%Y%m"))
+    one_year_ago = today - timedelta(days=365)
+    start_date = int(one_year_ago.strftime("%Y%m"))
 
     # 조회 기간 검증
-    start_date, end_date = period_check(start_date, end_date, today_date)
-    date_range = {"start_date": start_date, "end_date": end_date}
+    date_range = {"start_date": start_date, "end_date": today_date}
+    user_elements = await collection_user_list.get_all()
+    total_charge_list = []
+    for user_info in user_elements:
+        user_id = user_info["USER_ID"]
+        user_name = user_info["USER_NAME"]
+        cloud_conditions = {"USER_ID": user_id}
+        cloud_elements = await collection_cloud_list.gets_by_conditions(
+            cloud_conditions
+        )
+        for cloud_info in cloud_elements:
+            cloud_id = cloud_info["CLOUD_ID"]
+            cloud_class = cloud_info["CLOUD_CLASS"]
+            cloud_name = cloud_info["CLOUD_NAME"]
+            total_charge_conditions = {"CLOUD_ID": cloud_id}
+            total_charge_elements = (
+                await collection_cloud_total_charge_list.gets_by_conditions(
+                    total_charge_conditions
+                )
+            )
+            for total_charge_info in total_charge_elements:
+                total_charge_info = charge_info_str(total_charge_info)
+                total_charge_info["USER_NAME"] = user_name
+                total_charge_info["CLOUD_CLASS"] = cloud_class
+                total_charge_info["CLOUD_NAME"] = cloud_name
+                total_charge_list.append(total_charge_info)
 
-    """청구 목록 페이지"""
-    conditions = {
-        "bill_month": {"$gte": start_date, "$lte": end_date},
-    }
-    total_charge_list = await collection_total_charge.getsbyconditions(conditions)
-    total_charge_list = [dict(i) for i in total_charge_list]
-    for total_charge_info in total_charge_list:
-        total_charge_info = charge_info_str(total_charge_info)
-        cloud_id = '-'.join(total_charge_info['charge_id'].split('-')[:2])
-        total_charge_info['user_name'] = cloud_dict[cloud_id]['user_name']
-        total_charge_info['cloud_name'] = cloud_dict[cloud_id]['cloud_name']
-        total_charge_info['cloud_class'] = cloud_dict[cloud_id]['cloud_class']
+        pass
+
     sorted_charge_list = sorted(
         total_charge_list,
-        key=lambda x: x["bill_month"],
+        key=lambda x: x["BILL_MONTH"],
         reverse=True,
     )
-    return templates.TemplateResponse("billing_list.html", {"request": request,"date_range":date_range,"total_charge_list":sorted_charge_list})
+    return templates.TemplateResponse(
+        "billing_list.html",
+        {
+            "request": request,
+            "date_range": date_range,
+            "total_charge_list": sorted_charge_list,
+            "filter_condition": None,
+        },
+    )
+
+
+@app.post("/billing_list", response_class=HTMLResponse)
+async def billing_list(request: Request):
+    form_list = await request.form()
+    condition_dict = filter_dict_create(form_list)
+
+    date_range = {
+        "start_date": condition_dict["start_date"],
+        "end_date": condition_dict["end_date"],
+    }
+
+    user_elements = await collection_user_list.get_all()
+    total_charge_list = []
+    for user_info in user_elements:
+        user_id = user_info["USER_ID"]
+        user_name = user_info["USER_NAME"]
+        if condition_dict["user_name"] in user_name:
+            cloud_conditions = {"USER_ID": user_id}
+            cloud_elements = await collection_cloud_list.gets_by_conditions(
+                cloud_conditions
+            )
+            for cloud_info in cloud_elements:
+                cloud_id = cloud_info["CLOUD_ID"]
+                cloud_class = cloud_info["CLOUD_CLASS"]
+                cloud_name = cloud_info["CLOUD_NAME"]
+                if cloud_class in condition_dict['class_list'] and cloud_name in condition_dict["cloud_list"]:
+                    total_charge_conditions = {"CLOUD_ID": cloud_id}
+                    total_charge_elements = (
+                        await collection_cloud_total_charge_list.gets_by_conditions(
+                            total_charge_conditions
+                        )
+                    )
+                    for total_charge_info in total_charge_elements:
+                        if (
+                            total_charge_info["BILL_MONTH"] >= date_range["start_date"]
+                            and total_charge_info["BILL_MONTH"]
+                            <= date_range["end_date"]
+                        ):
+                            total_charge_info = charge_info_str(total_charge_info)
+                            total_charge_info["USER_NAME"] = user_name
+                            total_charge_info["CLOUD_CLASS"] = cloud_class
+                            total_charge_info["CLOUD_NAME"] = cloud_name
+                            total_charge_list.append(total_charge_info)
+
+    sorted_charge_list = sorted(
+        total_charge_list,
+        key=lambda x: x["BILL_MONTH"],
+        reverse=True,
+    )
+    return templates.TemplateResponse(
+        "billing_list.html",
+        {
+            "request": request,
+            "date_range": date_range,
+            "total_charge_list": sorted_charge_list,
+            "filter_condition": condition_dict,
+        },
+    )
 
 
 @app.get("/billing_info/{charge_id}", response_class=HTMLResponse)
-async def billing_info(
-    request: Request,
-    charge_id: str,
-    start_date: str = Query(None),  # 시작 날짜 (YYYY-MM 형식)
-    end_date: str = Query(None),  # 종료 날짜 (YYYY-MM 형식)
-):
-    """청구 상세 정보 페이지"""
-    cloud_name_class_dict = {"공공": "G", "민간": "P", "금융": "F"}
-    cloud_id_class_dict = {"G": "공공", "P": "민간", "F": "금융"}
+async def billing_info(request: Request, charge_id: str):
 
-    conditions = {"charge_id": {"$regex": charge_id}}
-    total_charge_list = await collection_total_charge.getsbyconditions(conditions)
-    user_dict = await user_dict_crate(charge_id, cloud_id_class_dict)
-    if total_charge_list is False:
-        api_selector = api_select(
-            {
-                "cloud_name": user_dict["cloud_name"],
-                "cloud_class": user_dict["cloud_class"],
-            }
-        )
-        total_charge_list = api_selector.total_charge_info(
-            user_dict["cloud_key"], user_dict["bill_month"], user_dict["bill_month"]
-        )
-    else:
-        total_charge_list = [dict(i) for i in total_charge_list]
-    total_charge_info = total_charge_list[0]
-    total_charge_info = charge_info_str(total_charge_info)
+    conditions = {"TOTAL_CHARGE_ID": charge_id}
+    total_charge_element = await collection_cloud_total_charge_list.get_by_conditions(
+        conditions
+    )
+    conditions = {"CLOUD_ID": total_charge_element["CLOUD_ID"]}
+    cloud_info = await collection_cloud_list.get_by_conditions(conditions)
+    conditions = {"USER_ID": cloud_info["USER_ID"]}
+    user_info = await collection_user_list.get_by_conditions(conditions)
 
-    conditions = {"charge_id": {"$regex": charge_id}}
-    service_charge_list = await collection_service_charge.getsbyconditions(conditions)
-    if service_charge_list is False:
-        api_selector = api_select(
-            {
-                "cloud_name": user_dict["cloud_name"],
-                "cloud_class": user_dict["cloud_class"],
-            }
-        )
-        service_charge_list = api_selector.service_charge_list(
-            user_dict["cloud_key"], user_dict["bill_month"], user_dict["bill_month"]
-        )
-    else:
-        service_charge_list = [dict(i) for i in service_charge_list]
-
+    user_dict = {
+        "USER_ID": user_info["USER_ID"],
+        "USER_NAME": user_info["USER_NAME"],
+        "CLOUD_CLASS": cloud_info["CLOUD_CLASS"],
+        "CLOUD_NAME": cloud_info["CLOUD_NAME"],
+    }
+    total_charge_info = charge_info_str(total_charge_element)
+    service_charge_list = []
+    conditions = {"TOTAL_CHARGE_ID": total_charge_info["TOTAL_CHARGE_ID"]}
+    service_charge_list = await collection_service_charge_list.gets_by_conditions(
+        conditions
+    )
     for service_charge_info in service_charge_list:
-        service_list = service_charge_info["service_list"]
+        service_charge_id = service_charge_info["SERVICE_CHARGE_ID"]
+        conditions = {"SERVICE_CHARGE_ID": service_charge_id}
+        type_charge_list = await collection_type_charge_list.gets_by_conditions(
+            conditions
+        )
         type_list = []
-        service_length = 1
-        for service_element in service_list:
-            type_elements = [i["type"] for i in type_list]
-            if service_element["type"] not in type_elements:
-                type_list.append(
-                    {
-                        "type": service_element["type"],
-                        "total_use_amt": service_element["use_amt"],
-                        "type_list": [
-                            {
-                                "name": service_element["name"],
-                                "use_amt": service_element["use_amt"],
-                                "use_amt_str": format_currency(
-                                    service_element["use_amt"]
-                                ),
-                            }
-                        ],
-                    }
-                )
-            else:
-                type_list[type_elements.index(service_element["type"])][
-                    "total_use_amt"
-                ] += service_element["use_amt"]
-                type_list[type_elements.index(service_element["type"])][
-                    "type_list"
-                ].append(
-                    {
-                        "name": service_element["name"],
-                        "use_amt": service_element["use_amt"],
-                        "use_amt_str": format_currency(service_element["use_amt"]),
-                    }
-                )
-        for type_element in type_list:
-            type_element["total_use_amt_str"] = format_currency(
-                type_element["total_use_amt"]
-            )
-            type_length = len(type_element["type_list"]) + 1
-            type_element["type_length"] = type_length
-            service_length += type_length
-        service_charge_info["service_list"] = type_list
-        service_charge_info["service_length"] = service_length
-        service_charge_info = charge_info_str(service_charge_info)
+        type_charge_length = 1
+        for type_charge_info in type_charge_list:
+            type_charge_id = type_charge_info["TYPE_CHARGE_ID"]
 
-    pass
+            conditions = {"TYPE_CHARGE_ID": type_charge_id}
+            item_charge_list = await collection_item_charge_list.gets_by_conditions(
+                conditions
+            )
+
+            type_charge_info["item_list"] = item_charge_list
+            item_charge_length = len(item_charge_list) + 1
+            type_charge_info["ITEM_CHARGE_LENGH"] = item_charge_length
+            type_charge_length += item_charge_length
+            type_list.append(type_charge_info)
+        service_charge_info["TYPE_CHARGE_LENGH"] = type_charge_length
+        service_charge_info["type_list"] = type_list
+        pass
     return templates.TemplateResponse(
         "billing_info.html",
         {
