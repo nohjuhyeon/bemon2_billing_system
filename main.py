@@ -23,7 +23,7 @@ from models.model import (
     ItemChargeList,
     ThirdPartyChargeList,
     ManagedServiceList,
-    OthersServiceList,
+    OtherServiceList,
 )
 from apscheduler.schedulers.background import BackgroundScheduler
 from mysql_user_data_setting import BillingDatabaseUpdater
@@ -60,21 +60,25 @@ collection_user_list = AsyncDatabase(UserList)
 collection_cloud_list = AsyncDatabase(CloudList)
 collection_service_list = AsyncDatabase(ServiceList)
 collection_cloud_total_charge_list = AsyncDatabase(CloudTotalChargeList)
+collection_third_party_charge_list = AsyncDatabase(ThirdPartyChargeList)
+collection_managed_service_charge_list = AsyncDatabase(ManagedServiceList)
+collection_other_service_charge_list = AsyncDatabase(OtherServiceList)
 collection_service_charge_list = AsyncDatabase(ServiceChargeList)
 collection_type_charge_list = AsyncDatabase(TypeChargeList)
 collection_item_charge_list = AsyncDatabase(ItemChargeList)
 
 
 def charge_info_str(total_charge_info):
-    total_charge_info["BILL_MONTH_STR"] = (
-        str(total_charge_info["BILL_MONTH"])[:4]
-        + "년 "
-        + str(total_charge_info["BILL_MONTH"])[4:]
-        + "월"
-    )
     dict_key_list = [i for i in total_charge_info.keys()]
     for dict_key in dict_key_list:
-        if "AMT" in dict_key and total_charge_info[dict_key] is not None:
+        if "BILL_MONTH" in dict_key and total_charge_info[dict_key] is not None:
+            total_charge_info["BILL_MONTH_STR"] = (
+                str(total_charge_info["BILL_MONTH"])[:4]
+                + "년 "
+                + str(total_charge_info["BILL_MONTH"])[4:]
+                + "월"
+            )
+        elif "AMT" in dict_key and total_charge_info[dict_key] is not None:
             total_charge_info[dict_key + "_STR"] = (
                 f"{int(total_charge_info[dict_key]):,} 원"
             )
@@ -380,6 +384,8 @@ async def billing_info(request: Request, charge_id: str):
     total_charge_element = await collection_cloud_total_charge_list.get_by_conditions(
         conditions
     )
+    
+    
     conditions = {"CLOUD_ID": total_charge_element["CLOUD_ID"]}
     cloud_info = await collection_cloud_list.get_by_conditions(conditions)
     conditions = {"USER_ID": cloud_info["USER_ID"]}
@@ -392,14 +398,16 @@ async def billing_info(request: Request, charge_id: str):
         "CLOUD_NAME": cloud_info["CLOUD_NAME"],
     }
     total_charge_info = charge_info_str(total_charge_element)
-    service_charge_list = []
     conditions = {"TOTAL_CHARGE_ID": total_charge_info["TOTAL_CHARGE_ID"]}
-    service_charge_list = await collection_service_charge_list.gets_by_conditions(
+    cloud_service_charge_list = await collection_service_charge_list.gets_by_conditions(
         conditions
     )
-    for service_charge_info in service_charge_list:
-        service_charge_id = service_charge_info["SERVICE_CHARGE_ID"]
-        conditions = {"SERVICE_CHARGE_ID": service_charge_id}
+    third_party_charge_list = await collection_third_party_charge_list.gets_by_conditions(conditions)
+    managed_service_charge_list = await collection_managed_service_charge_list.gets_by_conditions(conditions)
+    other_service_charge_list = await collection_other_service_charge_list.gets_by_conditions(conditions)
+    for cloud_service_charge_info in cloud_service_charge_list:
+        service_charge_id = cloud_service_charge_info["CLOUD_SERVICE_CHARGE_ID"]
+        conditions = {"CLOUD_SERVICE_CHARGE_ID": service_charge_id}
         type_charge_list = await collection_type_charge_list.gets_by_conditions(
             conditions
         )
@@ -412,14 +420,16 @@ async def billing_info(request: Request, charge_id: str):
             item_charge_list = await collection_item_charge_list.gets_by_conditions(
                 conditions
             )
-
+            item_charge_list = [charge_info_str(item_info) for item_info in item_charge_list]
             type_charge_info["item_list"] = item_charge_list
             item_charge_length = len(item_charge_list) + 1
             type_charge_info["ITEM_CHARGE_LENGH"] = item_charge_length
             type_charge_length += item_charge_length
+            type_charge_info = charge_info_str(type_charge_info)
             type_list.append(type_charge_info)
-        service_charge_info["TYPE_CHARGE_LENGH"] = type_charge_length
-        service_charge_info["type_list"] = type_list
+        cloud_service_charge_info["TYPE_CHARGE_LENGH"] = type_charge_length
+        cloud_service_charge_info["type_list"] = type_list
+        cloud_service_charge_info = charge_info_str(cloud_service_charge_info)
         pass
     return templates.TemplateResponse(
         "billing_info.html",
@@ -427,11 +437,84 @@ async def billing_info(request: Request, charge_id: str):
             "request": request,
             "user": user_dict,
             "total_charge_info": total_charge_info,
-            "service_charge_list": service_charge_list,
+            "cloud_service_charge_list": cloud_service_charge_list,
+            "managed_service_charge_list": managed_service_charge_list,
+            "third_party_charge_list": third_party_charge_list,
+            "other_service_charge_list": other_service_charge_list,
+            
         },
     )
 
 
+@app.post("/billing_info/{charge_id}", response_class=HTMLResponse)
+async def billing_info(request: Request, charge_id: str):
+
+    form_list = await request.form()
+    conditions = {"TOTAL_CHARGE_ID": charge_id}
+    total_charge_element = await collection_cloud_total_charge_list.get_by_conditions(
+        conditions
+    )
+    
+    
+    conditions = {"CLOUD_ID": total_charge_element["CLOUD_ID"]}
+    cloud_info = await collection_cloud_list.get_by_conditions(conditions)
+    conditions = {"USER_ID": cloud_info["USER_ID"]}
+    user_info = await collection_user_list.get_by_conditions(conditions)
+
+    user_dict = {
+        "USER_ID": user_info["USER_ID"],
+        "USER_NAME": user_info["USER_NAME"],
+        "CLOUD_CLASS": cloud_info["CLOUD_CLASS"],
+        "CLOUD_NAME": cloud_info["CLOUD_NAME"],
+    }
+    total_charge_info = charge_info_str(total_charge_element)
+    conditions = {"TOTAL_CHARGE_ID": total_charge_info["TOTAL_CHARGE_ID"]}
+    cloud_service_charge_list = await collection_service_charge_list.gets_by_conditions(
+        conditions
+    )
+    third_party_charge_list = await collection_third_party_charge_list.gets_by_conditions(conditions)
+    managed_service_charge_list = await collection_managed_service_charge_list.gets_by_conditions(conditions)
+    other_service_charge_list = await collection_other_service_charge_list.gets_by_conditions(conditions)
+    for cloud_service_charge_info in cloud_service_charge_list:
+        service_charge_id = cloud_service_charge_info["CLOUD_SERVICE_CHARGE_ID"]
+        conditions = {"CLOUD_SERVICE_CHARGE_ID": service_charge_id}
+        type_charge_list = await collection_type_charge_list.gets_by_conditions(
+            conditions
+        )
+        type_list = []
+        type_charge_length = 1
+        for type_charge_info in type_charge_list:
+            type_charge_id = type_charge_info["TYPE_CHARGE_ID"]
+
+            conditions = {"TYPE_CHARGE_ID": type_charge_id}
+            item_charge_list = await collection_item_charge_list.gets_by_conditions(
+                conditions
+            )
+            item_charge_list = [charge_info_str(item_info) for item_info in item_charge_list]
+            type_charge_info["item_list"] = item_charge_list
+            item_charge_length = len(item_charge_list) + 1
+            type_charge_info["ITEM_CHARGE_LENGH"] = item_charge_length
+            type_charge_length += item_charge_length
+            type_charge_info = charge_info_str(type_charge_info)
+            type_list.append(type_charge_info)
+        cloud_service_charge_info["TYPE_CHARGE_LENGH"] = type_charge_length
+        cloud_service_charge_info["type_list"] = type_list
+        cloud_service_charge_info = charge_info_str(cloud_service_charge_info)
+        pass
+    return templates.TemplateResponse(
+        "billing_info.html",
+        {
+            "request": request,
+            "user": user_dict,
+            "total_charge_info": total_charge_info,
+            "cloud_service_charge_list": cloud_service_charge_list,
+            "managed_service_charge_list": managed_service_charge_list,
+            "third_party_charge_list": third_party_charge_list,
+            "other_service_charge_list": other_service_charge_list,
+            
+        },
+    )
+    
 # Run the server
 if __name__ == "__main__":
     import uvicorn

@@ -253,14 +253,14 @@ class BillingDatabaseUpdater:
         for service_charge_element in service_charge_api:
             service_charge_dict = {
                 "TOTAL_CHARGE_ID": total_charge_info["TOTAL_CHARGE_ID"],
-                "SERVICE_CHARGE_NAME": service_charge_element["service"],
-                "SERVICE_CHARGE_CODE": service_charge_element["service_code"],
-                "SERVICE_USE_AMT": service_charge_element["use_amt"],
-                "SERVICE_DISCOUNT_AMT": service_charge_element["total_discount_amt"],
-                "SERVICE_PAY_AMT": service_charge_element["pay_amt"],
+                "CLOUD_SERVICE_CHARGE_NAME": service_charge_element["service"],
+                "CLOUD_SERVICE_CHARGE_CODE": service_charge_element["service_code"],
+                "CLOUD_SERVICE_USE_AMT": service_charge_element["use_amt"],
+                "CLOUD_SERVICE_DISCOUNT_AMT": service_charge_element["total_discount_amt"],
+                "CLOUD_SERVICE_PAY_AMT": service_charge_element["pay_amt"],
             }
             service_charge_element["TOTAL_CHARGE_ID"] = total_charge_info["TOTAL_CHARGE_ID"]
-            service_charge_element["SERVICE_CHARGE_CODE"] = service_charge_element["service_code"]
+            service_charge_element["CLOUD_SERVICE_CHARGE_CODE"] = service_charge_element["service_code"]
             service_charge_list.append(service_charge_dict)
         return service_charge_list, service_charge_api
 
@@ -278,19 +278,19 @@ class BillingDatabaseUpdater:
         for service_charge_element in service_charge_api:
             service_charge_select_condition = {
                 "TOTAL_CHARGE_ID": service_charge_element["TOTAL_CHARGE_ID"],
-                "SERVICE_CHARGE_CODE": service_charge_element["SERVICE_CHARGE_CODE"],
+                "CLOUD_SERVICE_CHARGE_CODE": service_charge_element["CLOUD_SERVICE_CHARGE_CODE"],
             }
-            selected_service_charge_info = self.db.select_one("SERVICE_CHARGE_LIST", "SERVICE_CHARGE_ID", service_charge_select_condition)
-            selected_service_charge_ID = selected_service_charge_info["SERVICE_CHARGE_ID"]
+            selected_service_charge_info = self.db.select_one("CLOUD_SERVICE_CHARGE_LIST", "CLOUD_SERVICE_CHARGE_ID", service_charge_select_condition)
+            selected_service_charge_ID = selected_service_charge_info["CLOUD_SERVICE_CHARGE_ID"]
             new_service_list = []
             for item_element in service_charge_element["service_list"]:
                 type_charge_dict = {
-                    "SERVICE_CHARGE_ID": selected_service_charge_ID,
+                    "CLOUD_SERVICE_CHARGE_ID": selected_service_charge_ID,
                     "TYPE_NAME": item_element["type"],
                     "TYPE_USE_AMT": item_element["type_use_amt"],
                 }
                 type_charge_list.append(type_charge_dict)
-                item_element["SERVICE_CHARGE_ID"] = selected_service_charge_ID
+                item_element["CLOUD_SERVICE_CHARGE_ID"] = selected_service_charge_ID
                 new_service_list.append(item_element)
             service_charge_element['service_list'] = new_service_list
         return type_charge_list,service_charge_api
@@ -309,7 +309,7 @@ class BillingDatabaseUpdater:
         for service_charge_element in service_charge_api:
             for type_list in service_charge_element["service_list"]:
                 type_charge_select_condition = {
-                    "SERVICE_CHARGE_ID": type_list["SERVICE_CHARGE_ID"],
+                    "CLOUD_SERVICE_CHARGE_ID": type_list["CLOUD_SERVICE_CHARGE_ID"],
                     "TYPE_NAME": type_list["type"],
                 }
                 selected_type_charge_info = self.db.select_one("TYPE_CHARGE_LIST", "TYPE_CHARGE_ID", type_charge_select_condition)
@@ -342,11 +342,11 @@ class BillingDatabaseUpdater:
                     continue
 
                 service_charge_select_condition = {"TOTAL_CHARGE_ID": total_charge_info["TOTAL_CHARGE_ID"]}
-                current_service_charge_list = self.db.select_many("SERVICE_CHARGE_LIST", None, service_charge_select_condition)
+                current_service_charge_list = self.db.select_many("CLOUD_SERVICE_CHARGE_LIST", None, service_charge_select_condition)
                 if not current_service_charge_list:
                     service_charge_list, service_charge_api = self.service_charge_info_api(cloud_element, total_charge_info)
                     for service_charge_dict in service_charge_list:
-                        self.db.insert("SERVICE_CHARGE_LIST", service_charge_dict)
+                        self.db.insert("CLOUD_SERVICE_CHARGE_LIST", service_charge_dict)
                     type_charge_list,service_charge_api = self.type_charge_info_api(service_charge_api)
                     for type_charge_dict in type_charge_list:
                         self.db.insert("TYPE_CHARGE_LIST", type_charge_dict)
@@ -360,14 +360,14 @@ class BillingDatabaseUpdater:
                     for service_charge_element in service_charge_list:
                         service_charge_condition = {
                             "TOTAL_CHARGE_ID": service_charge_element["TOTAL_CHARGE_ID"],
-                            "SERVICE_CHARGE_CODE": service_charge_element["SERVICE_CHARGE_CODE"],
+                            "CLOUD_SERVICE_CHARGE_CODE": service_charge_element["CLOUD_SERVICE_CHARGE_CODE"],
                         }
-                        self.db.update("SERVICE_CHARGE_LIST", service_charge_element, service_charge_condition)
+                        self.db.update("CLOUD_SERVICE_CHARGE_LIST", service_charge_element, service_charge_condition)
 
                     type_charge_list,service_charge_api = self.type_charge_info_api(service_charge_api)
                     for type_charge_element in type_charge_list:
                         type_charge_update_condition = {
-                                "SERVICE_CHARGE_ID": type_charge_element["SERVICE_CHARGE_ID"],
+                                "CLOUD_SERVICE_CHARGE_ID": type_charge_element["CLOUD_SERVICE_CHARGE_ID"],
                                 "TYPE_NAME": type_charge_element["TYPE_NAME"],
                             }
                         self.db.update("TYPE_CHARGE_LIST", type_charge_element, type_charge_update_condition)
@@ -403,7 +403,7 @@ if __name__ == "__main__":
     database_updater = BillingDatabaseUpdater()
     database_updater.create_database_from_sql()
     db.delete("ITEM_CHARGE_LIST")
-    db.delete("SERVICE_CHARGE_LIST")
+    db.delete("CLOUD_SERVICE_CHARGE_LIST")
     db.delete("CLOUD_TOTAL_CHARGE_LIST")
     # db.delete("SERVICE_LIST")
     # db.delete("CLOUD_LIST")

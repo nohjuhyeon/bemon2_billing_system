@@ -175,33 +175,146 @@
           <tr>
             <th class="text-center" style="width: 10%;">서비스명</th>
             <th class="text-center">항목</th>
-            <th class="text-right">사용 금액</th>
+            <th class="text-center">사용 금액</th>
             <th class="text-center remark-column">비고</th>
           </tr>
         </thead>
         <tbody>
-          {% for service_charge in service_charge_list %}
+          {% for service_charge in cloud_service_charge_list %}
           {% for type_info in service_charge.type_list %}
           {% set type_index = loop.index %}
           {% set type_length = (service_charge.type_list | length) + 1 %}
           <tr class="detail-row">
             {% if type_index == 1%}
-            <td class="text-center" rowspan="{{ type_length }}">{{ service_charge.SERVICE_CHARGE_NAME }}</td>
+            <td class="text-center" rowspan="{{ type_length }}">{{ service_charge.CLOUD_SERVICE_CHARGE_NAME }}</td>
             {% endif %}
             <td class="text-center">{{ type_info.TYPE_NAME }}</td>
-            <td class="text-right"> {{ type_info.TYPE_USE_AMT }}</td>
+            <td class="text-right"> {{ type_info.TYPE_USE_AMT_STR }}</td>
             <td> </td>
           </tr>
           {% endfor %}
           <tr>
             <td class="text-center">소계</td>
-            <td class="text-right"> {{ service_charge.SERVICE_USE_AMT }}</td>
+            <td class="text-right"> {{ service_charge.CLOUD_SERVICE_USE_AMT_STR }}</td>
             <td> </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
+
+    <!-- Third Party 사용 내역 -->
+    <div class="card p-4 mb-4">
+      <div class="d-flex align-items-center justify-content-between">
+        <h2>Third Party 사용 내역</h2>
+        <button type="button" class="btn btn-warning btn-sm">수정하기</button>
+      </div>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th class="text-center" style="width: 10%;">서비스명</th>
+            <th class="text-center">항목</th>
+            <th class="text-center">사용 금액</th>
+            <th class="text-center remark-column">비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for third_party_charge in third_party_charge_list %}
+          {% set third_party_index = loop.index %}
+          <tr class="detail-row">
+            <td class="text-center">{{ third_party_charge.THIRD_PARTY_SERVICE_NAME }}</td>
+            <td class="text-center">{{ third_party_charge.THIRD_PARTY_PRODUCT_NAME }}</td>
+            <td class="text-right"> {{ third_party_charge.THIRD_PARTY_SERVICE_USE_AMT_STR }}</td>
+            <td> </td>
+          </tr>
+          {% endfor %}
+          <tr class="detail-row">
+            <td class="text-center"></td>
+            <td class="text-center"></td>
+            <td class="text-right"></td>
+            <td> </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 매니지드 서비스 사용 내역 -->
+    <div class="card p-4 mb-4">
+      <div class="d-flex align-items-center justify-content-between">
+        <h2>매니지드 서비스 사용 내역</h2>
+        <button type="button" class="btn btn-warning btn-sm">수정하기</button>
+      </div>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th class="text-center" style="width: 10%;">서비스명</th>
+            <th class="text-center">항목</th>
+            <th class="text-center">사용 금액</th>
+            <th class="text-center remark-column">비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for managed_service_charge in managed_service_charge_list %}
+          {% set managed_service_index = loop.index %}
+          <tr class="detail-row">
+            <td class="text-center">{{ managed_service_charge.MANAGED_SERVICE_NAME }}</td>
+            <td class="text-center">{{ managed_service_charge.MANAGED_PRODUCT_NAME }}</td>
+            <td class="text-right"> {{ managed_service_charge.MANAGED_SERVICE_USE_AMT_STR }}</td>
+            <td> </td>
+          </tr>
+          {% endfor %}
+          <tr class="detail-row">
+            <td class="text-center"></td>
+            <td class="text-center"></td>
+            <td class="text-right"></td>
+            <td> </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <!-- 기타  서비스 사용 내역 -->
+    <form action="/billing_info/{{total_charge_info.TOTAL_CHARGE_ID}}" method="post">
+      <div class="card p-4 mb-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <h2>기타 서비스 사용 내역</h2>
+          <div class="text-end mt-3 d-flex" id="actionButtons" style="gap: 2px;">
+            <button type="button" class="btn btn-warning btn-sm" id="editButton">수정하기</button>
+            <button type="submit" class="btn btn-success btn-sm" id="saveButton" style="display: none;">저장</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="cancelButton" style="display: none;">취소</button>
+          </div>
+        </div>
+        <table class="table table-bordered" id="summaryTable">
+          <thead>
+            <tr>
+              <th class="text-center" style="width: 10%;">서비스명</th>
+              <th class="text-center">항목</th>
+              <th class="text-center">사용 금액</th>
+              <th class="text-center remark-column">비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for other_service_charge in other_service_charge_list %}
+            {% set other_service_index = loop.index %}
+            <tr class="detail-row">
+              <td class="text-center">{{ other_service_charge.OTHER_SERVICE_NAME }}</td>
+              <td class="text-center">{{ other_service_charge.OTHER_PRODUCT_NAME }}</td>
+              <td class="text-right"> {{ other_service_charge.OTHER_SERVICE_USE_AMT_STR }}</td>
+              <td> </td>
+            </tr>
+            {% endfor %}
+            <tr class="detail-row">
+              <td class="text-center" data-editable="true" data-key="service_name"></td>
+              <td class="text-center" data-editable="true" data-key="product_name"></td>
+              <td class="text-right" data-editable="true" data-key="use_amount"></td>
+              <td class="text-right" data-editable="true" data-key="other_service_notes"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </form>
+
 
     <!-- 클라우드 세부 사용 내역 -->
     <div class="card p-4 mb-4">
@@ -218,12 +331,12 @@
             <th class="text-center" style="width: 10%;">서비스명</th>
             <th class="text-center">항목</th>
             <th class="text-center">상세</th>
-            <th class="text-right">사용 금액</th>
+            <th class="text-center">사용 금액</th>
             <th class="text-center remark-column">비고</th>
           </tr>
         </thead>
         <tbody>
-          {% for service_charge in service_charge_list %}
+          {% for service_charge in cloud_service_charge_list %}
           {% for type_info in service_charge.type_list %}
           {% set type_index = loop.index %}
           {% for item_info in type_info.item_list %}
@@ -231,31 +344,32 @@
           <tr>
             {% if type_index == 1 and item_index == 1 %}
             <td class="text-center" rowspan="{{ service_charge.TYPE_CHARGE_LENGH }}">{{
-              service_charge.SERVICE_CHARGE_NAME }}</td>
+              service_charge.CLOUD_SERVICE_CHARGE_NAME }}</td>
             {% endif %}
             {% if item_index == 1 %}
             <td class="text-center" rowspan="{{ type_info.ITEM_CHARGE_LENGH }}">{{ type_info.TYPE_NAME }}</td>
             {% endif %}
             <td class="text-center">{{ item_info.ITEM_NAME }}</td>
-            <td class="text-right"> {{ item_info.ITEM_USE_AMT }}</td>
+            <td class="text-right"> {{ item_info.ITEM_USE_AMT_STR }}</td>
             <td> </td>
           </tr>
           {% endfor %}
           <tr>
             <td class="text-center">소계</td>
-            <td class="text-right"> {{ type_info.TYPE_USE_AMT }}</td>
+            <td class="text-right"> {{ type_info.TYPE_USE_AMT_STR }}</td>
             <td> </td>
           </tr>
           {% endfor %}
           <tr>
             <td class="text-center" colspan="2">소계</td>
-            <td class="text-right"> {{ service_charge.SERVICE_USE_AMT }}</td>
+            <td class="text-right"> {{ service_charge.SERVICE_USE_AMT_STR }}</td>
             <td> </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
+
 
     <!-- 버튼 -->
     <div class="text-end">
@@ -267,7 +381,42 @@
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/common.js"></script>
+  <script>
 
+    const editButton = document.getElementById("editButton");
+    const saveButton = document.getElementById("saveButton");
+    const cancelButton = document.getElementById("cancelButton");
+    const actionButtons = document.getElementById("actionButtons");
+    const tableCells = document.querySelectorAll("#summaryTable td[data-editable='true']");
+    let originalValues = [];
+    // "수정하기" 버튼 클릭 이벤트
+    editButton.addEventListener("click", () => {
+      originalValues = Array.from(tableCells).map(cell => cell.textContent.trim());
+      tableCells.forEach(cell => {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = cell.textContent.trim();
+        input.className = "form-control form-control-sm";
+        cell.textContent = "";
+        cell.appendChild(input);
+      });
+      editButton.style.display = "none";
+      saveButton.style.display = "block";
+      cancelButton.style.display = "block";
+    });
+
+
+    // "취소" 버튼 클릭 이벤트
+    cancelButton.addEventListener("click", () => {
+      tableCells.forEach((cell, index) => {
+        cell.textContent = originalValues[index];
+      });
+      editButton.style.display = "block";
+      saveButton.style.display = "none";
+      cancelButton.style.display = "none";
+    });
+
+  </script>
 
 </body>
 
