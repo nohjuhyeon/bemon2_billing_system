@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 from sqlalchemy.future import select
 from typing import Optional
+from sqlalchemy import and_, or_
 
 load_dotenv()
 
@@ -98,16 +99,77 @@ class AsyncDatabase:
 
     async def gets_by_conditions(self, conditions):
         async with self.SessionLocal() as session:
-            result = await session.execute(select(self.model).filter_by(**conditions))
+            # 조건 생성
+            filters = []
+            for key, value in conditions.items():
+                column = getattr(self.model, key)
+                if isinstance(value, dict):  # 값이 딕셔너리인 경우 (비교 연산자 처리)
+                    if "eq" in value:  # 동등 비교
+                        filters.append(column == value["eq"])
+                    if "like" in value:  # 문자열 포함 여부 (LIKE)
+                        filters.append(column.like(f"%{value['like']}%"))
+                    if "gte" in value:  # 크거나 같음
+                        filters.append(column >= value["gte"])
+                    if "lte" in value:  # 작거나 같음
+                        filters.append(column <= value["lte"])
+                    if "gt" in value:  # 큼
+                        filters.append(column > value["gt"])
+                    if "lt" in value:  # 작음
+                        filters.append(column < value["lt"])
+                    if "in" in value:  # 리스트 포함 여부
+                        filters.append(column.in_(value["in"]))
+                    if "not_in" in value:  # 리스트에 포함되지 않는 경우
+                        filters.append(~column.in_(value["not_in"]))
+                else:  # 단순 동등 비교
+                    filters.append(column == value)
+
+            # 필터를 and_로 묶음
+            final_filter = and_(*filters)
+
+            # 쿼리 실행
+            result = await session.execute(select(self.model).filter(final_filter))
             result_list = result.scalars().all()
+
+            # 결과 변환
             output_list = []
             for result_element in result_list:
                 output_list.append({c.name: getattr(result_element, c.name) for c in result_element.__table__.columns})
             return output_list
 
+
     async def get_by_conditions(self, conditions):
         async with self.SessionLocal() as session:
-            result = await session.execute(select(self.model).filter_by(**conditions))
+            # 조건 생성
+            filters = []
+            for key, value in conditions.items():
+                column = getattr(self.model, key)
+                if isinstance(value, dict):  # 값이 딕셔너리인 경우 (비교 연산자 처리)
+                    if "eq" in value:  # 동등 비교
+                        filters.append(column == value["eq"])
+                    if "like" in value:  # 문자열 포함 여부 (LIKE)
+                        filters.append(column.like(f"%{value['like']}%"))
+                    if "gte" in value:  # 크거나 같음
+                        filters.append(column >= value["gte"])
+                    if "lte" in value:  # 작거나 같음
+                        filters.append(column <= value["lte"])
+                    if "gt" in value:  # 큼
+                        filters.append(column > value["gt"])
+                    if "lt" in value:  # 작음
+                        filters.append(column < value["lt"])
+                    if "in" in value:  # 리스트 포함 여부
+                        filters.append(column.in_(value["in"]))
+                    if "not_in" in value:  # 리스트에 포함되지 않는 경우
+                        filters.append(~column.in_(value["not_in"]))
+                else:  # 단순 동등 비교
+                    filters.append(column == value)
+
+            # 필터를 and_로 묶음
+            final_filter = and_(*filters)
+
+
+            # 쿼리 실행
+            result = await session.execute(select(self.model).filter(final_filter))
             result_element = result.scalars().one()
             output = {c.name: getattr(result_element, c.name) for c in result_element.__table__.columns}
             return output
+    

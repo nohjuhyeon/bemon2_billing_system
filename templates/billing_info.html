@@ -305,10 +305,18 @@
             </tr>
             {% endfor %}
             <tr class="detail-row">
-              <td class="text-center" data-editable="true" data-key="service_name"></td>
-              <td class="text-center" data-editable="true" data-key="product_name"></td>
-              <td class="text-right" data-editable="true" data-key="use_amount"></td>
-              <td class="text-right" data-editable="true" data-key="other_service_notes"></td>
+              <td class="text-center">
+                <input type="text" class="form-control form-control-sm" name="service_name" id="other_service_data" style="display:none;">
+              </td>
+              <td class="text-center">
+                <input type="text" class="form-control form-control-sm" name="product_name" id="other_service_data" style="display:none;">
+              </td>
+              <td class="text-right">
+                <input type="text" class="form-control form-control-sm" name="use_amount" id="other_service_data" style="display:none;">
+              </td>
+              <td class="text-right">
+                <input type="text" class="form-control form-control-sm" name="other_service_notes" id="other_service_data" style="display:none;">
+              </td>
             </tr>
           </tbody>
         </table>
@@ -387,18 +395,14 @@
     const saveButton = document.getElementById("saveButton");
     const cancelButton = document.getElementById("cancelButton");
     const actionButtons = document.getElementById("actionButtons");
-    const tableCells = document.querySelectorAll("#summaryTable td[data-editable='true']");
+    const tableCells = document.querySelectorAll("#other_service_data");
     let originalValues = [];
     // "수정하기" 버튼 클릭 이벤트
     editButton.addEventListener("click", () => {
       originalValues = Array.from(tableCells).map(cell => cell.textContent.trim());
       tableCells.forEach(cell => {
-        const input = document.createElement("input");
-        input.type = "text";
-        input.value = cell.textContent.trim();
-        input.className = "form-control form-control-sm";
-        cell.textContent = "";
-        cell.appendChild(input);
+        cell.style.display = "block";
+
       });
       editButton.style.display = "none";
       saveButton.style.display = "block";
@@ -409,7 +413,7 @@
     // "취소" 버튼 클릭 이벤트
     cancelButton.addEventListener("click", () => {
       tableCells.forEach((cell, index) => {
-        cell.textContent = originalValues[index];
+        cell.style.display = "none";
       });
       editButton.style.display = "block";
       saveButton.style.display = "none";

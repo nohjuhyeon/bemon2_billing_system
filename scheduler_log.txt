@@ -4181,3 +4181,21 @@ FROM `ITEM_CHARGE_LIST`
 WHERE `ITEM_CHARGE_LIST`.`TYPE_CHARGE_ID` = %s
 2025-05-08 08:00:38,912 - [cached since 633.3s ago] (26,)
 2025-05-08 08:00:38,918 - ROLLBACK
+2025-05-09 01:00:07,158 - Job "BillingDatabaseUpdater.update_database (trigger: cron[minute='0'], next run at: 2025-05-09 02:00:00 UTC)" raised an exception
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/apscheduler/executors/base.py", line 131, in run_job
+    retval = job.func(*job.args, **job.kwargs)
+  File "/app/bemon2_billing_system/mysql_user_data_setting.py", line 395, in update_database
+    self.service_charge_list_update()
+  File "/app/bemon2_billing_system/mysql_user_data_setting.py", line 379, in service_charge_list_update
+    "ITEM_TYPE": item_charge_element["ITEM_TYPE"],
+KeyError: 'ITEM_TYPE'
+2025-05-09 08:00:09,139 - Job "BillingDatabaseUpdater.update_database (trigger: cron[minute='0'], next run at: 2025-05-09 09:00:00 UTC)" raised an exception
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/apscheduler/executors/base.py", line 131, in run_job
+    retval = job.func(*job.args, **job.kwargs)
+  File "/app/bemon2_billing_system/mysql_user_data_setting.py", line 395, in update_database
+    self.service_charge_list_update()
+  File "/app/bemon2_billing_system/mysql_user_data_setting.py", line 379, in service_charge_list_update
+    "ITEM_TYPE": item_charge_element["ITEM_TYPE"],
+KeyError: 'ITEM_TYPE'
