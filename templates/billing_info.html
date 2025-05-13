@@ -47,6 +47,13 @@
       width: 35% !important;
       /* 원하는 너비로 조정 */
     }
+
+    .row-select {
+      margin: 0 auto;
+      display: block;
+      width: 100%;
+      /* 체크박스 자체의 너비를 설정 */
+    }
   </style>
 </head>
 
@@ -203,91 +210,31 @@
       </table>
     </div>
 
-    <!-- Third Party 사용 내역 -->
-    <div class="card p-4 mb-4">
-      <div class="d-flex align-items-center justify-content-between">
-        <h2>Third Party 사용 내역</h2>
-        <button type="button" class="btn btn-warning btn-sm">수정하기</button>
-      </div>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th class="text-center" style="width: 10%;">서비스명</th>
-            <th class="text-center">항목</th>
-            <th class="text-center">사용 금액</th>
-            <th class="text-center remark-column">비고</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for third_party_charge in third_party_charge_list %}
-          {% set third_party_index = loop.index %}
-          <tr class="detail-row">
-            <td class="text-center">{{ third_party_charge.THIRD_PARTY_SERVICE_NAME }}</td>
-            <td class="text-center">{{ third_party_charge.THIRD_PARTY_PRODUCT_NAME }}</td>
-            <td class="text-right"> {{ third_party_charge.THIRD_PARTY_SERVICE_USE_AMT_STR }}</td>
-            <td> </td>
-          </tr>
-          {% endfor %}
-          <tr class="detail-row">
-            <td class="text-center"></td>
-            <td class="text-center"></td>
-            <td class="text-right"></td>
-            <td> </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- 매니지드 서비스 사용 내역 -->
-    <div class="card p-4 mb-4">
-      <div class="d-flex align-items-center justify-content-between">
-        <h2>매니지드 서비스 사용 내역</h2>
-        <button type="button" class="btn btn-warning btn-sm">수정하기</button>
-      </div>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th class="text-center" style="width: 10%;">서비스명</th>
-            <th class="text-center">항목</th>
-            <th class="text-center">사용 금액</th>
-            <th class="text-center remark-column">비고</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for managed_service_charge in managed_service_charge_list %}
-          {% set managed_service_index = loop.index %}
-          <tr class="detail-row">
-            <td class="text-center">{{ managed_service_charge.MANAGED_SERVICE_NAME }}</td>
-            <td class="text-center">{{ managed_service_charge.MANAGED_PRODUCT_NAME }}</td>
-            <td class="text-right"> {{ managed_service_charge.MANAGED_SERVICE_USE_AMT_STR }}</td>
-            <td> </td>
-          </tr>
-          {% endfor %}
-          <tr class="detail-row">
-            <td class="text-center"></td>
-            <td class="text-center"></td>
-            <td class="text-right"></td>
-            <td> </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-
-    <!-- 기타  서비스 사용 내역 -->
-    <form action="/billing_info/{{total_charge_info.TOTAL_CHARGE_ID}}" method="post">
+    <!-- Third Party 서비스 사용 내역 -->
+    <form id="thirdPartyForm" action="/billing_info/{{total_charge_info.TOTAL_CHARGE_ID}}" method="post"
+      onsubmit="return updateForm(event,'thirdPartyForm')">
+      <input type="hidden" name="collection_name" value="THIRD_PARTY">
       <div class="card p-4 mb-4">
         <div class="d-flex align-items-center justify-content-between">
-          <h2>기타 서비스 사용 내역</h2>
+          <h2>Third Party 서비스 사용 내역</h2>
           <div class="text-end mt-3 d-flex" id="actionButtons" style="gap: 2px;">
-            <button type="button" class="btn btn-warning btn-sm" id="editButton">수정하기</button>
-            <button type="submit" class="btn btn-success btn-sm" id="saveButton" style="display: none;">저장</button>
-            <button type="button" class="btn btn-secondary btn-sm" id="cancelButton" style="display: none;">취소</button>
+            <button type="button" class="btn btn-warning btn-sm" id="editButtonThirdParty">수정하기</button>
+            <button type="submit" class="btn btn-success btn-sm" id="saveButtonThirdParty"
+              style="display: none;">저장</button>
+            <button type="button" class="btn btn-primary btn-sm" id="addButtonThirdParty"
+              style="display: none;">추가</button>
+            <button type="button" class="btn btn-danger btn-sm" id="deleteButtonThirdParty"
+              style="display: none;">삭제</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="cancelButtonThirdParty"
+              style="display: none;">취소</button>
           </div>
         </div>
         <table class="table table-bordered" id="summaryTable">
           <thead>
             <tr>
+              <th class="text-center" style="width: 5%;">
+                <input type="checkbox" class="row-select" id="selectAllThirdParty">
+              </th>
               <th class="text-center" style="width: 10%;">서비스명</th>
               <th class="text-center">항목</th>
               <th class="text-center">사용 금액</th>
@@ -295,29 +242,258 @@
             </tr>
           </thead>
           <tbody>
+            {% set type_length = (third_party_charge_list | length) %}
+            {% if type_length != 0%}
+            {% for third_party_charge in third_party_charge_list %}
+            {% set third_party_index = loop.index %}
+            <tr class="detail-row">
+              <td class="text-center">
+                <input type="checkbox" class="row-select">
+                <input type="hidden" name="THIRD_PARTY_CHARGE_ID_UPDATE_{{third_party_index}}"
+                  value="{{third_party_charge.THIRD_PARTY_CHARGE_ID}}">
+              </td>
+              <td class="text-center">
+                <div id="valueDataThirdParty">{{ third_party_charge.THIRD_PARTY_NAME }}</div>
+                <input type="text" class="form-control form-control-sm"
+                  name="THIRD_PART_NAME_UPDATE_{{third_party_index}}" id="inputDataThirdParty"
+                  value="{{ third_party_charge.THIRD_PART_NAME }}" style="display:none;">
+              </td>
+              <td class="text-center">
+                <div id="valueDataThirdParty">{{ third_party_charge.THIRD_PARTY_PRODUCT_NAME }}</div>
+                <input type="text" class="form-control form-control-sm"
+                  name="THIRD_PARTY_PRODUCT_NAME_UPDATE_{{third_party_index}}" id="inputDataThirdParty"
+                  value="{{ third_party_charge.THIRD_PARTY_PRODUCT_NAME }}" style="display:none;">
+              </td>
+              <td class="text-right">
+                <div id="valueDataThirdParty">{{ third_party_charge.THIRD_PARTY_USE_AMT_STR }}</div>
+                <input type="text" class="form-control form-control-sm"
+                  name="THIRD_PARTY_USE_AMT_UPDATE_{{third_party_index}}" id="inputDataThirdParty"
+                  value="{{ third_party_charge.THIRD_PARTY_USE_AMT }}" style="display:none;">
+              </td>
+              <td>
+                <div id="valueDataThirdParty">{{ third_party_charge.THIRD_PARTY_NOTES }}</div>
+                <input type="text" class="form-control form-control-sm"
+                  name="THIRD_PARTY_NOTES_UPDATE_{{third_party_index}}" id="inputDataThirdParty"
+                  value="{{ third_party_charge.THIRD_PARTY_NOTES }}" style="display:none;">
+              </td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr class="detail-row">
+              <td class="text-center">
+                <input type="checkbox" class="row-select">
+              </td>
+              <td class="text-center">
+                <input type="text" class="form-control form-control-sm" name="THIRD_PARTY_NAME_NEW_1"
+                  id="inputDataThirdParty" style="display:none;">
+              </td>
+              <td class="text-center">
+                <input type="text" class="form-control form-control-sm" name="THIRD_PARTY_PRODUCT_NAME_NEW_1"
+                  id="inputDataThirdParty" style="display:none;">
+              </td>
+              <td class="text-right">
+                <input type="text" class="form-control form-control-sm" name="THIRD_PARTY_USE_AMT_NEW_1"
+                  id="inputDataThirdParty" style="display:none;">
+              </td>
+              <td class="text-right">
+                <input type="text" class="form-control form-control-sm" name="THIRD_PARTY_NOTES_NEW_1"
+                  id="inputDataThirdParty" style="display:none;">
+              </td>
+            </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </form>
+
+    <!-- 매니지드 서비스 사용 내역 -->
+    <form id="managedServiceForm" action="/billing_info/{{total_charge_info.TOTAL_CHARGE_ID}}" method="post"
+      onsubmit="return updateForm(event,'managedServiceForm')">
+      <input type="hidden" name="collection_name" value="MANAGED">
+
+      <div class="card p-4 mb-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <h2>매니지드 서비스 사용 내역</h2>
+          <div class="text-end mt-3 d-flex" id="actionButtons" style="gap: 2px;">
+            <button type="button" class="btn btn-warning btn-sm" id="editButtonManagedService">수정하기</button>
+            <button type="submit" class="btn btn-success btn-sm" id="saveButtonManagedService"
+              style="display: none;">저장</button>
+            <button type="button" class="btn btn-primary btn-sm" id="addButtonManagedService"
+              style="display: none;">추가</button>
+            <button type="button" class="btn btn-danger btn-sm" id="deleteButtonManagedService"
+              style="display: none;">삭제</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="cancelButtonManagedService"
+              style="display: none;">취소</button>
+          </div>
+        </div>
+        <table class="table table-bordered" id="summaryTable">
+          <thead>
+            <tr>
+              <th class="text-center" style="width: 5%;">
+                <input type="checkbox" class="row-select" id="selectAllManagedService">
+              </th>
+              <th class="text-center" style="width: 10%;">서비스명</th>
+              <th class="text-center">항목</th>
+              <th class="text-center">사용 금액</th>
+              <th class="text-center remark-column">비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% set type_length = (managed_service_charge_list | length) %}
+            {% if type_length != 0%}
+            {% for managed_service_charge in managed_service_charge_list %}
+            {% set managed_service_index = loop.index %}
+            <tr class="detail-row">
+              <td class="text-center">
+                <input type="checkbox" class="row-select">
+                <input type="hidden" name="MANAGED_SERVICE_CHARGE_ID_UPDATE_{{managed_service_index}}"
+                  value="{{managed_service_charge.MANAGED_SERVICE_CHARGE_ID}}">
+              </td>
+              <td class="text-center">
+                <div id="valueDataManagedService">{{ managed_service_charge.MANAGED_SERVICE_NAME }}</div>
+                <input type="text" class="form-control form-control-sm"
+                  name="MANAGED_SERVICE_NAME_UPDATE_{{managed_service_index}}" id="inputDataManagedService"
+                  value="{{ managed_service_charge.MANAGED_SERVICE_NAME }}" style="display:none;">
+              </td>
+              <td class="text-center">
+                <div id="valueDataManagedService">{{ managed_service_charge.MANAGED_PRODUCT_NAME }}</div>
+                <input type="text" class="form-control form-control-sm"
+                  name="MANAGED_PRODUCT_NAME_UPDATE_{{managed_service_index}}" id="inputDataManagedService"
+                  value="{{ managed_service_charge.MANAGED_PRODUCT_NAME }}" style="display:none;">
+              </td>
+              <td class="text-right">
+                <div id="valueDataManagedService">{{ managed_service_charge.MANAGED_SERVICE_USE_AMT_STR }}</div>
+                <input type="text" class="form-control form-control-sm"
+                  name="MANAGED_SERVICE_USE_AMT_UPDATE_{{managed_service_index}}" id="inputDataManagedService"
+                  value="{{ managed_service_charge.MANAGED_SERVICE_USE_AMT }}" style="display:none;">
+              </td>
+              <td>
+                <div id="valueDataManagedService">{{ managed_service_charge.MANAGED_SERVICE_NOTES }}</div>
+                <input type="text" class="form-control form-control-sm"
+                  name="MANAGED_SERVICE_NOTES_UPDATE_{{managed_service_index}}" id="inputDataManagedService"
+                  value="{{ managed_service_charge.MANAGED_SERVICE_NOTES }}" style="display:none;">
+              </td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr class="detail-row">
+              <td class="text-center">
+                <input type="checkbox" class="row-select">
+              </td>
+              <td class="text-center">
+                <input type="text" class="form-control form-control-sm" name="MANAGED_SERVICE_NAME_NEW_1"
+                  id="inputDataManagedService" style="display:none;">
+              </td>
+              <td class="text-center">
+                <input type="text" class="form-control form-control-sm" name="MANAGED_PRODUCT_NAME_NEW_1"
+                  id="inputDataManagedService" style="display:none;">
+              </td>
+              <td class="text-right">
+                <input type="text" class="form-control form-control-sm" name="MANAGED_SERVICE_USE_AMT_NEW_1"
+                  id="inputDataManagedService" style="display:none;">
+              </td>
+              <td class="text-right">
+                <input type="text" class="form-control form-control-sm" name="MANAGED_SERVICE_NOTES_NEW_1"
+                  id="inputDataManagedService" style="display:none;">
+              </td>
+            </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </form>
+
+    <!-- 기타  서비스 사용 내역 -->
+    <form id="otherServiceForm" action="/billing_info/{{total_charge_info.TOTAL_CHARGE_ID}}" method="post"
+      onsubmit="return updateForm(event,'otherServiceForm')">
+      <input type="hidden" name="collection_name" value="OTHER">
+      <div class="card p-4 mb-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <h2>기타 서비스 사용 내역</h2>
+          <div class="text-end mt-3 d-flex" id="actionButtons" style="gap: 2px;">
+            <button type="button" class="btn btn-warning btn-sm" id="editButtonOtherService">수정하기</button>
+            <button type="submit" class="btn btn-success btn-sm" id="saveButtonOtherService"
+              style="display: none;">저장</button>
+            <button type="button" class="btn btn-primary btn-sm" id="addButtonOtherService"
+              style="display: none;">추가</button>
+            <button type="button" class="btn btn-danger btn-sm" id="deleteButtonOtherService"
+              style="display: none;">삭제</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="cancelButtonOtherService"
+              style="display: none;">취소</button>
+          </div>
+        </div>
+        <table class="table table-bordered" id="summaryTable">
+          <thead>
+            <tr>
+              <th class="text-center" style="width: 5%;">
+                <input type="checkbox" class="row-select" id="selectAllOtherService">
+              </th>
+              <th class="text-center" style="width: 10%;">서비스명</th>
+              <th class="text-center">항목</th>
+              <th class="text-center">사용 금액</th>
+              <th class="text-center remark-column">비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% set type_length = (other_service_charge_list | length) %}
+            {% if type_length != 0%}
             {% for other_service_charge in other_service_charge_list %}
             {% set other_service_index = loop.index %}
             <tr class="detail-row">
-              <td class="text-center">{{ other_service_charge.OTHER_SERVICE_NAME }}</td>
-              <td class="text-center">{{ other_service_charge.OTHER_PRODUCT_NAME }}</td>
-              <td class="text-right"> {{ other_service_charge.OTHER_SERVICE_USE_AMT_STR }}</td>
-              <td> </td>
+              <td class="text-center">
+                <input type="checkbox" class="row-select">
+                <input type="hidden" name="OTHER_SERVICE_CHARGE_ID_UPDATE_{{other_service_index}}"
+                  value="{{other_service_charge.OTHER_SERVICE_CHARGE_ID}}">
+              </td>
+              <td class="text-center">
+                <div id="valueDataOtherService">{{ other_service_charge.OTHER_SERVICE_NAME }}</div>
+                <input type="text" class="form-control form-control-sm"
+                  name="OTHER_SERVICE_NAME_UPDATE_{{other_service_index}}" id="inputDataOtherService"
+                  value="{{ other_service_charge.OTHER_SERVICE_NAME }}" style="display:none;">
+              </td>
+              <td class="text-center">
+                <div id="valueDataOtherService">{{ other_service_charge.OTHER_PRODUCT_NAME }}</div>
+                <input type="text" class="form-control form-control-sm"
+                  name="OTHER_PRODUCT_NAME_UPDATE_{{other_service_index}}" id="inputDataOtherService"
+                  value="{{ other_service_charge.OTHER_PRODUCT_NAME }}" style="display:none;">
+              </td>
+              <td class="text-right">
+                <div id="valueDataOtherService">{{ other_service_charge.OTHER_SERVICE_USE_AMT_STR }}</div>
+                <input type="text" class="form-control form-control-sm"
+                  name="OTHER_SERVICE_USE_AMT_UPDATE_{{other_service_index}}" id="inputDataOtherService"
+                  value="{{ other_service_charge.OTHER_SERVICE_USE_AMT }}" style="display:none;">
+              </td>
+              <td>
+                <div id="valueDataOtherService">{{ other_service_charge.OTHER_SERVICE_NOTES }}</div>
+                <input type="text" class="form-control form-control-sm"
+                  name="OTHER_SERVICE_NOTES_UPDATE_{{other_service_index}}" id="inputDataOtherService"
+                  value="{{ other_service_charge.OTHER_SERVICE_NOTES }}" style="display:none;">
+              </td>
             </tr>
             {% endfor %}
+            {% else %}
             <tr class="detail-row">
               <td class="text-center">
-                <input type="text" class="form-control form-control-sm" name="service_name" id="other_service_data" style="display:none;">
+                <input type="checkbox" class="row-select">
               </td>
               <td class="text-center">
-                <input type="text" class="form-control form-control-sm" name="product_name" id="other_service_data" style="display:none;">
+                <input type="text" class="form-control form-control-sm" name="OTHER_SERVICE_NAME_NEW_1"
+                  id="inputDataOtherService" style="display:none;">
+              </td>
+              <td class="text-center">
+                <input type="text" class="form-control form-control-sm" name="OTHER_PRODUCT_NAME_NEW_1"
+                  id="inputDataOtherService" style="display:none;">
               </td>
               <td class="text-right">
-                <input type="text" class="form-control form-control-sm" name="use_amount" id="other_service_data" style="display:none;">
+                <input type="text" class="form-control form-control-sm" name="OTHER_SERVICE_USE_AMT_NEW_1"
+                  id="inputDataOtherService" style="display:none;">
               </td>
               <td class="text-right">
-                <input type="text" class="form-control form-control-sm" name="other_service_notes" id="other_service_data" style="display:none;">
+                <input type="text" class="form-control form-control-sm" name="OTHER_SERVICE_NOTES_NEW_1"
+                  id="inputDataOtherService" style="display:none;">
               </td>
             </tr>
+            {% endif %}
           </tbody>
         </table>
       </div>
@@ -390,38 +566,122 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/common.js"></script>
   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      function setupForm(formId, editButtonId, saveButtonId, addButtonId, deleteButtonId, cancelButtonId, selectAllCheckboxId, valueData, inputData, collectionName) {
+        const form = document.getElementById(formId);
+        const editButton = document.getElementById(editButtonId);
+        const saveButton = document.getElementById(saveButtonId);
+        const addButton = document.getElementById(addButtonId);
+        const deleteButton = document.getElementById(deleteButtonId);
+        const cancelButton = document.getElementById(cancelButtonId);
+        const selectAllCheckbox = document.getElementById(selectAllCheckboxId);
+        const summaryTable = form.querySelector("tbody");
+        const valueCells = form.querySelectorAll(valueData);
+        const inputCells = form.querySelectorAll(inputData);
+        let originalValues = [];
+        let addedRows = [];
+        let deletedRows = []; // 삭제된 행을 저장할 배열
+        let rowCounter = 2;
 
-    const editButton = document.getElementById("editButton");
-    const saveButton = document.getElementById("saveButton");
-    const cancelButton = document.getElementById("cancelButton");
-    const actionButtons = document.getElementById("actionButtons");
-    const tableCells = document.querySelectorAll("#other_service_data");
-    let originalValues = [];
-    // "수정하기" 버튼 클릭 이벤트
-    editButton.addEventListener("click", () => {
-      originalValues = Array.from(tableCells).map(cell => cell.textContent.trim());
-      tableCells.forEach(cell => {
-        cell.style.display = "block";
+        editButton.addEventListener("click", () => {
+          originalValues = Array.from(inputCells).map(cell => cell.textContent.trim());
+          valueCells.forEach(cell => {
+            cell.style.display = "none";
+          });
+          inputCells.forEach(cell => {
+            cell.style.display = "block";
+          });
+          editButton.style.display = "none";
+          addButton.style.display = "block";
+          saveButton.style.display = "block";
+          cancelButton.style.display = "block";
+          deleteButton.style.display = "block";
+          form.querySelectorAll(".row-select").forEach(checkbox => {
+            checkbox.checked = false;
+          });
+        });
 
-      });
-      editButton.style.display = "none";
-      saveButton.style.display = "block";
-      cancelButton.style.display = "block";
+        cancelButton.addEventListener("click", () => {
+          // 삭제된 행 복원
+          deletedRows.forEach(row => {
+            summaryTable.appendChild(row);
+          });
+          deletedRows = [];
+
+          addedRows.forEach(row => {
+            if (summaryTable.contains(row)) {
+              summaryTable.removeChild(row);
+            }
+          });
+          addedRows = [];
+          rowCounter = 2;
+          valueCells.forEach(cell => {
+            cell.style.display = "block";
+          });
+          inputCells.forEach((cell, index) => {
+            cell.style.display = "none";
+          });
+          editButton.style.display = "block";
+          addButton.style.display = "none";
+          saveButton.style.display = "none";
+          cancelButton.style.display = "none";
+          deleteButton.style.display = "none";
+          selectAllCheckbox.checked = false;
+          form.querySelectorAll(".row-select").forEach(checkbox => {
+            checkbox.checked = false;
+          });
+        });
+
+        addButton.addEventListener("click", () => {
+          const NEWRow = document.createElement("tr");
+          NEWRow.classList.add("detail-row");
+
+          NEWRow.innerHTML = `
+        <td class="text-center">
+          <input type="checkbox" class="row-select" style="display:block;">
+        </td>
+        <td class="text-center">
+          <input type="text" class="form-control form-control-sm input-data" name="${collectionName}_SERVICE_NAME_NEW_${rowCounter}">
+        </td>
+        <td class="text-center">
+          <input type="text" class="form-control form-control-sm input-data" name="${collectionName}_PRODUCT_NAME_NEW_${rowCounter}">
+        </td>
+        <td class="text-right">
+          <input type="text" class="form-control form-control-sm input-data" name="${collectionName}_SERVICE_USE_AMT_NEW_${rowCounter}">
+        </td>
+        <td class="text-right">
+          <input type="text" class="form-control form-control-sm input-data" name="${collectionName}_SERVICE_NOTES_NEW_${rowCounter}">
+        </td>
+      `;
+
+          summaryTable.appendChild(NEWRow);
+          addedRows.push(NEWRow);
+          rowCounter++;
+        });
+
+        deleteButton.addEventListener("click", () => {
+          form.querySelectorAll(".row-select:checked").forEach(checkbox => {
+            const row = checkbox.closest("tr");
+            if (row && summaryTable.contains(row)) {
+              deletedRows.push(row); // 삭제된 행 저장
+              summaryTable.removeChild(row);
+            }
+          });
+        });
+
+        selectAllCheckbox.addEventListener("change", () => {
+          const checked = selectAllCheckbox.checked;
+          form.querySelectorAll(".row-select").forEach(checkbox => {
+            checkbox.checked = checked;
+          });
+        });
+      }
+
+      setupForm('thirdPartyForm', 'editButtonThirdParty', 'saveButtonThirdParty', 'addButtonThirdParty', 'deleteButtonThirdParty', 'cancelButtonThirdParty', 'selectAllThirdParty', '#valueDataThirdParty', '#inputDataThirdParty', 'THIRD_PARTY');
+      setupForm('managedServiceForm', 'editButtonManagedService', 'saveButtonManagedService', 'addButtonManagedService', 'deleteButtonManagedService', 'cancelButtonManagedService', 'selectAllManagedService', '#valueDataManagedService', '#inputDataManagedService', 'MANAGED');
+      setupForm('otherServiceForm', 'editButtonOtherService', 'saveButtonOtherService', 'addButtonOtherService', 'deleteButtonOtherService', 'cancelButtonOtherService', 'selectAllOtherService', '#valueDataOtherService', '#inputDataOtherService', 'OTHER');
     });
-
-
-    // "취소" 버튼 클릭 이벤트
-    cancelButton.addEventListener("click", () => {
-      tableCells.forEach((cell, index) => {
-        cell.style.display = "none";
-      });
-      editButton.style.display = "block";
-      saveButton.style.display = "none";
-      cancelButton.style.display = "none";
-    });
-
   </script>
-
 </body>
 
 </html>

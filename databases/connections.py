@@ -41,7 +41,7 @@ class AsyncDatabase:
             f"@{settings.MYSQL_HOST}:{settings.MYSQL_PORT}/{settings.MYSQL_DATABASE}?charset=utf8"
         )
 
-        engine = create_async_engine(DB_URL, echo=True)
+        engine = create_async_engine(DB_URL, echo=False)
         self.SessionLocal = sessionmaker(
             bind=engine, class_=AsyncSession, expire_on_commit=False
         )
@@ -85,10 +85,12 @@ class AsyncDatabase:
                 return True
             return False
 
-    async def delete_one(self, id):
+    async def delete_one(self, id_field_name,id_value):
         async with self.SessionLocal() as session:
+            model_class = self.model
+            id_field = getattr(model_class, id_field_name)
             result = await session.execute(
-                select(self.model).where(self.model.id == id)
+                select(self.model).where(id_field == id_value)
             )
             doc = result.scalar()
             if doc:

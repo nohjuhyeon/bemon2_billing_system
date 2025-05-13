@@ -94,6 +94,81 @@ function validateDates() {
     return true;
 }
 
+function submitForm(event) {
+    const isValid = validateDates();
+    console.log("Validation result:", isValid);
+
+    if (!isValid) {
+        // 검증이 실패하면 기본 동작을 막음
+        event.preventDefault();
+        console.log("Form submission prevented due to invalid dates.");
+    }
+
+    return isValid;
+}
+
+function validateForm(formName) {
+    const form = document.getElementById(formName);
+    const useAmountInputs = form.querySelectorAll("input[name*='USE_AMT']");
+    const serviceInputs = form.querySelectorAll("input[name*='SERVICE_NAME']");
+    const productInputs = form.querySelectorAll("input[name*='PRODUCT_NAME']");
+    
+    // 서비스명 입력 검사
+    for (let i = 0; i < serviceInputs.length; i++) {
+        const input = serviceInputs[i];
+        const value = input.value.trim();
+        if (value === "") {
+            alert(`서비스명을 입력해주세요.`);
+            input.focus();
+            return false; // 유효성 검사 실패 시 false 반환
+        }
+    }
+
+    // 상품명 입력 검사
+    for (let i = 0; i < productInputs.length; i++) {
+        const input = productInputs[i];
+        const value = input.value.trim();
+        if (value === "") {
+            alert(`상품명을 입력해주세요.`);
+            input.focus();
+            return false; // 유효성 검사 실패 시 false 반환
+        }
+    }
+
+    // 사용 금액 입력 검사
+    for (let i = 0; i < useAmountInputs.length; i++) {
+        const input = useAmountInputs[i];
+        const value = input.value.trim();
+        if (value === "" || isNaN(value)) {
+            alert(`사용 금액은 숫자여야 합니다.`);
+            input.focus();
+            return false; // 유효성 검사 실패 시 false 반환
+        }
+        else if (value.length > 11) {
+            alert(`사용 금액은 11자리 이하의 숫자여야 합니다.`);
+            input.focus();
+            return false; // 유효성 검사 실패 시 false 반환
+    }
+
+    }
+
+    return true; // 모든 값이 유효하면 true 반환
+}
+
+function updateForm(event,formName) {
+    const isValid = validateForm(formName);
+    console.log("Validation result:", isValid);
+
+    if (!isValid) {
+        if (event) {
+            event.preventDefault();
+            console.log("Form submission prevented.");
+        }
+    }
+    
+    return isValid; // 유효성 검사가 통과되면 true 반환하여 제출 허용
+}
+
 // 조회 기간 초기화
 function resetDate() {
     const today = new Date();
@@ -237,12 +312,6 @@ function changePage(page) {
     renderPagination();
 }
 
-function submitForm() {
-    if (validateDates()) {
-        // 검증이 통과되면 폼 제출
-        document.querySelector('form').submit();
-    }
-}
 
 
 // 청구 리스트 조회
@@ -299,7 +368,7 @@ function BillingListSearch() {
 //사용자 정보 페이지로 이동
 function ViewUserInfo(customerId) {
     // 상세 보기 페이지로 이동
-    window.location.href = `/user_info/${customerId}`;
+    window.location.href = `/user_billing/${customerId}`;
 }
 
 // 청구 정보 페이지로 이동

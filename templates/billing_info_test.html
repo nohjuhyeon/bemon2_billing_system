@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>청구 상세 정보</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* 표 헤더 스타일 */
+    th {
+      background-color: #f8f9fa !important;
+      /* 연한 회색 */
+      color: #343a40 !important;
+      /* 어두운 회색 */
+      vertical-align: middle !important;
+    }
+
+    /* 표 본문 스타일 */
+    td {
+      background-color: #ffffff !important;
+      /* 흰색 */
+      color: #212529 !important;
+      /* 검정색 */
+      vertical-align: middle !important;
+    }
+
+    /* 강조된 행 스타일 */
+    .highlight-row {
+      background-color: #e9ecef !important;
+      /* 더 연한 회색 */
+    }
+
+    /* 중앙 정렬 스타일 */
+    .text-center {
+      text-align: center !important;
+    }
+
+    /* 오른쪽 정렬 스타일 */
+    .text-right {
+      text-align: right !important;
+    }
+
+    /* 비고 열 너비 조정 */
+    .remark-column {
+      width: 35% !important;
+      /* 원하는 너비로 조정 */
+    }
+
+    .row-select {
+      margin: 0 auto;
+      display: block;
+      width: 100%;
+      /* 체크박스 자체의 너비를 설정 */
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4">청구 상세 정보</h1>
+
+    <!-- 고객 정보 -->
+    <div class="card p-4 mb-4">
+      <h2>고객 정보</h2>
+      <table class="table table-bordered">
+        <tbody>
+          <tr>
+            <th class="text-center">고객명</th>
+            <td class="text-center">{{ user.USER_NAME }}</td>
+            <th class="text-center">고객 번호</th>
+            <td class="text-center">{{ user.USER_ID }}</td>
+          </tr>
+          <tr>
+            <th class="text-center">구분</th>
+            <td class="text-center">{{ user.CLOUD_CLASS }}</td>
+            <th class="text-center">CSP</th>
+            <td class="text-center">{{ user.CLOUD_NAME }} CLOUD</td>
+          </tr>
+          <tr>
+            <th class="text-center">조회 월</th>
+            <td class="text-center">{{ total_charge_info.BILL_MONTH_STR }}</td>
+            <th class="text-center">납부 기한</th>
+            <td class="text-center">{{ total_charge_info.BILL_MONTH_STR }} 15일</td>
+          </tr>
+          <tr>
+            <th class="text-center">총 납부 금액(VAT 제외)</th>
+            <td colspan="3" class="text-center"> {{ total_charge_info.TOTAL_PAY_AMT_STR }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 비용 요약 -->
+    <div class="card p-4 mb-4">
+      <div class="d-flex align-items-center justify-content-between">
+        <h2>비용 요약</h2>
+        <button type="button" class="btn btn-warning btn-sm">수정하기</button>
+      </div>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th class="text-center">구분</th>
+            <th class="text-center">항목</th>
+            <th class="text-center">사용 금액</th>
+            <th class="text-center">청구 금액</th>
+            <th class="remark-column text-center">비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center" rowspan="4">서비스 사용 요금</td>
+            <td class="text-center">클라우드 사용</td>
+            <td class="text-right"> {{ total_charge_info.TOTAL_USE_AMT_STR }}</td>
+            <td class="text-right"> {{ total_charge_info.TOTAL_PAY_AMT_STR }}</td>
+            <td> </td>
+          </tr>
+          <tr>
+            <td class="text-center">3rd Party S/W</td>
+            <td class="text-right"></td>
+            <td class="text-right"></td>
+            <td> </td>
+          </tr>
+          <tr>
+            <td class="text-center">매니지드 서비스</td>
+            <td class="text-right"></td>
+            <td class="text-right"></td>
+            <td> </td>
+          </tr>
+          <tr>
+            <td class="text-center">기타</td>
+            <td class="text-right"></td>
+            <td class="text-right"></td>
+            <td> </td>
+          </tr>
+          <tr class="highlight-row">
+            <td colspan="2" class="text-center">소계</td>
+            <td class="text-right"></td>
+            <td class="text-right"></td>
+            <td> </td>
+          </tr>
+          <tr>
+            <td rowspan="2" class="text-center">할인 내역</td>
+            <td class="text-center">영업 할인</td>
+            <td colspan="2" class="text-right"></td>
+            <td> </td>
+          </tr>
+          <tr>
+            <td class="text-center">크레딧</td>
+            <td colspan="2" class="text-right"></td>
+            <td> </td>
+          </tr>
+          <tr class="highlight-row">
+            <td colspan="2" class="text-center">납부 금액</td>
+            <td colspan="2" class="text-right"></td>
+            <td> </td>
+          </tr>
+          <tr>
+            <td colspan="2" class="text-center">부가세</td>
+            <td colspan="2" class="text-right"></td>
+            <td> </td>
+          </tr>
+          <tr class="highlight-row">
+            <td colspan="2" class="text-center">총 납부 금액(VAT 포함)</td>
+            <td colspan="2" class="text-right"></td>
+            <td> </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <!-- 클라우드 사용 내역 -->
+    <div class="card p-4 mb-4">
+      <div class="d-flex align-items-center justify-content-between">
+        <h2>클라우드 사용 내역</h2>
+        <button type="button" class="btn btn-warning btn-sm">수정하기</button>
+      </div>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th class="text-center" style="width: 10%;">서비스명</th>
+            <th class="text-center">항목</th>
+            <th class="text-center">사용 금액</th>
+            <th class="text-center remark-column">비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for service_charge in cloud_service_charge_list %}
+          {% for type_info in service_charge.type_list %}
+          {% set type_index = loop.index %}
+          {% set type_length = (service_charge.type_list | length) + 1 %}
+          <tr class="detail-row">
+            {% if type_index == 1%}
+            <td class="text-center" rowspan="{{ type_length }}">{{ service_charge.CLOUD_SERVICE_CHARGE_NAME }}</td>
+            {% endif %}
+            <td class="text-center">{{ type_info.TYPE_NAME }}</td>
+            <td class="text-right"> {{ type_info.TYPE_USE_AMT_STR }}</td>
+            <td> </td>
+          </tr>
+          {% endfor %}
+          <tr>
+            <td class="text-center">소계</td>
+            <td class="text-right"> {{ service_charge.CLOUD_SERVICE_USE_AMT_STR }}</td>
+            <td> </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Third Party 사용 내역 -->
+    <div class="card p-4 mb-4">
+      <div class="d-flex align-items-center justify-content-between">
+        <h2>Third Party 사용 내역</h2>
+        <button type="button" class="btn btn-warning btn-sm">수정하기</button>
+      </div>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th class="text-center" style="width: 10%;">서비스명</th>
+            <th class="text-center">항목</th>
+            <th class="text-center">사용 금액</th>
+            <th class="text-center remark-column">비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for third_party_charge in third_party_charge_list %}
+          {% set third_party_index = loop.index %}
+          <tr class="detail-row">
+            <td class="text-center">{{ third_party_charge.THIRD_PARTY_SERVICE_NAME }}</td>
+            <td class="text-center">{{ third_party_charge.THIRD_PARTY_PRODUCT_NAME }}</td>
+            <td class="text-right"> {{ third_party_charge.THIRD_PARTY_SERVICE_USE_AMT_STR }}</td>
+            <td> </td>
+          </tr>
+          {% endfor %}
+          <tr class="detail-row">
+            <td class="text-center"></td>
+            <td class="text-center"></td>
+            <td class="text-right"></td>
+            <td> </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 매니지드 서비스 사용 내역 -->
+    <div class="card p-4 mb-4">
+      <div class="d-flex align-items-center justify-content-between">
+        <h2>매니지드 서비스 사용 내역</h2>
+        <button type="button" class="btn btn-warning btn-sm">수정하기</button>
+      </div>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th class="text-center" style="width: 10%;">서비스명</th>
+            <th class="text-center">항목</th>
+            <th class="text-center">사용 금액</th>
+            <th class="text-center remark-column">비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for managed_service_charge in managed_service_charge_list %}
+          {% set managed_service_index = loop.index %}
+          <tr class="detail-row">
+            <td class="text-center">{{ managed_service_charge.MANAGED_SERVICE_NAME }}</td>
+            <td class="text-center">{{ managed_service_charge.MANAGED_PRODUCT_NAME }}</td>
+            <td class="text-right"> {{ managed_service_charge.MANAGED_SERVICE_USE_AMT_STR }}</td>
+            <td> </td>
+          </tr>
+          {% endfor %}
+          <tr class="detail-row">
+            <td class="text-center"></td>
+            <td class="text-center"></td>
+            <td class="text-right"></td>
+            <td> </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <!-- 기타  서비스 사용 내역 -->
+    <form action="/billing_info/{{total_charge_info.TOTAL_CHARGE_ID}}" method="post"
+      onsubmit="return updateForm(event)">
+      <div class="card p-4 mb-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <h2>기타 서비스 사용 내역</h2>
+          <div class="text-end mt-3 d-flex" id="actionButtons" style="gap: 2px;">
+            <button type="button" class="btn btn-warning btn-sm" id="editButton">수정하기</button>
+            <button type="submit" class="btn btn-success btn-sm" id="saveButton" style="display: none;">저장</button>
+            <button type="button" class="btn btn-primary btn-sm" id="addButton" style="display: none;">추가</button>
+            <button type="button" class="btn btn-danger btn-sm" id="deleteButton" style="display: none;">삭제</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="cancelButton" style="display: none;">취소</button>
+          </div>
+        </div>
+        <table class="table table-bordered" id="summaryTable">
+          <thead>
+            <tr>
+              <th class="text-center" style="width: 5%;">
+                <input type="checkbox" class="row-select" id="selectAll">
+              </th>
+              <th class="text-center" style="width: 10%;">서비스명</th>
+              <th class="text-center">항목</th>
+              <th class="text-center">사용 금액</th>
+              <th class="text-center remark-column">비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% set type_length = (other_service_charge_list | length) %}
+            {% if type_length != 0%}
+            {% for other_service_charge in other_service_charge_list %}
+            {% set other_service_index = loop.index %}
+            <tr class="detail-row">
+              <td class="text-center">
+                <input type="checkbox" class="row-select">
+                <input type="hidden" name="OTHER_SERVICE_CHARGE_ID_UPDATE_{{other_service_index}}"
+                  value="{{other_service_charge.OTHER_SERVICE_CHARGE_ID}}">
+              </td>
+              <td class="text-center">
+                <div id="other_service_value_data">{{ other_service_charge.OTHER_SERVICE_NAME }}</div>
+                <input type="text" class="form-control form-control-sm"
+                  name="OTHER_SERVICE_NAME_UPDATE_{{other_service_index}}" id="other_service_input_data"
+                  value="{{ other_service_charge.OTHER_SERVICE_NAME }}" style="display:none;">
+              </td>
+              <td class="text-center">
+                <div id="other_service_value_data">{{ other_service_charge.OTHER_PRODUCT_NAME }}</div>
+                <input type="text" class="form-control form-control-sm"
+                  name="OTHER_PRODUCT_NAME_UPDATE_{{other_service_index}}" id="other_service_input_data"
+                  value="{{ other_service_charge.OTHER_PRODUCT_NAME }}" style="display:none;">
+              </td>
+              <td class="text-right">
+                <div id="other_service_value_data">{{ other_service_charge.OTHER_SERVICE_USE_AMT_STR }}</div>
+                <input type="text" class="form-control form-control-sm"
+                  name="OTHER_SERVICE_USE_AMT_UPDATE_{{other_service_index}}" id="other_service_input_data"
+                  value="{{ other_service_charge.OTHER_SERVICE_USE_AMT }}" style="display:none;">
+              </td>
+              <td>
+                <div id="other_service_value_data">{{ other_service_charge.OTHER_SERVICE_NOTES }}</div>
+                <input type="text" class="form-control form-control-sm"
+                  name="OTHER_SERVICE_NOTES_UPDATE_{{other_service_index}}" id="other_service_input_data"
+                  value="{{ other_service_charge.OTHER_SERVICE_NOTES }}" style="display:none;">
+              </td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr class="detail-row">
+              <td class="text-center">
+                <input type="checkbox" class="row-select" style="display:none;">
+              </td>
+              <td class="text-center">
+                <input type="text" class="form-control form-control-sm" name="OTHER_SERVICE_NAME_NEW_1"
+                  id="other_service_input_data" style="display:none;">
+              </td>
+              <td class="text-center">
+                <input type="text" class="form-control form-control-sm" name="OTHER_PRODUCT_NAME_NEW_1"
+                  id="other_service_input_data" style="display:none;">
+              </td>
+              <td class="text-right">
+                <input type="text" class="form-control form-control-sm" name="OTHER_SERVICE_USE_AMT_NEW_1"
+                  id="other_service_input_data" style="display:none;">
+              </td>
+              <td class="text-right">
+                <input type="text" class="form-control form-control-sm" name="OTHER_SERVICE_NOTES_NEW_1"
+                  id="other_service_input_data" style="display:none;">
+              </td>
+            </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </form>
+
+
+    <!-- 클라우드 세부 사용 내역 -->
+    <div class="card p-4 mb-4">
+      <div class="d-flex align-items-center justify-content-between">
+        <h2>클라우드 세부 사용 내역</h2>
+        <div>
+          <button type="button" class="btn btn-info btn-sm" id="toggleDetails">상세 보기</button>
+          <button type="button" class="btn btn-warning btn-sm">수정하기</button>
+        </div>
+      </div>
+      <table class="table table-bordered detail-table" style="display: none;">
+        <thead>
+          <tr>
+            <th class="text-center" style="width: 10%;">서비스명</th>
+            <th class="text-center">항목</th>
+            <th class="text-center">상세</th>
+            <th class="text-center">사용 금액</th>
+            <th class="text-center remark-column">비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for service_charge in cloud_service_charge_list %}
+          {% for type_info in service_charge.type_list %}
+          {% set type_index = loop.index %}
+          {% for item_info in type_info.item_list %}
+          {% set item_index = loop.index %}
+          <tr>
+            {% if type_index == 1 and item_index == 1 %}
+            <td class="text-center" rowspan="{{ service_charge.TYPE_CHARGE_LENGH }}">{{
+              service_charge.CLOUD_SERVICE_CHARGE_NAME }}</td>
+            {% endif %}
+            {% if item_index == 1 %}
+            <td class="text-center" rowspan="{{ type_info.ITEM_CHARGE_LENGH }}">{{ type_info.TYPE_NAME }}</td>
+            {% endif %}
+            <td class="text-center">{{ item_info.ITEM_NAME }}</td>
+            <td class="text-right"> {{ item_info.ITEM_USE_AMT_STR }}</td>
+            <td> </td>
+          </tr>
+          {% endfor %}
+          <tr>
+            <td class="text-center">소계</td>
+            <td class="text-right"> {{ type_info.TYPE_USE_AMT_STR }}</td>
+            <td> </td>
+          </tr>
+          {% endfor %}
+          <tr>
+            <td class="text-center" colspan="2">소계</td>
+            <td class="text-right"> {{ service_charge.SERVICE_USE_AMT_STR }}</td>
+            <td> </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+
+    <!-- 버튼 -->
+    <div class="text-end">
+      <button type="button" class="btn btn-primary">출력하기</button>
+      <button type="button" class="btn btn-secondary" onclick="goBack()">목록</button>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/common.js"></script>
+  <script>
+    const editButton = document.getElementById("editButton");
+    const saveButton = document.getElementById("saveButton");
+    const cancelButton = document.getElementById("cancelButton");
+    const addButton = document.getElementById("addButton");
+    const deleteButton = document.getElementById("deleteButton");
+    const selectAllCheckbox = document.getElementById("selectAll");
+    const checkColumn = document.querySelectorAll("#checkColumn");
+    const summaryTable = document.getElementById("summaryTable").querySelector("tbody");
+    const valueCells = document.querySelectorAll("#other_service_value_data");
+    const inputCells = document.querySelectorAll("#other_service_input_data");
+    let originalValues = [];
+    let addedRows = [];
+    let rowCounter = 2;
+
+    // "수정하기" 버튼 클릭 이벤트
+    editButton.addEventListener("click", () => {
+      originalValues = Array.from(inputCells).map(cell => cell.textContent.trim());
+      valueCells.forEach(cell => {
+        cell.style.display = "none";
+      });
+      inputCells.forEach(cell => {
+        cell.style.display = "block";
+      });
+      checkColumn.forEach(cell => {
+        cell.style.display = "block";
+      });
+      editButton.style.display = "none";
+      addButton.style.display = "block";
+      saveButton.style.display = "block";
+      cancelButton.style.display = "block";
+      deleteButton.style.display = "block";
+      document.querySelectorAll(".row-select").forEach(checkbox => checkbox.style.display = "block");
+      document.querySelectorAll(".row-select").forEach(checkbox => {
+        checkbox.checked = false;
+      });
+    });
+
+    cancelButton.addEventListener("click", () => {
+      // 추가된 행만 삭제
+      addedRows.forEach(row => {
+        if (summaryTable.contains(row)) {
+          summaryTable.removeChild(row);
+        }
+      });
+      addedRows = []; // 추가된 행 배열 초기화
+      rowCounter = 2; // 행 번호 초기화
+      valueCells.forEach(cell => {
+        cell.style.display = "block";
+      });
+      inputCells.forEach((cell, index) => {
+        cell.style.display = "none";
+      });
+      checkColumn.forEach(cell => {
+        cell.style.display = "none";
+      });
+      editButton.style.display = "block";
+      addButton.style.display = "none";
+      saveButton.style.display = "none";
+      cancelButton.style.display = "none";
+      deleteButton.style.display = "none";
+      selectAllCheckbox.checked = false; // 전체 선택 체크박스 해제
+      document.querySelectorAll(".row-select").forEach(checkbox => {
+        checkbox.checked = false;
+      });
+    });
+
+
+    // "추가" 버튼 클릭 이벤트
+    addButton.addEventListener("click", () => {
+      const NEWRow = document.createElement("tr");
+      NEWRow.classList.add("detail-row");
+
+      NEWRow.innerHTML = `
+      <td class="text-center" id="checkColumn">
+        <input type="checkbox" class="row-select" style="display:block;">
+      </td>
+      <td class="text-center">
+        <input type="text" class="form-control form-control-sm" name="OTHER_SERVICE_NAME_NEW_${rowCounter}" id="other_service_input_data">
+      </td>
+      <td class="text-center">
+        <input type="text" class="form-control form-control-sm" name="OTHER_PRODUCT_NAME_NEW_${rowCounter}" id="other_service_input_data">
+      </td>
+      <td class="text-right">
+        <input type="text" class="form-control form-control-sm" name="OTHER_SERVICE_USE_AMT_NEW_${rowCounter}" id="other_service_input_data">
+      </td>
+      <td class="text-right">
+        <input type="text" class="form-control form-control-sm" name="OTHER_SERVICE_NOTES_NEW_${rowCounter}" id="other_service_input_data">
+      </td>
+    `;
+
+      summaryTable.appendChild(NEWRow);
+      addedRows.push(NEWRow);
+      rowCounter++;
+    });
+
+    // "삭제" 버튼 클릭 이벤트
+    deleteButton.addEventListener("click", () => {
+      document.querySelectorAll(".row-select:checked").forEach(checkbox => {
+        const row = checkbox.closest("tr");
+        summaryTable.removeChild(row);
+      });
+    });
+
+    // "전체 선택" 체크박스 클릭 이벤트
+    selectAllCheckbox.addEventListener("change", () => {
+      const checked = selectAllCheckbox.checked;
+      document.querySelectorAll(".row-select").forEach(checkbox => {
+        checkbox.checked = checked;
+      });
+    });
+  </script>
+
+</body>
+
+</html>

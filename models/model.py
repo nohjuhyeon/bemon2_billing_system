@@ -85,7 +85,7 @@ class ThirdPartyChargeList(Base):
     __tablename__ = "THIRD_PARTY_CHARGE_LIST"
     THIRD_PARTY_CHARGE_ID = mapped_column(Integer, primary_key=True, autoincrement=True)
     TOTAL_CHARGE_ID = mapped_column(Integer, ForeignKey("CLOUD_TOTAL_CHARGE_LIST.TOTAL_CHARGE_ID"))
-    THIRD_PARTY_SERVICE_NAME = mapped_column(String(50), nullable=True)
+    THIRD_PARTY_NAME = mapped_column(String(50), nullable=True)
     THIRD_PARTY_PRODUCT_NAME = mapped_column(String(50), nullable=True)
     THIRD_PARTY_USE_AMT = mapped_column(Integer, nullable=True)
     THIRD_PARTY_PAY_AMT = mapped_column(Integer, nullable=True)
