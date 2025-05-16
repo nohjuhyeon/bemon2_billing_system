@@ -112,26 +112,26 @@
           <tr>
             <td class="text-center" rowspan="4">서비스 사용 요금</td>
             <td class="text-center">클라우드 사용</td>
-            <td class="text-right"> {{ total_charge_info.TOTAL_USE_AMT_STR }}</td>
-            <td class="text-right"> {{ total_charge_info.TOTAL_PAY_AMT_STR }}</td>
+            <td class="text-right"> {{ total_cloud_charge_info.TOTAL_CLOUD_USE_AMT_STR }}</td>
+            <td class="text-right"> {{ total_cloud_charge_info.TOTAL_CLOUD_PAY_AMT_STR }}</td>
             <td> </td>
           </tr>
           <tr>
             <td class="text-center">3rd Party S/W</td>
-            <td class="text-right"></td>
-            <td class="text-right"></td>
+            <td class="text-right"> {{ total_cloud_charge_info.TOTAL_USE_AMT_STR }}</td>
+            <td class="text-right"> {{ total_cloud_charge_info.TOTAL_USE_AMT_STR }}</td>
             <td> </td>
           </tr>
           <tr>
             <td class="text-center">매니지드 서비스</td>
-            <td class="text-right"></td>
-            <td class="text-right"></td>
+            <td class="text-right"> {{ total_cloud_charge_info.TOTAL_USE_AMT_STR }}</td>
+            <td class="text-right"> {{ total_cloud_charge_info.TOTAL_USE_AMT_STR }}</td>
             <td> </td>
           </tr>
           <tr>
             <td class="text-center">기타</td>
-            <td class="text-right"></td>
-            <td class="text-right"></td>
+            <td class="text-right"> {{ total_cloud_charge_info.TOTAL_USE_AMT_STR }}</td>
+            <td class="text-right"> {{ total_cloud_charge_info.TOTAL_USE_AMT_STR }}</td>
             <td> </td>
           </tr>
           <tr class="highlight-row">

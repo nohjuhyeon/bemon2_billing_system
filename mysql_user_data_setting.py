@@ -198,44 +198,65 @@ class BillingDatabaseUpdater:
         """
         cloud_api = self.api_select(cloud_element)
         total_charge_info = cloud_api.total_charge_info(cloud_element["CLOUD_KEY"], bill_month)
+        total_charge_dict = None
+        total_cloud_charge_dict = None
         if total_charge_info:
-            return {
+            total_charge_dict = {
                 "CLOUD_ID": cloud_element["CLOUD_ID"],
                 "BILL_MONTH": bill_month,
-                "TOTAL_USE_AMT": total_charge_info["use_amt"],
-                "TOTAL_DISCOUNT_AMT": total_charge_info["total_discount_amt"],
                 "TOTAL_COIN_USE_AMT": total_charge_info["coin_use_amt"],
                 "TOTAL_DEFAULT_AMT": total_charge_info["default_amt"],
+                "TOTAL_USE_AMT": total_charge_info["use_amt"],
+                "TOTAL_DISCOUNT_AMT": total_charge_info["total_discount_amt"],
                 "TOTAL_VAT_AMT": total_charge_info["vat_amt"],
                 "TOTAL_VAT_INCLUDE_AMT": total_charge_info["pay_amt_including_vat"],
-                "TOTAL_PAY_AMT": total_charge_info["pay_amt"],
+                "TOTAL_PAY_AMT": total_charge_info["pay_amt"]
             }
+            total_cloud_charge_dict =  {
+                "TOTAL_CLOUD_USE_AMT": total_charge_info["use_amt"],
+                "TOTAL_CLOUD_DISCOUNT_AMT": total_charge_info["total_discount_amt"],
+                "TOTAL_CLOUD_VAT_AMT": total_charge_info["vat_amt"],
+                "TOTAL_CLOUD_VAT_INCLUDE_AMT": total_charge_info["pay_amt_including_vat"],
+                "TOTAL_CLOUD_PAY_AMT": total_charge_info["pay_amt"]
+            }
+        return total_charge_dict,total_cloud_charge_dict
 
     def total_charge_list_update(self):
         """
         총 사용 요금 목록을 데이터베이스에 업데이트합니다.
 
-        각 클라우드 요소에 대해 청구 월별로 요금 정보를 가져오고, CLOUD_TOTAL_CHARGE_LIST 테이블에 삽입 또는 업데이트합니다.
+        각 클라우드 요소에 대해 청구 월별로 요금 정보를 가져오고, TOTAL_CLOUD_CHARGE_LIST 테이블에 삽입 또는 업데이트합니다.
         """
         current_cloud_list = self.db.select_many("CLOUD_LIST", None)
         for cloud_element in current_cloud_list:
             period_list = self.generate_month_range(cloud_element["START_DATE"], self.end_date)
             for bill_month in period_list:
                 total_charge_select_condition = {"CLOUD_ID": cloud_element["CLOUD_ID"], "BILL_MONTH": bill_month}
-                current_total_charge_info = self.db.select_one("CLOUD_TOTAL_CHARGE_LIST", None, total_charge_select_condition)
-                
+                current_total_charge_info = self.db.select_one("TOTAL_CHARGE_LIST", None, total_charge_select_condition)
                 if not current_total_charge_info:
-                    total_charge_dict = self.total_charge_info_api(cloud_element, bill_month)
-                    if total_charge_dict:
-                        self.db.insert("CLOUD_TOTAL_CHARGE_LIST", total_charge_dict)
+                    total_charge_dict,total_cloud_charge_dict = self.total_charge_info_api(cloud_element, bill_month)
+                    if total_charge_dict and total_cloud_charge_dict:
+                        self.db.insert("TOTAL_CHARGE_LIST", total_charge_dict)
+                        current_total_charge_info = self.db.select_one("TOTAL_CHARGE_LIST", None, total_charge_select_condition)
+                        total_charge_id = current_total_charge_info['TOTAL_CHARGE_ID']
+                        total_cloud_charge_dict['TOTAL_CHARGE_ID'] = total_charge_id
+                        self.db.insert("TOTAL_CLOUD_CHARGE_LIST", {"TOTAL_CHARGE_ID":total_charge_id})
+                        self.db.insert("TOTAL_THIRD_PARTY_CHARGE_LIST", {"TOTAL_CHARGE_ID":total_charge_id})
+                        self.db.insert("TOTAL_MANAGED_SERVICE_CHARGE_LIST", {"TOTAL_CHARGE_ID":total_charge_id})
+                        self.db.insert("TOTAL_OTHER_SERVICE_CHARGE_LIST", {"TOTAL_CHARGE_ID":total_charge_id})
 
                 elif bill_month == self.end_date:
-                    total_charge_dict = self.total_charge_info_api(cloud_element, bill_month)
-                    if total_charge_dict:
+                    total_charge_dict,total_cloud_charge_dict = self.total_charge_info_api(cloud_element, bill_month)
+                    if total_charge_dict and total_cloud_charge_dict:
                         total_charge_update_condition = {"TOTAL_CHARGE_ID": current_total_charge_info["TOTAL_CHARGE_ID"]}                
-                        self.db.update("CLOUD_TOTAL_CHARGE_LIST", total_charge_dict, total_charge_update_condition)
+                        self.db.update("TOTAL_CHARGE_LIST", total_charge_dict, total_charge_update_condition)
+                        current_total_charge_info = self.db.select_one("TOTAL_CHARGE_LIST", None, total_charge_select_condition)
+                        total_charge_id = current_total_charge_info['TOTAL_CHARGE_ID']
+                        total_cloud_charge_update_condition = {"TOTAL_CLOUD_CHARGE_ID": total_charge_id}                
+                        total_cloud_charge_dict['TOTAL_CHARGE_ID'] = total_charge_id
+                        self.db.update("TOTAL_CLOUD_CHARGE_LIST", total_cloud_charge_dict, total_cloud_charge_update_condition)
 
-    def service_charge_info_api(self, cloud_element, total_charge_info):
+    def service_charge_info_api(self, cloud_element, total_cloud_charge_info,bill_month):
         """
         서비스 사용 요금 정보를 API를 통해 가져옵니다.
 
@@ -247,19 +268,19 @@ class BillingDatabaseUpdater:
             tuple: 서비스 사용 요금 정보 리스트와 API 응답 데이터를 포함하는 튜플.
         """
         cloud_api = self.api_select(cloud_element)
-        service_charge_api = cloud_api.service_charge_list(cloud_element["CLOUD_KEY"], total_charge_info["BILL_MONTH"])
+        service_charge_api = cloud_api.service_charge_list(cloud_element["CLOUD_KEY"], bill_month)
 
         service_charge_list = []
         for service_charge_element in service_charge_api:
             service_charge_dict = {
-                "TOTAL_CHARGE_ID": total_charge_info["TOTAL_CHARGE_ID"],
+                "TOTAL_CLOUD_CHARGE_ID": total_cloud_charge_info["TOTAL_CLOUD_CHARGE_ID"],
                 "CLOUD_SERVICE_CHARGE_NAME": service_charge_element["service"],
                 "CLOUD_SERVICE_CHARGE_CODE": service_charge_element["service_code"],
                 "CLOUD_SERVICE_USE_AMT": service_charge_element["use_amt"],
                 "CLOUD_SERVICE_DISCOUNT_AMT": service_charge_element["total_discount_amt"],
                 "CLOUD_SERVICE_PAY_AMT": service_charge_element["pay_amt"],
             }
-            service_charge_element["TOTAL_CHARGE_ID"] = total_charge_info["TOTAL_CHARGE_ID"]
+            service_charge_element["TOTAL_CLOUD_CHARGE_ID"] = total_cloud_charge_info["TOTAL_CLOUD_CHARGE_ID"]
             service_charge_element["CLOUD_SERVICE_CHARGE_CODE"] = service_charge_element["service_code"]
             service_charge_list.append(service_charge_dict)
         return service_charge_list, service_charge_api
@@ -277,7 +298,7 @@ class BillingDatabaseUpdater:
         type_charge_list = []
         for service_charge_element in service_charge_api:
             service_charge_select_condition = {
-                "TOTAL_CHARGE_ID": service_charge_element["TOTAL_CHARGE_ID"],
+                "TOTAL_CLOUD_CHARGE_ID": service_charge_element["TOTAL_CLOUD_CHARGE_ID"],
                 "CLOUD_SERVICE_CHARGE_CODE": service_charge_element["CLOUD_SERVICE_CHARGE_CODE"],
             }
             selected_service_charge_info = self.db.select_one("CLOUD_SERVICE_CHARGE_LIST", "CLOUD_SERVICE_CHARGE_ID", service_charge_select_condition)
@@ -337,14 +358,17 @@ class BillingDatabaseUpdater:
             period_list = self.generate_month_range(cloud_element["START_DATE"], self.end_date)
             for bill_month in period_list:
                 total_charge_select_condition = {"CLOUD_ID": cloud_element["CLOUD_ID"], "BILL_MONTH": bill_month}
-                total_charge_info = self.db.select_one("CLOUD_TOTAL_CHARGE_LIST", None, total_charge_select_condition)
+                total_charge_info = self.db.select_one("TOTAL_CHARGE_LIST", None, total_charge_select_condition)
                 if not total_charge_info:
                     continue
-
-                service_charge_select_condition = {"TOTAL_CHARGE_ID": total_charge_info["TOTAL_CHARGE_ID"]}
-                current_service_charge_list = self.db.select_many("CLOUD_SERVICE_CHARGE_LIST", None, service_charge_select_condition)
+                else:
+                    total_charge_id = total_charge_info['TOTAL_CHARGE_ID']
+                    total_cloud_charge_select_condition = {"TOTAL_CHARGE_ID": total_charge_id}
+                    total_cloud_charge_info = self.db.select_one("TOTAL_CLOUD_CHARGE_LIST", None, total_cloud_charge_select_condition)
+                    service_charge_select_condition = {"TOTAL_CLOUD_CHARGE_ID": total_cloud_charge_info["TOTAL_CLOUD_CHARGE_ID"]}
+                    current_service_charge_list = self.db.select_many("CLOUD_SERVICE_CHARGE_LIST", None, service_charge_select_condition)
                 if not current_service_charge_list:
-                    service_charge_list, service_charge_api = self.service_charge_info_api(cloud_element, total_charge_info)
+                    service_charge_list, service_charge_api = self.service_charge_info_api(cloud_element, total_cloud_charge_info,bill_month)
                     for service_charge_dict in service_charge_list:
                         self.db.insert("CLOUD_SERVICE_CHARGE_LIST", service_charge_dict)
                     type_charge_list,service_charge_api = self.type_charge_info_api(service_charge_api)
@@ -356,10 +380,10 @@ class BillingDatabaseUpdater:
                         self.db.insert("ITEM_CHARGE_LIST", item_charge_dict)
 
                 elif bill_month == self.end_date:
-                    service_charge_list, service_charge_api = self.service_charge_info_api(cloud_element, total_charge_info)
+                    service_charge_list, service_charge_api = self.service_charge_info_api(cloud_element, total_cloud_charge_info,bill_month)
                     for service_charge_element in service_charge_list:
                         service_charge_condition = {
-                            "TOTAL_CHARGE_ID": service_charge_element["TOTAL_CHARGE_ID"],
+                            "TOTAL_CLOUD_CHARGE_ID": service_charge_element["TOTAL_CLOUD_CHARGE_ID"],
                             "CLOUD_SERVICE_CHARGE_CODE": service_charge_element["CLOUD_SERVICE_CHARGE_CODE"],
                         }
                         self.db.update("CLOUD_SERVICE_CHARGE_LIST", service_charge_element, service_charge_condition)
@@ -376,7 +400,6 @@ class BillingDatabaseUpdater:
                     for item_charge_element in item_charge_list:
                         item_charge_update_condition = {
                                 "TYPE_CHARGE_ID": item_charge_element["TYPE_CHARGE_ID"],
-                                "ITEM_TYPE": item_charge_element["ITEM_TYPE"],
                                 "ITEM_NAME": item_charge_element["ITEM_NAME"],
                                 "ITEM_REGION": item_charge_element["ITEM_REGION"],
                             }
@@ -401,13 +424,15 @@ if __name__ == "__main__":
     db = MySQLDatabase()
 
     database_updater = BillingDatabaseUpdater()
-    database_updater.create_database_from_sql()
+    # database_updater.create_database_from_sql()
     db.delete("ITEM_CHARGE_LIST")
+    db.delete("TYPE_CHARGE_LIST")
     db.delete("CLOUD_SERVICE_CHARGE_LIST")
-    db.delete("CLOUD_TOTAL_CHARGE_LIST")
+    db.delete("TOTAL_CLOUD_CHARGE_LIST")
+    db.delete("TOTAL_CHARGE_LIST")
     # db.delete("SERVICE_LIST")
     # db.delete("CLOUD_LIST")
     # db.delete("USER_LIST")
 
-    database_updater.user_list_insert()
+    # database_updater.user_list_insert()
     database_updater.update_database()

@@ -4,8 +4,12 @@ from models.model import (
     UserList,
     CloudList,
     ServiceList,
-    CloudTotalChargeList,
-    ServiceChargeList,
+    TotalChargeList,
+    TotalCloudChargeList,
+    TotalThirdPartyChargeList,
+    TotalManagedServiceChargeList,
+    TotalOtherServiceChargeList,
+    CloudServiceChargeList,
     TypeChargeList,
     ItemChargeList,
     ThirdPartyChargeList,
@@ -19,11 +23,15 @@ class ChargeInfoManager:
         self.collection_user_list = AsyncDatabase(UserList)
         self.collection_cloud_list = AsyncDatabase(CloudList)
         self.collection_service_list = AsyncDatabase(ServiceList)
-        self.collection_cloud_total_charge_list = AsyncDatabase(CloudTotalChargeList)
+        self.collection_total_charge_list = AsyncDatabase(TotalChargeList)
+        self.collection_total_cloud_charge_list = AsyncDatabase(TotalCloudChargeList)
+        self.collection_total_third_party_charge_list = AsyncDatabase(TotalThirdPartyChargeList)
+        self.collection_total_managed_service_charge_list = AsyncDatabase(TotalManagedServiceChargeList)
+        self.collection_total_other_service_charge_list = AsyncDatabase(TotalOtherServiceChargeList)
         self.collection_third_party_charge_list = AsyncDatabase(ThirdPartyChargeList)
         self.collection_managed_service_charge_list = AsyncDatabase(ManagedServiceList)
         self.collection_other_service_charge_list = AsyncDatabase(OtherServiceList)
-        self.collection_service_charge_list = AsyncDatabase(ServiceChargeList)
+        self.collection_service_charge_list = AsyncDatabase(CloudServiceChargeList)
         self.collection_type_charge_list = AsyncDatabase(TypeChargeList)
         self.collection_item_charge_list = AsyncDatabase(ItemChargeList)
 
@@ -164,7 +172,7 @@ class ChargeInfoManager:
     async def get_cloud_charge_list(self, USER_ID, date_range):
         user_info_conditions = {"USER_ID": {"eq": USER_ID}}
         cloud_list_conditions = {"USER_ID": {"eq": USER_ID}}
-        cloud_charge_list_conditions = {
+        total_charge_list_conditions = {
             "BILL_MONTH": {
                 "gte": date_range["start_date"],
                 "lte": date_range["end_date"],
@@ -180,10 +188,10 @@ class ChargeInfoManager:
 
         total_charge_list = []
         for cloud_element in cloud_list:
-            cloud_charge_list_conditions["CLOUD_ID"] = {"eq": cloud_element["CLOUD_ID"]}
+            total_charge_list_conditions["CLOUD_ID"] = {"eq": cloud_element["CLOUD_ID"]}
             total_charge_data = (
-                await self.collection_cloud_total_charge_list.gets_by_conditions(
-                    cloud_charge_list_conditions
+                await self.collection_total_charge_list.gets_by_conditions(
+                    total_charge_list_conditions
                 )
             )
 
@@ -226,7 +234,7 @@ class ChargeInfoManager:
 
                 cloud_charge_list_conditions["CLOUD_ID"] = {"eq": cloud_id}
                 total_charge_elements = (
-                    await self.collection_cloud_total_charge_list.gets_by_conditions(
+                    await self.collection_total_charge_list.gets_by_conditions(
                         cloud_charge_list_conditions
                     )
                 )
@@ -245,9 +253,7 @@ class ChargeInfoManager:
         )
         return sorted_charge_list
 
-    async def save_service(
-        self, service_list, total_charge_id, collection, id_field, model_class
-    ):
+    async def save_service(self, service_list, total_charge_id, collection, id_field, model_class):
         charge_list_conditions = {"TOTAL_CHARGE_ID": {"eq": total_charge_id}}
         charge_list = await collection.gets_by_conditions(charge_list_conditions)
         charge_id_list = []
@@ -305,3 +311,31 @@ class ChargeInfoManager:
                 "OTHER_SERVICE_CHARGE_ID",
                 OtherServiceList,
             )
+
+    async def get_billing_info(self,total_charge_id,charge_class):
+        total_charge_conditons = {"TOTAL_CHARGE_ID": {"eq": total_charge_id}}
+        if charge_class == 'CLOUD':
+            collection_total_list = self.collection_total_cloud_charge_list
+            collection_list = self.collection_service_charge_list
+            collection_id = "TOTAL_CLOUD_CHARGE_ID"
+        if charge_class == 'THIRD_PARTY':
+            collection_total_list = self.collection_total_third_party_charge_list
+            collection_list = self.collection_third_party_charge_list
+            collection_id = "TOTAL_THIRD_PARTY_CHARGE_ID"
+        if charge_class == 'MANAGED_SERVICE':
+            collection_total_list = self.collection_total_managed_service_charge_list
+            collection_list = self.collection_managed_service_charge_list
+            collection_id = "TOTAL_MANAGED_SERVICE_CHARGE_ID"
+        if charge_class == 'OTHER_SERVICE':
+            collection_total_list = self.collection_total_other_service_charge_list
+            collection_list = self.collection_other_service_charge_list
+            collection_id = "TOTAL_OTHER_SERVICE_CHARGE_ID"
+
+
+
+        total_collection_charge_info = await collection_total_list.get_by_conditions(total_charge_conditons)
+        total_collection_charge_conditions = {collection_id:{"eq":total_collection_charge_info[collection_id]}}
+        total_collection_charge_info = self.charge_info_str(total_collection_charge_info)      
+        collection_charge_list = await collection_list.gets_by_conditions(total_collection_charge_conditions)
+        collection_charge_list = [self.charge_info_str(collection_charge_info) for collection_charge_info in collection_charge_list]
+        return total_collection_charge_info,collection_charge_list
