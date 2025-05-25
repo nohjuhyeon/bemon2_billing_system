@@ -182,8 +182,8 @@ async def billing_info(request: Request, charge_id: str):
     total_charge_id = total_charge_info['TOTAL_CHARGE_ID']
     total_cloud_charge_info,cloud_service_charge_list = await charge_manager.get_billing_info(total_charge_id,"CLOUD")
     total_third_party_charge_info,third_party_charge_list = await charge_manager.get_billing_info(total_charge_id,"THIRD_PARTY")
-    total_service_charge_info,managed_service_charge_list = await charge_manager.get_billing_info(total_charge_id,"MANAGED_SERVICE")
-    total_other_service_charge_info,other_service_charge_list = await charge_manager.get_billing_info(total_charge_id,"OTHER_SERVICE")
+    total_managed_service_charge_info,managed_service_charge_list = await charge_manager.get_billing_info(total_charge_id,"MANAGED")
+    total_other_service_charge_info,other_service_charge_list = await charge_manager.get_billing_info(total_charge_id,"OTHER")
 
     user_dict = await charge_manager.get_user_info_by_cloud_id(total_charge_element)
     cloud_service_charge_list = await charge_manager.get_cloud_service_charge(cloud_service_charge_list)
@@ -195,7 +195,7 @@ async def billing_info(request: Request, charge_id: str):
             "total_charge_info": total_charge_info,
             "total_cloud_charge_info": total_cloud_charge_info,
             "total_third_party_charge_info": total_third_party_charge_info,
-            "total_service_charge_info": total_service_charge_info,
+            "total_managed_service_charge_info": total_managed_service_charge_info,
             "total_other_service_charge_info": total_other_service_charge_info,
             "cloud_service_charge_list": cloud_service_charge_list,
             "managed_service_charge_list": managed_service_charge_list,
@@ -212,34 +212,31 @@ async def billing_info(request: Request, charge_id: str):
     update_data = await request.form()
     await charge_manager.billing_info_update(update_data,charge_id)
 
-    total_charge_conditions = {"TOTAL_CHARGE_ID": {"eq": charge_id}}
-
-    total_charge_element = await charge_manager.collection_cloud_total_charge_list.get_by_conditions(total_charge_conditions)
+    cloud_conditions = {"TOTAL_CHARGE_ID": {"eq": charge_id}}
+    total_charge_element = await charge_manager.collection_total_charge_list.get_by_conditions(cloud_conditions)
     total_charge_info = charge_manager.charge_info_str(total_charge_element)
-
-    cloud_service_charge_list = await charge_manager.collection_service_charge_list.gets_by_conditions(total_charge_conditions)
-    cloud_service_charge_list = [charge_manager.charge_info_str(cloud_service_charge_info) for cloud_service_charge_info in cloud_service_charge_list]
-    third_party_charge_list = await charge_manager.collection_third_party_charge_list.gets_by_conditions(total_charge_conditions)
-    third_party_charge_list = [charge_manager.charge_info_str(third_party_charge_info) for third_party_charge_info in third_party_charge_list]
-    managed_service_charge_list = await charge_manager.collection_managed_service_charge_list.gets_by_conditions(total_charge_conditions)
-    managed_service_charge_list = [charge_manager.charge_info_str(managed_service_charge_info) for managed_service_charge_info in managed_service_charge_list]
-    other_service_charge_list = await charge_manager.collection_other_service_charge_list.gets_by_conditions(total_charge_conditions)
-    other_service_charge_list = [charge_manager.charge_info_str(other_service_charge_info) for other_service_charge_info in other_service_charge_list]
+    total_charge_id = total_charge_info['TOTAL_CHARGE_ID']
+    total_cloud_charge_info,cloud_service_charge_list = await charge_manager.get_billing_info(total_charge_id,"CLOUD")
+    total_third_party_charge_info,third_party_charge_list = await charge_manager.get_billing_info(total_charge_id,"THIRD_PARTY")
+    total_managed_service_charge_info,managed_service_charge_list = await charge_manager.get_billing_info(total_charge_id,"MANAGED")
+    total_other_service_charge_info,other_service_charge_list = await charge_manager.get_billing_info(total_charge_id,"OTHER")
 
     user_dict = await charge_manager.get_user_info_by_cloud_id(total_charge_element)
     cloud_service_charge_list = await charge_manager.get_cloud_service_charge(cloud_service_charge_list)
-
     return templates.TemplateResponse(
         "billing_info.html",
         {
             "request": request,
             "user": user_dict,
             "total_charge_info": total_charge_info,
+            "total_cloud_charge_info": total_cloud_charge_info,
+            "total_third_party_charge_info": total_third_party_charge_info,
+            "total_managed_service_charge_info": total_managed_service_charge_info,
+            "total_other_service_charge_info": total_other_service_charge_info,
             "cloud_service_charge_list": cloud_service_charge_list,
             "managed_service_charge_list": managed_service_charge_list,
             "third_party_charge_list": third_party_charge_list,
             "other_service_charge_list": other_service_charge_list,
-            
         },
     )
     

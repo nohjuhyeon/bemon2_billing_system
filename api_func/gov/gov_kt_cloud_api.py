@@ -78,21 +78,22 @@ def total_charge_info(user_id, bill_month):
 
     response = call_api(command, param_list)
     kt_total_charge_info = []
-    for i in response["billinginfolistaccountsresponse"]["chargeaccountlists"]:
-        if user_id == i["account"]:
-            kt_total_charge_info.append(
-                {
-                    "cloud_key": user_id,
-                    "bill_month": int(i["bill_month"].replace("-", "")),
-                    "use_amt": i["pay_amt"] + i["total_discount_amt"],
-                    "total_discount_amt": i["total_discount_amt"],
-                    "pay_amt": i["pay_amt"],
-                    "coin_use_amt": None,
-                    "default_amt": None,
-                    "vat_amt": None,
-                    "pay_amt_including_vat": None,
-                }
-            )
+    if response:
+        for i in response["billinginfolistaccountsresponse"]["chargeaccountlists"]:
+            if user_id == i["account"]:
+                kt_total_charge_info.append(
+                    {
+                        "cloud_key": user_id,
+                        "bill_month": int(i["bill_month"].replace("-", "")),
+                        "use_amt": i["pay_amt"] + i["total_discount_amt"],
+                        "total_discount_amt": i["total_discount_amt"],
+                        "pay_amt": i["pay_amt"],
+                        "coin_use_amt": 0,
+                        "default_amt": 0,
+                        "vat_amt": 0,
+                        "pay_amt_including_vat": i["pay_amt"],
+                    }
+                )
     if len(kt_total_charge_info) == 1:
         return kt_total_charge_info[0]
     else:

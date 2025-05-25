@@ -299,13 +299,13 @@ def service_charge_list(memberNoList, bill_month):
                     "service_code": type_element["service_code"],
                     "service": type_element["service"],
                     "bill_month": type_element["bill_month"],
-                    "use_amt": type_element["use_amt"],
+                    "use_amt": type_element["type_use_amt"],
                     "total_discount_amt": type_element["total_discount_amt"],
                     "pay_amt": type_element["pay_amt"],
                     "service_list": [
                         {
                             "type": type_element["type"],
-                            "type_use_amt": type_element["use_amt"],
+                            "type_use_amt": type_element["type_use_amt"],
                             "type_list": type_element["type_list"]
                         }
                     ],
@@ -313,7 +313,7 @@ def service_charge_list(memberNoList, bill_month):
             )
         else:
             list_index = code_list.index(type_element["service"])
-            service_result_list[list_index]["use_amt"] += type_element["use_amt"]
+            service_result_list[list_index]["use_amt"] += type_element["type_use_amt"]
             service_result_list[list_index]["total_discount_amt"] += type_element[
                 "total_discount_amt"
             ]
@@ -321,7 +321,7 @@ def service_charge_list(memberNoList, bill_month):
             service_result_list[list_index]["service_list"].append(
                 {
                             "type": type_element["type"],
-                            "type_use_amt": type_element["use_amt"],
+                            "type_use_amt": type_element["type_use_amt"],
                             "type_list": type_element["type_list"]
                 }
             )

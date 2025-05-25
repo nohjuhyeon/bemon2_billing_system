@@ -109,7 +109,7 @@ function submitForm(event) {
 
 function validateForm(formName) {
     const form = document.getElementById(formName);
-    const useAmountInputs = form.querySelectorAll("input[name*='USE_AMT']");
+    const useAmountInputs = form.querySelectorAll("input[name*='AMT']");
     const serviceInputs = form.querySelectorAll("input[name*='SERVICE_NAME']");
     const productInputs = form.querySelectorAll("input[name*='PRODUCT_NAME']");
     

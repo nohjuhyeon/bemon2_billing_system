@@ -18776,3 +18776,49 @@ WHERE `ITEM_CHARGE_LIST`.`TYPE_CHARGE_ID` = %s
 2025-05-16 07:45:03,065 - 데이터 업데이트가 완료되었습니다. 현재 시간: 2025-05-16 07:45:03
 2025-05-16 08:00:13,079 - 데이터 업데이트가 완료되었습니다. 현재 시간: 2025-05-16 08:00:13
 2025-05-16 08:00:13,080 - Job "BillingDatabaseUpdater.update_database (trigger: cron[minute='0'], next run at: 2025-05-16 09:00:00 UTC)" executed successfully
+2025-05-19 01:00:23,894 - 데이터 업데이트가 완료되었습니다. 현재 시간: 2025-05-19 01:00:23
+2025-05-19 01:00:23,895 - Job "BillingDatabaseUpdater.update_database (trigger: cron[minute='0'], next run at: 2025-05-19 02:00:00 UTC)" executed successfully
+2025-05-19 01:15:00,812 - 데이터 업데이트가 완료되었습니다. 현재 시간: 2025-05-19 01:15:00
+2025-05-19 02:00:14,191 - 데이터 업데이트가 완료되었습니다. 현재 시간: 2025-05-19 02:00:14
+2025-05-19 02:00:14,192 - Job "BillingDatabaseUpdater.update_database (trigger: cron[minute='0'], next run at: 2025-05-19 03:00:00 UTC)" executed successfully
+2025-05-19 03:00:41,597 - 데이터 업데이트가 완료되었습니다. 현재 시간: 2025-05-19 03:00:41
+2025-05-19 03:00:41,599 - Job "BillingDatabaseUpdater.update_database (trigger: cron[minute='0'], next run at: 2025-05-19 04:00:00 UTC)" executed successfully
+2025-05-19 04:00:00,003 - Running job "BillingDatabaseUpdater.update_database (trigger: cron[minute='0'], next run at: 2025-05-19 05:00:00 UTC)" (scheduled at 2025-05-19 04:00:00+00:00)
+2025-05-19 04:00:00,018 - Job "BillingDatabaseUpdater.update_database (trigger: cron[minute='0'], next run at: 2025-05-19 05:00:00 UTC)" raised an exception
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/mysql/connector/cursor_cext.py", line 311, in execute
+    raise ProgrammingError
+mysql.connector.errors.ProgrammingError: Unknown error
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/apscheduler/executors/base.py", line 131, in run_job
+    retval = job.func(*job.args, **job.kwargs)
+  File "/app/bemon2_billing_system/mysql_user_data_setting.py", line 416, in update_database
+    self.service_list_update()
+  File "/app/bemon2_billing_system/mysql_user_data_setting.py", line 172, in service_list_update
+    current_cloud_list = self.db.select_many("CLOUD_LIST", None)
+  File "/app/bemon2_billing_system/MYSQL_CRUD.py", line 41, in select_many
+    self.cursor.execute(query)
+  File "/usr/local/lib/python3.9/site-packages/mysql/connector/cursor_cext.py", line 313, in execute
+    raise ProgrammingError("Cursor is not connected", 2055) from err
+mysql.connector.errors.ProgrammingError: 2055: Cursor is not connected
+2025-05-19 05:00:13,747 - 데이터 업데이트가 완료되었습니다. 현재 시간: 2025-05-19 05:00:13
+2025-05-19 05:00:13,788 - Job "BillingDatabaseUpdater.update_database (trigger: cron[minute='0'], next run at: 2025-05-19 06:00:00 UTC)" executed successfully
+2025-05-19 05:33:42,672 - 데이터 업데이트가 완료되었습니다. 현재 시간: 2025-05-19 05:33:42
+2025-05-19 06:04:24,799 - 데이터 업데이트가 완료되었습니다. 현재 시간: 2025-05-19 06:04:24
+2025-05-19 07:00:12,106 - 데이터 업데이트가 완료되었습니다. 현재 시간: 2025-05-19 07:00:12
+2025-05-19 07:00:12,187 - Job "BillingDatabaseUpdater.update_database (trigger: cron[minute='0'], next run at: 2025-05-19 08:00:00 UTC)" executed successfully
+2025-05-19 08:00:12,868 - 데이터 업데이트가 완료되었습니다. 현재 시간: 2025-05-19 08:00:12
+2025-05-19 08:00:12,869 - Job "BillingDatabaseUpdater.update_database (trigger: cron[minute='0'], next run at: 2025-05-19 09:00:00 UTC)" executed successfully
+2025-05-19 23:59:46,448 - 데이터 업데이트가 완료되었습니다. 현재 시간: 2025-05-19 23:59:46
+2025-05-20 00:05:20,753 - 데이터 업데이트가 완료되었습니다. 현재 시간: 2025-05-20 00:05:20
+2025-05-20 01:00:27,401 - 데이터 업데이트가 완료되었습니다. 현재 시간: 2025-05-20 01:00:27
+2025-05-20 01:00:27,402 - Job "BillingDatabaseUpdater.update_database (trigger: cron[minute='0'], next run at: 2025-05-20 02:00:00 UTC)" executed successfully
+2025-05-20 01:23:45,685 - 데이터 업데이트가 완료되었습니다. 현재 시간: 2025-05-20 01:23:45
+2025-05-20 01:30:27,211 - 데이터 업데이트가 완료되었습니다. 현재 시간: 2025-05-20 01:30:27
+2025-05-20 02:00:19,011 - 데이터 업데이트가 완료되었습니다. 현재 시간: 2025-05-20 02:00:19
+2025-05-20 02:00:19,012 - Job "BillingDatabaseUpdater.update_database (trigger: cron[minute='0'], next run at: 2025-05-20 03:00:00 UTC)" executed successfully
+2025-05-20 03:00:13,484 - 데이터 업데이트가 완료되었습니다. 현재 시간: 2025-05-20 03:00:13
+2025-05-20 03:00:13,485 - Job "BillingDatabaseUpdater.update_database (trigger: cron[minute='0'], next run at: 2025-05-20 04:00:00 UTC)" executed successfully

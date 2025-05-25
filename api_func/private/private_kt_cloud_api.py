@@ -88,10 +88,10 @@ def total_charge_info(user_id, bill_month):
                         "use_amt": i["pay_amt"] + i["total_discount_amt"],
                         "total_discount_amt": i["total_discount_amt"],
                         "pay_amt": i["pay_amt"],
-                        "coin_use_amt": None,
-                        "default_amt": None,
-                        "vat_amt": None,
-                        "pay_amt_including_vat": None,
+                        "coin_use_amt": 0,
+                        "default_amt": 0,
+                        "vat_amt": 0,
+                        "pay_amt_including_vat": i["pay_amt"],
                     }
                 )
     if len(kt_total_charge_info) == 1:

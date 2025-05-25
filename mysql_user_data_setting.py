@@ -210,14 +210,17 @@ class BillingDatabaseUpdater:
                 "TOTAL_DISCOUNT_AMT": total_charge_info["total_discount_amt"],
                 "TOTAL_VAT_AMT": total_charge_info["vat_amt"],
                 "TOTAL_VAT_INCLUDE_AMT": total_charge_info["pay_amt_including_vat"],
-                "TOTAL_PAY_AMT": total_charge_info["pay_amt"]
+                "TOTAL_PAY_AMT": total_charge_info["pay_amt"],
+                "TOTAL_USER_PAY_AMT": total_charge_info["pay_amt"],
+                "TOTAL_DISCOUNT_INCLUDE_AMT": total_charge_info["pay_amt"],
             }
             total_cloud_charge_dict =  {
                 "TOTAL_CLOUD_USE_AMT": total_charge_info["use_amt"],
                 "TOTAL_CLOUD_DISCOUNT_AMT": total_charge_info["total_discount_amt"],
                 "TOTAL_CLOUD_VAT_AMT": total_charge_info["vat_amt"],
                 "TOTAL_CLOUD_VAT_INCLUDE_AMT": total_charge_info["pay_amt_including_vat"],
-                "TOTAL_CLOUD_PAY_AMT": total_charge_info["pay_amt"]
+                "TOTAL_CLOUD_PAY_AMT": total_charge_info["pay_amt"],
+                "TOTAL_CLOUD_USER_PAY_AMT": total_charge_info["pay_amt"]
             }
         return total_charge_dict,total_cloud_charge_dict
 
@@ -240,10 +243,10 @@ class BillingDatabaseUpdater:
                         current_total_charge_info = self.db.select_one("TOTAL_CHARGE_LIST", None, total_charge_select_condition)
                         total_charge_id = current_total_charge_info['TOTAL_CHARGE_ID']
                         total_cloud_charge_dict['TOTAL_CHARGE_ID'] = total_charge_id
-                        self.db.insert("TOTAL_CLOUD_CHARGE_LIST", {"TOTAL_CHARGE_ID":total_charge_id})
-                        self.db.insert("TOTAL_THIRD_PARTY_CHARGE_LIST", {"TOTAL_CHARGE_ID":total_charge_id})
-                        self.db.insert("TOTAL_MANAGED_SERVICE_CHARGE_LIST", {"TOTAL_CHARGE_ID":total_charge_id})
-                        self.db.insert("TOTAL_OTHER_SERVICE_CHARGE_LIST", {"TOTAL_CHARGE_ID":total_charge_id})
+                        self.db.insert("TOTAL_CLOUD_CHARGE_LIST",total_cloud_charge_dict)
+                        self.db.insert("TOTAL_THIRD_PARTY_CHARGE_LIST", {"TOTAL_CHARGE_ID":total_charge_id,"TOTAL_THIRD_PARTY_NOTES":""})
+                        self.db.insert("TOTAL_MANAGED_SERVICE_CHARGE_LIST", {"TOTAL_CHARGE_ID":total_charge_id,"TOTAL_MANAGED_SERVICE_NOTES":""})
+                        self.db.insert("TOTAL_OTHER_SERVICE_CHARGE_LIST", {"TOTAL_CHARGE_ID":total_charge_id,"TOTAL_OTHER_SERVICE_NOTES":""})
 
                 elif bill_month == self.end_date:
                     total_charge_dict,total_cloud_charge_dict = self.total_charge_info_api(cloud_element, bill_month)
@@ -428,7 +431,14 @@ if __name__ == "__main__":
     db.delete("ITEM_CHARGE_LIST")
     db.delete("TYPE_CHARGE_LIST")
     db.delete("CLOUD_SERVICE_CHARGE_LIST")
+    db.delete("THIRD_PARTY_CHARGE_LIST")
+    db.delete("MANAGED_SERVICE_LIST")
+    db.delete("OTHER_SERVICE_LIST")
+    db.delete("CLOUD_SERVICE_CHARGE_LIST")
     db.delete("TOTAL_CLOUD_CHARGE_LIST")
+    db.delete("TOTAL_THIRD_PARTY_CHARGE_LIST")
+    db.delete("TOTAL_MANAGED_SERVICE_CHARGE_LIST")
+    db.delete("TOTAL_OTHER_SERVICE_CHARGE_LIST")
     db.delete("TOTAL_CHARGE_LIST")
     # db.delete("SERVICE_LIST")
     # db.delete("CLOUD_LIST")

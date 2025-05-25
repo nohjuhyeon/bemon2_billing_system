@@ -44,7 +44,7 @@
 
     /* 비고 열 너비 조정 */
     .remark-column {
-      width: 35% !important;
+      width: 25% !important;
       /* 원하는 너비로 조정 */
     }
 
@@ -94,80 +94,192 @@
 
     <!-- 비용 요약 -->
     <div class="card p-4 mb-4">
-      <div class="d-flex align-items-center justify-content-between">
-        <h2>비용 요약</h2>
-        <button type="button" class="btn btn-warning btn-sm">수정하기</button>
-      </div>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th class="text-center">구분</th>
-            <th class="text-center">항목</th>
-            <th class="text-center">사용 금액</th>
-            <th class="text-center">청구 금액</th>
-            <th class="remark-column text-center">비고</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="text-center" rowspan="4">서비스 사용 요금</td>
-            <td class="text-center">클라우드 사용</td>
-            <td class="text-right"> {{ total_cloud_charge_info.TOTAL_CLOUD_USE_AMT_STR }}</td>
-            <td class="text-right"> {{ total_cloud_charge_info.TOTAL_CLOUD_PAY_AMT_STR }}</td>
-            <td> </td>
-          </tr>
-          <tr>
-            <td class="text-center">3rd Party S/W</td>
-            <td class="text-right"> {{ total_cloud_charge_info.TOTAL_USE_AMT_STR }}</td>
-            <td class="text-right"> {{ total_cloud_charge_info.TOTAL_USE_AMT_STR }}</td>
-            <td> </td>
-          </tr>
-          <tr>
-            <td class="text-center">매니지드 서비스</td>
-            <td class="text-right"> {{ total_cloud_charge_info.TOTAL_USE_AMT_STR }}</td>
-            <td class="text-right"> {{ total_cloud_charge_info.TOTAL_USE_AMT_STR }}</td>
-            <td> </td>
-          </tr>
-          <tr>
-            <td class="text-center">기타</td>
-            <td class="text-right"> {{ total_cloud_charge_info.TOTAL_USE_AMT_STR }}</td>
-            <td class="text-right"> {{ total_cloud_charge_info.TOTAL_USE_AMT_STR }}</td>
-            <td> </td>
-          </tr>
-          <tr class="highlight-row">
-            <td colspan="2" class="text-center">소계</td>
-            <td class="text-right"></td>
-            <td class="text-right"></td>
-            <td> </td>
-          </tr>
-          <tr>
-            <td rowspan="2" class="text-center">할인 내역</td>
-            <td class="text-center">영업 할인</td>
-            <td colspan="2" class="text-right"></td>
-            <td> </td>
-          </tr>
-          <tr>
-            <td class="text-center">크레딧</td>
-            <td colspan="2" class="text-right"></td>
-            <td> </td>
-          </tr>
-          <tr class="highlight-row">
-            <td colspan="2" class="text-center">납부 금액</td>
-            <td colspan="2" class="text-right"></td>
-            <td> </td>
-          </tr>
-          <tr>
-            <td colspan="2" class="text-center">부가세</td>
-            <td colspan="2" class="text-right"></td>
-            <td> </td>
-          </tr>
-          <tr class="highlight-row">
-            <td colspan="2" class="text-center">총 납부 금액(VAT 포함)</td>
-            <td colspan="2" class="text-right"></td>
-            <td> </td>
-          </tr>
-        </tbody>
-      </table>
+      <form id="totalSummaryForm" action="/billing_info/{{total_charge_info.TOTAL_CHARGE_ID}}" method="post"
+        onsubmit="return updateForm(event,'totalSummaryForm')">
+        <input type="hidden" name="collection_name" value="TOTAL">
+        <div class="d-flex align-items-center justify-content-between">
+          <h2>비용 요약</h2>
+          <div class="text-end mt-3 d-flex" id="actionButtons" style="gap: 2px;">
+            <button type="button" class="btn btn-warning btn-sm" id="editButtonTotalSummary">수정하기</button>
+            <button type="submit" class="btn btn-success btn-sm" id="saveButtonTotalSummary"
+              style="display: none;">저장</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="cancelButtonTotalSummary"
+              style="display: none;">취소</button>
+          </div>
+        </div>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th class="text-center">구분</th>
+              <th class="text-center">항목</th>
+              <th class="text-center">사용 금액</th>
+              <th class="text-center">CSP 청구 금액</th>
+              <th class="text-center">사용자 청구 금액</th>
+              <th class="remark-column text-center">비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-center" rowspan="4">서비스 사용 요금</td>
+              <td class="text-center">클라우드 사용</td>
+              <td class="text-right"> {{ total_cloud_charge_info.TOTAL_CLOUD_USE_AMT_STR }}</td>
+              <td class="text-right">{{ total_cloud_charge_info.TOTAL_CLOUD_PAY_AMT_STR }}</td>
+              <td class="text-right">
+                <div id="valueDataTotalSummary">{{total_cloud_charge_info.TOTAL_CLOUD_USER_PAY_AMT_STR}}</div>
+                <input type="text" class="form-control form-control-sm" name="TOTAL_CLOUD_USER_PAY_AMT"
+                  id="inputDataTotalSummary" value="{{ total_cloud_charge_info.TOTAL_CLOUD_USER_PAY_AMT }}"
+                  style="display:none;">
+              </td>
+              <td class="text-right">
+                <div id="valueDataTotalSummary">{{total_cloud_charge_info.TOTAL_CLOUD_NOTES}}</div>
+                <input type="text" class="form-control form-control-sm" name="TOTAL_CLOUD_NOTES"
+                  id="inputDataTotalSummary" value="{{ total_cloud_charge_info.TOTAL_CLOUD_NOTES }}"
+                  style="display:none;">
+              </td>
+            </tr>
+            <tr>
+              <td class="text-center">3rd Party S/W</td>
+              <td class="text-right"> {{ total_third_party_charge_info.TOTAL_THIRD_PARTY_USE_AMT_STR }}</td>
+              <td class="text-right">
+                <div>{{ total_third_party_charge_info.TOTAL_THIRD_PARTY_PAY_AMT_STR }}</div>
+              </td>
+              <td class="text-right">
+                <div id="valueDataTotalSummary">{{total_third_party_charge_info.TOTAL_THIRD_PARTY_USER_PAY_AMT_STR}}
+                </div>
+                <input type="text" class="form-control form-control-sm" name="TOTAL_THIRD_PARTY_USER_PAY_AMT"
+                  id="inputDataTotalSummary" value="{{ total_third_party_charge_info.TOTAL_THIRD_PARTY_USER_PAY_AMT }}"
+                  style="display:none;">
+              </td>
+              <td class="text-right">
+                <div id="valueDataTotalSummary">{{total_third_party_charge_info.TOTAL_THIRD_PARTY_NOTES}}</div>
+                <input type="text" class="form-control form-control-sm" name="TOTAL_THIRD_PARTY_NOTES"
+                  id="inputDataTotalSummary" value="{{ total_third_party_charge_info.TOTAL_THIRD_PARTY_NOTES }}"
+                  style="display:none;">
+              </td>
+            </tr>
+            <tr>
+              <td class="text-center">매니지드 서비스</td>
+              <td class="text-right"> {{ total_managed_service_charge_info.TOTAL_MANAGED_SERVICE_USE_AMT_STR }}</td>
+              <td class="text-right"> {{ total_managed_service_charge_info.TOTAL_MANAGED_SERVICE_PAY_AMT_STR}}</td>
+              <td class="text-right">
+                <div id="valueDataTotalSummary">
+                  {{total_managed_service_charge_info.TOTAL_MANAGED_SERVICE_USER_PAY_AMT_STR}}</div>
+                <input type="text" class="form-control form-control-sm" name="TOTAL_MANAGED_SERVICE_USER_PAY_AMT"
+                  id="inputDataTotalSummary"
+                  value="{{ total_managed_service_charge_info.TOTAL_MANAGED_SERVICE_USER_PAY_AMT }}"
+                  style="display:none;">
+              </td>
+              <td class="text-right">
+                <div id="valueDataTotalSummary">{{total_managed_service_charge_info.TOTAL_MANAGED_SERVICE_NOTES}}</div>
+                <input type="text" class="form-control form-control-sm" name="TOTAL_MANAGED_SERVICE_NOTES"
+                  id="inputDataTotalSummary" value="{{ total_managed_service_charge_info.TOTAL_MANAGED_SERVICE_NOTES }}"
+                  style="display:none;">
+              </td>
+            </tr>
+            <tr>
+              <td class="text-center">기타</td>
+              <td class="text-right"> {{ total_other_service_charge_info.TOTAL_OTHER_SERVICE_USE_AMT_STR }}</td>
+              <td class="text-right">{{ total_other_service_charge_info.TOTAL_OTHER_SERVICE_PAY_AMT_STR }}</td>
+              <td class="text-right">
+                <div id="valueDataTotalSummary">{{total_other_service_charge_info.TOTAL_OTHER_SERVICE_USER_PAY_AMT_STR}}
+                </div>
+                <input type="text" class="form-control form-control-sm" name="TOTAL_OTHER_SERVICE_USER_PAY_AMT"
+                  id="inputDataTotalSummary"
+                  value="{{ total_other_service_charge_info.TOTAL_OTHER_SERVICE_USER_PAY_AMT }}" style="display:none;">
+              </td>
+              <td class="text-right">
+                <div id="valueDataTotalSummary">{{total_other_service_charge_info.TOTAL_OTHER_SERVICE_NOTES}}</div>
+                <input type="text" class="form-control form-control-sm" name="TOTAL_OTHER_SERVICE_NOTES"
+                  id="inputDataTotalSummary" value="{{ total_other_service_charge_info.TOTAL_OTHER_SERVICE_NOTES }}"
+                  style="display:none;">
+              </td>
+            </tr>
+            <tr class="highlight-row">
+              <td colspan="2" class="text-center">소계</td>
+              <td class="text-right">
+                <div>{{total_charge_info.TOTAL_USE_AMT_STR}}</div>
+              </td>
+              <td class="text-right">
+                <div>{{total_charge_info.TOTAL_PAY_AMT_STR}}</div>
+              </td>
+              <td class="text-right">
+                <div>{{total_charge_info.TOTAL_USER_PAY_AMT_STR}}</div>
+              </td>
+              <td class="text-right">
+                <div id="valueDataTotalSummary">{{total_charge_info.TOTAL_PAY_NOTES}}</div>
+                <input type="text" class="form-control form-control-sm" name="TOTAL_PAY_NOTES"
+                  id="inputDataTotalSummary" value="{{ total_charge_info.TOTAL_PAY_NOTES }}" style="display:none;">
+              </td>
+            </tr>
+            <tr>
+              <td rowspan="2" class="text-center">할인 내역</td>
+              <td class="text-center">영업 할인</td>
+              <td colspan="3" class="text-right">
+                <div id="valueDataTotalSummary">{{total_charge_info.TOTAL_SALES_DISCOUNT_AMT_STR}}</div>
+                <input type="text" class="form-control form-control-sm" name="TOTAL_SALES_DISCOUNT_AMT"
+                  id="inputDataTotalSummary" value="{{ total_charge_info.TOTAL_SALES_DISCOUNT_AMT }}"
+                  style="display:none;">
+              </td>
+              <td class="text-right">
+                <div id="valueDataTotalSummary">{{total_charge_info.TOTAL_SALES_DISCOUNT_NOTES}}</div>
+                <input type="text" class="form-control form-control-sm" name="TOTAL_SALES_DISCOUNT_NOTES"
+                  id="inputDataTotalSummary" value="{{ total_charge_info.TOTAL_SALES_DISCOUNT_NOTES }}"
+                  style="display:none;">
+              </td>
+            </tr>
+            <tr>
+              <td class="text-center">크레딧</td>
+              <td colspan="3" class="text-right">
+                <div id="valueDataTotalSummary">{{total_charge_info.TOTAL_COIN_USE_AMT_STR}}</div>
+                <input type="text" class="form-control form-control-sm" name="TOTAL_COIN_USE_AMT"
+                  id="inputDataTotalSummary" value="{{ total_charge_info.TOTAL_COIN_USE_AMT }}" style="display:none;">
+              </td>
+              <td class="text-right">
+                <div id="valueDataTotalSummary">{{total_charge_info.TOTAL_COIN_USE_NOTES}}</div>
+                <input type="text" class="form-control form-control-sm" name="TOTAL_COIN_USE_NOTES"
+                  id="inputDataTotalSummary" value="{{ total_charge_info.TOTAL_COIN_USE_NOTES }}" style="display:none;">
+              </td>
+            </tr>
+            <tr class="highlight-row">
+              <td colspan="2" class="text-center">납부 금액</td>
+              <td colspan="3" class="text-right">
+                <div>{{total_charge_info.TOTAL_DISCOUNT_INCLUDE_AMT_STR}}</div>
+              </td>
+              <td class="text-right">
+                <div id="valueDataTotalSummary">{{total_charge_info.TOTAL_DISCOUNT_INCLUDE_NOTES}}</div>
+                <input type="text" class="form-control form-control-sm" name="TOTAL_DISCOUNT_INCLUDE_NOTES"
+                  id="inputDataTotalSummary" value="{{ total_charge_info.TOTAL_DISCOUNT_INCLUDE_NOTES }}"
+                  style="display:none;">
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" class="text-center">부가세</td>
+              <td colspan="3" class="text-right">
+                <div id="valueDataTotalSummary">{{total_charge_info.TOTAL_VAT_AMT_STR}}</div>
+                <input type="text" class="form-control form-control-sm" name="TOTAL_VAT_AMT" id="inputDataTotalSummary"
+                  value="{{ total_charge_info.TOTAL_VAT_AMT }}" style="display:none;">
+              </td>
+              <td class="text-right">
+                <div id="valueDataTotalSummary">{{total_charge_info.TOTAL_VAT_NOTES}}</div>
+                <input type="text" class="form-control form-control-sm" name="TOTAL_VAT_NOTES"
+                  id="inputDataTotalSummary" value="{{ total_charge_info.TOTAL_VAT_NOTES }}" style="display:none;">
+              </td>
+            </tr>
+            <tr class="highlight-row">
+              <td colspan="2" class="text-center">총 납부 금액(VAT 포함)</td>
+              <td colspan="3" class="text-right">
+                <div>{{total_charge_info.TOTAL_VAT_INCLUDE_AMT_STR}}</div>
+              </td>
+              <td class="text-right">
+                <div id="valueDataTotalSummary">{{total_charge_info.TOTAL_VAT_INCLUDE_NOTES}}</div>
+                <input type="text" class="form-control form-control-sm" name="TOTAL_VAT_INCLUDE_NOTES"
+                  id="inputDataTotalSummary" value="{{ total_charge_info.TOTAL_VAT_INCLUDE_NOTES }}"
+                  style="display:none;">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
     </div>
 
 
@@ -238,6 +350,7 @@
               <th class="text-center" style="width: 10%;">서비스명</th>
               <th class="text-center">항목</th>
               <th class="text-center">사용 금액</th>
+              <th class="text-center">청구 금액</th>
               <th class="text-center remark-column">비고</th>
             </tr>
           </thead>
@@ -255,8 +368,8 @@
               <td class="text-center">
                 <div id="valueDataThirdParty">{{ third_party_charge.THIRD_PARTY_NAME }}</div>
                 <input type="text" class="form-control form-control-sm"
-                  name="THIRD_PART_NAME_UPDATE_{{third_party_index}}" id="inputDataThirdParty"
-                  value="{{ third_party_charge.THIRD_PART_NAME }}" style="display:none;">
+                  name="THIRD_PARTY_NAME_UPDATE_{{third_party_index}}" id="inputDataThirdParty"
+                  value="{{ third_party_charge.THIRD_PARTY_NAME }}" style="display:none;">
               </td>
               <td class="text-center">
                 <div id="valueDataThirdParty">{{ third_party_charge.THIRD_PARTY_PRODUCT_NAME }}</div>
@@ -269,6 +382,12 @@
                 <input type="text" class="form-control form-control-sm"
                   name="THIRD_PARTY_USE_AMT_UPDATE_{{third_party_index}}" id="inputDataThirdParty"
                   value="{{ third_party_charge.THIRD_PARTY_USE_AMT }}" style="display:none;">
+              </td>
+              <td class="text-right">
+                <div id="valueDataThirdParty">{{ third_party_charge.THIRD_PARTY_PAY_AMT_STR }}</div>
+                <input type="text" class="form-control form-control-sm"
+                  name="THIRD_PARTY_PAY_AMT_UPDATE_{{third_party_index}}" id="inputDataThirdParty"
+                  value="{{ third_party_charge.THIRD_PARTY_PAY_AMT }}" style="display:none;">
               </td>
               <td>
                 <div id="valueDataThirdParty">{{ third_party_charge.THIRD_PARTY_NOTES }}</div>
@@ -293,6 +412,10 @@
               </td>
               <td class="text-right">
                 <input type="text" class="form-control form-control-sm" name="THIRD_PARTY_USE_AMT_NEW_1"
+                  id="inputDataThirdParty" style="display:none;">
+              </td>
+              <td class="text-right">
+                <input type="text" class="form-control form-control-sm" name="THIRD_PARTY_PAY_AMT_NEW_1"
                   id="inputDataThirdParty" style="display:none;">
               </td>
               <td class="text-right">
@@ -335,6 +458,7 @@
               <th class="text-center" style="width: 10%;">서비스명</th>
               <th class="text-center">항목</th>
               <th class="text-center">사용 금액</th>
+              <th class="text-center">청구 금액</th>
               <th class="text-center remark-column">비고</th>
             </tr>
           </thead>
@@ -367,6 +491,12 @@
                   name="MANAGED_SERVICE_USE_AMT_UPDATE_{{managed_service_index}}" id="inputDataManagedService"
                   value="{{ managed_service_charge.MANAGED_SERVICE_USE_AMT }}" style="display:none;">
               </td>
+              <td class="text-right">
+                <div id="valueDataManagedService">{{ managed_service_charge.MANAGED_SERVICE_PAY_AMT_STR }}</div>
+                <input type="text" class="form-control form-control-sm"
+                  name="MANAGED_SERVICE_PAY_AMT_UPDATE_{{managed_service_index}}" id="inputDataManagedService"
+                  value="{{ managed_service_charge.MANAGED_SERVICE_PAY_AMT }}" style="display:none;">
+              </td>
               <td>
                 <div id="valueDataManagedService">{{ managed_service_charge.MANAGED_SERVICE_NOTES }}</div>
                 <input type="text" class="form-control form-control-sm"
@@ -390,6 +520,10 @@
               </td>
               <td class="text-right">
                 <input type="text" class="form-control form-control-sm" name="MANAGED_SERVICE_USE_AMT_NEW_1"
+                  id="inputDataManagedService" style="display:none;">
+              </td>
+              <td class="text-right">
+                <input type="text" class="form-control form-control-sm" name="MANAGED_SERVICE_PAY_AMT_NEW_1"
                   id="inputDataManagedService" style="display:none;">
               </td>
               <td class="text-right">
@@ -431,6 +565,7 @@
               <th class="text-center" style="width: 10%;">서비스명</th>
               <th class="text-center">항목</th>
               <th class="text-center">사용 금액</th>
+              <th class="text-center">청구 금액</th>
               <th class="text-center remark-column">비고</th>
             </tr>
           </thead>
@@ -463,6 +598,12 @@
                   name="OTHER_SERVICE_USE_AMT_UPDATE_{{other_service_index}}" id="inputDataOtherService"
                   value="{{ other_service_charge.OTHER_SERVICE_USE_AMT }}" style="display:none;">
               </td>
+              <td class="text-right">
+                <div id="valueDataOtherService">{{ other_service_charge.OTHER_SERVICE_PAY_AMT_STR }}</div>
+                <input type="text" class="form-control form-control-sm"
+                  name="OTHER_SERVICE_PAY_AMT_UPDATE_{{other_service_index}}" id="inputDataOtherService"
+                  value="{{ other_service_charge.OTHER_SERVICE_PAY_AMT }}" style="display:none;">
+              </td>
               <td>
                 <div id="valueDataOtherService">{{ other_service_charge.OTHER_SERVICE_NOTES }}</div>
                 <input type="text" class="form-control form-control-sm"
@@ -486,6 +627,10 @@
               </td>
               <td class="text-right">
                 <input type="text" class="form-control form-control-sm" name="OTHER_SERVICE_USE_AMT_NEW_1"
+                  id="inputDataOtherService" style="display:none;">
+              </td>
+              <td class="text-right">
+                <input type="text" class="form-control form-control-sm" name="OTHER_SERVICE_PAY_AMT_NEW_1"
                   id="inputDataOtherService" style="display:none;">
               </td>
               <td class="text-right">
@@ -567,7 +712,7 @@
   <script src="/js/common.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      function setupForm(formId, editButtonId, saveButtonId, addButtonId, deleteButtonId, cancelButtonId, selectAllCheckboxId, valueData, inputData, collectionName) {
+      function collectionSetupForm(formId, editButtonId, saveButtonId, addButtonId, deleteButtonId, cancelButtonId, selectAllCheckboxId, valueData, inputData, collectionName) {
         const form = document.getElementById(formId);
         const editButton = document.getElementById(editButtonId);
         const saveButton = document.getElementById(saveButtonId);
@@ -584,7 +729,7 @@
         let rowCounter = 2;
 
         editButton.addEventListener("click", () => {
-          originalValues = Array.from(inputCells).map(cell => cell.textContent.trim());
+          originalValues = Array.from(valueCells).map(cell => cell.textContent.trim());
           valueCells.forEach(cell => {
             cell.style.display = "none";
           });
@@ -619,6 +764,7 @@
             cell.style.display = "block";
           });
           inputCells.forEach((cell, index) => {
+            cell.value = originalValues[index]; // 원래 값 복원
             cell.style.display = "none";
           });
           editButton.style.display = "block";
@@ -677,9 +823,48 @@
         });
       }
 
-      setupForm('thirdPartyForm', 'editButtonThirdParty', 'saveButtonThirdParty', 'addButtonThirdParty', 'deleteButtonThirdParty', 'cancelButtonThirdParty', 'selectAllThirdParty', '#valueDataThirdParty', '#inputDataThirdParty', 'THIRD_PARTY');
-      setupForm('managedServiceForm', 'editButtonManagedService', 'saveButtonManagedService', 'addButtonManagedService', 'deleteButtonManagedService', 'cancelButtonManagedService', 'selectAllManagedService', '#valueDataManagedService', '#inputDataManagedService', 'MANAGED');
-      setupForm('otherServiceForm', 'editButtonOtherService', 'saveButtonOtherService', 'addButtonOtherService', 'deleteButtonOtherService', 'cancelButtonOtherService', 'selectAllOtherService', '#valueDataOtherService', '#inputDataOtherService', 'OTHER');
+      function summarySetupForm(formId, editButtonId, saveButtonId, cancelButtonId, valueData, inputData, collectionName) {
+        const form = document.getElementById(formId);
+        const editButton = document.getElementById(editButtonId);
+        const saveButton = document.getElementById(saveButtonId);
+        const cancelButton = document.getElementById(cancelButtonId);
+        const summaryTable = form.querySelector("tbody");
+        const valueCells = form.querySelectorAll(valueData);
+        const inputCells = form.querySelectorAll(inputData);
+        let originalValues = [];
+
+        editButton.addEventListener("click", () => {
+          originalValues = Array.from(valueCells).map(cell => cell.textContent.trim());
+          valueCells.forEach(cell => {
+            cell.style.display = "none";
+          });
+          inputCells.forEach(cell => {
+            cell.style.display = "block";
+          });
+          editButton.style.display = "none";
+          saveButton.style.display = "block";
+          cancelButton.style.display = "block";
+        });
+
+        cancelButton.addEventListener("click", () => {
+          valueCells.forEach(cell => {
+            cell.style.display = "block";
+          });
+          inputCells.forEach((cell, index) => {
+            cell.value = originalValues[index]; // 원래 값 복원
+            cell.style.display = "none";
+          });
+          editButton.style.display = "block";
+          saveButton.style.display = "none";
+          cancelButton.style.display = "none";
+        });
+
+      }
+
+      summarySetupForm('totalSummaryForm', 'editButtonTotalSummary', 'saveButtonTotalSummary', 'cancelButtonTotalSummary', '#valueDataTotalSummary', '#inputDataTotalSummary', 'TOTAL');
+      collectionSetupForm('thirdPartyForm', 'editButtonThirdParty', 'saveButtonThirdParty', 'addButtonThirdParty', 'deleteButtonThirdParty', 'cancelButtonThirdParty', 'selectAllThirdParty', '#valueDataThirdParty', '#inputDataThirdParty', 'THIRD_PARTY');
+      collectionSetupForm('managedServiceForm', 'editButtonManagedService', 'saveButtonManagedService', 'addButtonManagedService', 'deleteButtonManagedService', 'cancelButtonManagedService', 'selectAllManagedService', '#valueDataManagedService', '#inputDataManagedService', 'MANAGED');
+      collectionSetupForm('otherServiceForm', 'editButtonOtherService', 'saveButtonOtherService', 'addButtonOtherService', 'deleteButtonOtherService', 'cancelButtonOtherService', 'selectAllOtherService', '#valueDataOtherService', '#inputDataOtherService', 'OTHER');
     });
   </script>
 </body>
