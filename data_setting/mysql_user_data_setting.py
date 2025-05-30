@@ -43,7 +43,7 @@ class BillingDatabaseUpdater:
         self.user=os.getenv("MYSQL_USER")
         self.password=os.getenv("MYSQL_PASSWORD")
         self.database=os.getenv("MYSQL_DATABASE")
-        print(f"Connecting to MySQL with host={host}, user={user}, port={port}")
+        print(f"Connecting to MySQL with host={self.host}, user={self.user}, port={self.port}")
 
 
     def api_select(self, cloud_info):
