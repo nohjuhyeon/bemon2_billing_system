@@ -88,8 +88,9 @@ async def user_billing(request: Request, CLOUD_ID: str):
     start_date = int(one_year_ago.strftime("%Y%m"))
 
     date_range = {"start_date": start_date, "end_date": today_date}
-
     user_info,user_billing_list = await charge_manager.get_cloud_charge_list(CLOUD_ID,date_range)
+    date_range['start_date'] = str(date_range['start_date'])[:4]+'-' + str(date_range['start_date'])[-2:]
+    date_range['end_date'] = str(date_range['end_date'])[:4]+'-' + str(date_range['end_date'])[-2:]
     # 조회 기간을 템플릿에 전달
     return templates.TemplateResponse(
         "user_billing.html",
@@ -106,7 +107,6 @@ async def user_billing(request: Request, CLOUD_ID: str):
 async def user_billing(request: Request, CLOUD_ID: str):
     form_list = await request.form()
     condition_dict = charge_manager.filter_dict_create(form_list)
-    await charge_manager.billing_info_update(form_list,CLOUD_ID)
 
     if 'start_date' in condition_dict.keys() and 'end_date' in condition_dict.keys():
         start_date = condition_dict['start_date']
@@ -120,7 +120,8 @@ async def user_billing(request: Request, CLOUD_ID: str):
     date_range = {"start_date": start_date,"end_date": end_date}
     
     user_info,user_billing_list = await charge_manager.get_cloud_charge_list(CLOUD_ID,date_range)
-
+    date_range['start_date'] = str(date_range['start_date'])[:4]+'-' + str(date_range['start_date'])[-2:]
+    date_range['end_date'] = str(date_range['end_date'])[:4]+'-' + str(date_range['end_date'])[-2:]
     # 조회 기간을 템플릿에 전달
     return templates.TemplateResponse(
         "user_billing.html",
@@ -183,6 +184,8 @@ async def billing_list(request: Request):
     cloud_list_conditions = {}
     
     total_billing_list = await charge_manager.get_billing_list(user_list,cloud_list_conditions,date_range)
+    date_range['start_date'] = str(date_range['start_date'])[:4]+'-' + str(date_range['start_date'])[-2:]
+    date_range['end_date'] = str(date_range['end_date'])[:4]+'-' + str(date_range['end_date'])[-2:]
     return templates.TemplateResponse(
         "billing_list.html",
         {
@@ -209,6 +212,8 @@ async def billing_list(request: Request):
 
     user_list = await charge_manager.collection_user_list.gets_by_conditions(user_list_conditions)
     total_billing_list = await charge_manager.get_billing_list(user_list,cloud_list_conditions,date_range)
+    date_range['start_date'] = str(date_range['start_date'])[:4]+'-' + str(date_range['start_date'])[-2:]
+    date_range['end_date'] = str(date_range['end_date'])[:4]+'-' + str(date_range['end_date'])[-2:]
 
     return templates.TemplateResponse(
         "billing_list.html",
