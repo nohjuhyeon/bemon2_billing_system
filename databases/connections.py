@@ -98,6 +98,42 @@ class AsyncDatabase:
                 await session.commit()
                 return True
             return False
+    async def delete_many(self, field_name, values):
+        """
+        Deletes multiple records based on the provided field and values.
+
+        Args:
+            field_name (str): The name of the field to filter records.
+            values (list or single value): A list of values or a single value to match for deletion.
+
+        Returns:
+            int: The number of records deleted.
+        """
+        # Ensure `values` is a list (even for a single value)
+        if not isinstance(values, (list, tuple)):
+            values = [values]
+
+        # Return immediately if `values` is empty
+        if not values:
+            return 0
+
+        async with self.SessionLocal() as session:
+            model_class = self.model
+            field = getattr(model_class, field_name)
+            
+            # Fetch all records matching the condition
+            result = await session.execute(
+                select(model_class).where(field.in_(values))
+            )
+            docs = result.scalars().all()
+            
+            if docs:
+                for doc in docs:
+                    await session.delete(doc)
+                await session.commit()
+                return len(docs)  # Return the count of deleted records
+            
+            return 0  # No records deleted
 
     async def gets_by_conditions(self, conditions):
         async with self.SessionLocal() as session:

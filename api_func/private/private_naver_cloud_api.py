@@ -98,7 +98,7 @@ def service_list(memberNoList, contractMonth):
         "memberNoList": memberNoList,
     }
 
-    with open("contract_product_category.json", "r", encoding="utf-8") as file:
+    with open("api_func/contract_product_category.json", "r", encoding="utf-8") as file:
         contract_dict = json.load(file)
 
     # API 호출 및 결과 처리
@@ -170,7 +170,7 @@ def service_charge_list(memberNoList, bill_month):
         "memberNoList": memberNoList,
     }
 
-    with open("demand_product_category.json", "r", encoding="utf-8") as file:
+    with open("api_func/demand_product_category.json", "r", encoding="utf-8") as file:
         demand_product_category = json.load(file)
 
     # API 호출 및 결과 처리
@@ -190,12 +190,8 @@ def service_charge_list(memberNoList, bill_month):
             naver_service_charge_list.append(
                 {
                     "cloud_key": i["memberNo"],
-                    "mdcode": demand_product_category[i["demandType"]["codeName"]][
-                        "code"
-                    ],
-                    "service": demand_product_category[i["demandType"]["codeName"]][
-                        "codeName"
-                    ],
+                    "mdcode": demand_product_category[i["demandType"]["codeName"]]["code"],
+                    "service": demand_product_category[i["demandType"]["codeName"]]["codeName"],
                     "bill_month": int(i["demandMonth"]),
                     "type": i["demandType"]["codeName"],
                     "name": name,
@@ -267,11 +263,13 @@ def service_charge_list(memberNoList, bill_month):
                     "pay_amt": unique_element["pay_amt"],
                     "type": unique_element["type"],
                     "type_use_amt": unique_element["use_amt"],
+                    "type_pay_amt": unique_element["pay_amt"],
                     "type_list": [
                         {
                             "name": unique_element["name"],
                             "region": unique_element["region"],
                             "use_amt": unique_element["use_amt"],
+                            "pay_amt": unique_element["pay_amt"],
                             "start_date": unique_element[
                                 "contract_start_date"
                             ],
@@ -282,11 +280,13 @@ def service_charge_list(memberNoList, bill_month):
         else:
             list_index = type_list.index(unique_element["type"])
             type_result_list[list_index]["type_use_amt"] += unique_element["use_amt"]
+            type_result_list[list_index]["type_pay_amt"] += unique_element["pay_amt"]
             type_result_list[list_index]["type_list"].append(
                 {
                     "name": unique_element["name"],
                     "region": unique_element["region"],
                     "use_amt": unique_element["use_amt"],
+                    "pay_amt": unique_element["pay_amt"],
                     "start_date": unique_element["contract_start_date"],
                 }
             )
@@ -306,6 +306,7 @@ def service_charge_list(memberNoList, bill_month):
                         {
                             "type": type_element["type"],
                             "type_use_amt": type_element["type_use_amt"],
+                            "type_pay_amt": type_element["type_pay_amt"],
                             "type_list": type_element["type_list"]
                         }
                     ],
@@ -322,6 +323,7 @@ def service_charge_list(memberNoList, bill_month):
                 {
                             "type": type_element["type"],
                             "type_use_amt": type_element["type_use_amt"],
+                            "type_pay_amt": type_element["type_pay_amt"],
                             "type_list": type_element["type_list"]
                 }
             )

@@ -124,6 +124,7 @@ def service_charge_list(user_id, bill_month):
                         "name": j["name"],
                         "type": j["type"],
                         "use_amt": j["pay_amt"],
+                        "pay_amt": j["pay_amt"],
                         "region": None,
                         "start_date": j["reg_dttm"],
                     }
@@ -149,13 +150,15 @@ def service_charge_list(user_id, bill_month):
                 type_dict = {
                         "type": type_element["type"],
                         "type_use_amt": type_element['use_amt'],
-                        "type_list":[{"name": type_element["name"],"use_amt": type_element["use_amt"],"region": None,"start_date": type_element["start_date"]}]
+                        "type_pay_amt": type_element['pay_amt'],
+                        "type_list":[{"name": type_element["name"],"use_amt": type_element["use_amt"],"pay_amt": type_element["pay_amt"],"region": None,"start_date": type_element["start_date"]}]
                         }
                 type_list.append(type_dict)
             else:
                 type_index = type_name_list.index(type_element['type'])
                 type_list[type_index]['type_use_amt'] += type_element['use_amt']
-                type_list[type_index]['type_list'].append({"name": type_element["name"],"use_amt": type_element["use_amt"],"region": None,"start_date": type_element["start_date"]})
+                type_list[type_index]['type_pay_amt'] += type_element['use_amt']
+                type_list[type_index]['type_list'].append({"name": type_element["name"],"use_amt": type_element["use_amt"],"pay_amt": type_element["pay_amt"],"region": None,"start_date": type_element["start_date"]})
         kt_service_charge_element['service_list'] = type_list
     return kt_service_charge_list
 

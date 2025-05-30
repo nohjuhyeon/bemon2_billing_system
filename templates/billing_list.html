@@ -11,75 +11,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.6/plugins/monthSelect/style.min.css">
+    <link rel="stylesheet" href="/css/common.css">
     <style>
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .checkbox-group .form-check {
-            margin-right: 15px;
-        }
-
-        html {
-            height: 100%;
-        }
-        /* 기본 스타일 설정 */
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            display: flex;
-            height: 100%;
-
-        }
-
-        /* 사이드바 스타일 */
-        .sidebar {
-            width: 250px;
-            height: 100%;
-            background-color: #343a40;
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        /* 사이드바 링크 스타일 */
-        .sidebar a {
-            color: white;
-            text-decoration: none;
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
-            display: block;
-            transition: background-color 0.3s ease;
-        }
-
-        .sidebar a:hover {
-            background-color: #575757;
-        }
-
-        /* 메인 컨텐츠 스타일 */
-        .main-content {
-            margin-left: 250px;
-            padding: 20px;
-            flex-grow: 1;
-            background-color: #f4f4f4;
-            min-height: 100vh;
-        }
-
-        /* 반응형 디자인 */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 200px;
-            }
-
-            .main-content {
-                margin-left: 200px;
-            }
-        }
     </style>
 </head>
 
@@ -94,7 +27,7 @@
     </div>
 
     <!-- 메인 컨텐츠 -->
-    <div class="container mt-5">
+    <div class="main-content mt-5">
         <h1 class="mb-4">청구서 리스트</h1>
 
         <!-- Customer Information -->
@@ -103,7 +36,8 @@
                 <!-- 고객사명 -->
                 <div class="mb-3 d-flex align-items-center">
                     <label class="form-label me-3" style="min-width: 100px;">고객사명</label>
-                    <input type="text" class="form-control" id="customer-name" name="customer_name" placeholder="고객사명을 입력하세요">
+                    <input type="text" class="form-control" id="customer-name" name="customer_name"
+                        placeholder="고객사명을 입력하세요">
                 </div>
 
                 <!-- 구분 (체크박스) -->
@@ -210,6 +144,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr@latest/dist/plugins/monthSelect/index.js"></script>
     <script src="/js/common.js"></script>
+    <script src="/js/pagination.js"></script>
+    <script src="/js/filtering.js"></script>
     <script>
         // 서버에서 전달된 users 데이터 (템플릿 엔진에서 렌더링된 데이터로 가정)
         const pagenation_list = {{ total_charge_list | tojson | safe }}; // Django 템플릿에서 JSON 데이터로 변환

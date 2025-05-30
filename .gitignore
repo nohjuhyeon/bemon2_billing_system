@@ -1,1 +1,11 @@
 .env
+bemon_manage_func/invoice_result.xlsx
+data_setting/bemon2.sql
+data_setting/bemon2_erd.png
+data_setting/bemon2.vuerd.json
+data_setting/member_info.json
+
+__pycache__/
+*.py[cod]
+*$py.class
+

@@ -1,0 +1,218 @@
+/* 표 헤더 스타일 */
+th {
+    background-color: #f8f9fa ;
+    /* 연한 회색 */
+    color: #343a40 ;
+    /* 어두운 회색 */
+    vertical-align: middle ;
+}
+
+/* 표 본문 스타일 */
+td {
+    background-color: #ffffff ;
+    /* 흰색 */
+    color: #212529 ;
+    /* 검정색 */
+    vertical-align: middle ;
+}
+
+/* 강조된 행 스타일 */
+.highlight-row {
+    background-color: #e9ecef ;
+    /* 더 연한 회색 */
+}
+
+/* 중앙 정렬 스타일 */
+.text-center {
+    text-align: center ;
+}
+
+/* 오른쪽 정렬 스타일 */
+.text-right {
+    text-align: right ;
+}
+
+/* 비고 열 너비 조정 */
+.remark-column {
+    width: 25% ;
+    /* 원하는 너비로 조정 */
+}
+
+.row-select {
+    margin: 0 auto;
+    display: block;
+    width: 100%;
+    /* 체크박스 자체의 너비를 설정 */
+}
+.title-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+    /* 전체 기본 스타일 */
+html {
+    height: 100%;
+}
+body {
+    margin: 0;
+    font-family: 'Roboto', Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #212529;
+    display: flex;
+}
+
+/* 메인 컨텐츠 스타일 */
+.main-content {
+    margin-left: 20%;
+    width: 75%;
+}
+/* 사이드바 스타일 */
+.sidebar {
+    width: 15%;
+    height: 100%;
+    background-color: #343a40;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    position: fixed;
+}
+
+.sidebar h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    border-bottom: 2px solid #495057;
+    padding-bottom: 10px;
+}
+
+.sidebar a {
+    color: #ffffff;
+    text-decoration: none;
+    margin: 10px 0;
+    padding: 10px 15px;
+    border-radius: 5px;
+    display: block;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.sidebar a:hover {
+    background-color: #495057;
+    color: #f8f9fa;
+}
+
+
+
+h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #343a40;
+}
+
+/* 카드 스타일 */
+.card {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+}
+
+/* 버튼 스타일 */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+/* 테이블 스타일 */
+.table {
+    background-color: #ffffff;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.table thead {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table thead th {
+    font-weight: 600;
+    color: #495057;
+    padding: 12px;
+    text-align: left;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid #dee2e6;
+    transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f3f5;
+}
+
+.table tbody td {
+    padding: 12px;
+    color: #212529;
+}
+
+/* 체크박스 그룹 스타일 */
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.checkbox-group .form-check {
+    margin-right: 15px;
+}
+
+.checkbox-group .form-check-label {
+    font-size: 14px;
+    color: #495057;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.checkbox-group .form-check {
+    margin-right: 15px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+
+
+    h1 {
+        font-size: 24px;
+    }
+}
+
+
+.sub-title-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}

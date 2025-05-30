@@ -11,59 +11,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.6/plugins/monthSelect/style.min.css">
+    <link rel="stylesheet" href="/css/common.css">
     <style>
-        /* 기본 스타일 설정 */
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            display: flex;
-        }
 
-        /* 사이드바 스타일 */
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            background-color: #333;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-        }
 
-        /* 사이드바 링크 스타일 */
-        .sidebar a {
-            color: white;
-            text-decoration: none;
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
-            display: block;
-            transition: background-color 0.3s ease;
-        }
-
-        .sidebar a:hover {
-            background-color: #575757;
-        }
-
-        /* 메인 컨텐츠 스타일 */
-        .main-content {
-            margin-left: 250px;
-            padding: 20px;
-            flex-grow: 1;
-            background-color: #f4f4f4;
-            min-height: 100vh;
-        }
-
-        /* 반응형 디자인 */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 200px;
-            }
-
-            .main-content {
-                margin-left: 200px;
-            }
-        }
     </style>
 </head>
 
@@ -78,58 +29,52 @@
     </div>
 
     <!-- 메인 컨텐츠 -->
-    <div class="container mt-5">
+    <div class="main-content mt-5">
         <h1 class="mb-4">고객 상세 정보</h1>
+        <!-- 고객 정보 -->
+        <div class="card p-4 mb-4">
+            <div class="sub-title-header mb-2 mt-4">
+                <h2>고객 정보</h2>
+                <div class="text-end">
+                    <a type="button" class="btn btn-primary" href="/user_manage/{{user.USER_ID}}">고객 정보 관리</a>
+                </div>
+            </div>
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th class="text-center">고객명</th>
+                        <td class="text-center">{{ user.USER_NAME }}</td>
+                        <th class="text-center">시작월</th>
+                        <td class="text-center">{{ user.START_DATE }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-center">구분</th>
+                        <td class="text-center">{{ user.CLOUD_CLASS }}</td>
+                        <th class="text-center">CSP</th>
+                        <td class="text-center">{{ user.CLOUD_NAME }} CLOUD</td>
+                    </tr>
+                    <tr>
+                        <th class="text-center">계정 ID</th>
+                        <td class="text-center">{{user.CLOUD_USER_ID}}</td>
+                        <th class="text-center">계정 번호</th>
+                        <td class="text-center">{{user.CLOUD_USER_NUM}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
 
         <!-- Customer Information -->
         <div class="card p-4 mb-4">
             <form action="/user_billing/{{user.USER_ID}}" method="post" onsubmit="return submitForm(event)">
-                <!-- 고객사명 -->
-                <div class="mb-3 d-flex align-items-center">
-                    <label class="form-label me-3" style="min-width: 100px;">고객사명</label>
-                    <input type="text" class="form-control" value="{{ user.USER_NAME }}" readonly>
-                </div>
-
-                <!-- 구분 -->
-                <div class="mb-3 d-flex align-items-center">
-                    <label class="form-label me-3" style="min-width: 100px;">구분</label>
-                    <div class="form-check me-3">
-                        <input class="form-check-input" type="checkbox" id="public" {% if '공공' in user.CLOUD_CLASS
-                            %}checked{% endif %} disabled>
-                        <label class="form-check-label" for="public">공공</label>
-                    </div>
-                    <div class="form-check me-3">
-                        <input class="form-check-input" type="checkbox" id="private" {% if '민간' in user.CLOUD_CLASS
-                            %}checked{% endif %} disabled>
-                        <label class="form-check-label" for="private">민간</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="finance" {% if '금융' in user.CLOUD_CLASS
-                            %}checked{% endif %} disabled>
-                        <label class="form-check-label" for="finance">금융</label>
+                <div class="sub-title-header mb-4 mt-2">
+                    <h2>청구서 조회하기</h2>
+                    <!-- 조회 버튼 -->
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary me-2">조회하기</button>
+                        <button type="button" class="btn btn-secondary" onclick="resetDate()">기간 초기화</button>
                     </div>
                 </div>
-
-                <!-- 클라우드사 -->
-                <div class="mb-3 d-flex align-items-center">
-                    <label class="form-label me-3" style="min-width: 100px;">클라우드사</label>
-                    <div class="form-check me-3">
-                        <input class="form-check-input" type="checkbox" id="kt-cloud" {% if 'KT' in user.CLOUD_NAME
-                            %}checked{% endif %} disabled>
-                        <label class="form-check-label" for="kt-cloud">KT 클라우드</label>
-                    </div>
-                    <div class="form-check me-3">
-                        <input class="form-check-input" type="checkbox" id="naver-cloud" {% if 'NAVER' in
-                            user.CLOUD_NAME %}checked{% endif %} disabled>
-                        <label class="form-check-label" for="naver-cloud">네이버 클라우드</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="nhn-cloud" {% if 'NHN' in user.CLOUD_NAME
-                            %}checked{% endif %} disabled>
-                        <label class="form-check-label" for="nhn-cloud">NHN 클라우드</label>
-                    </div>
-                </div>
-
                 <!-- 조회 기간 -->
                 <div class="mb-3 d-flex align-items-center">
                     <label class="form-label me-3" style="min-width: 100px;">조회 기간</label>
@@ -139,40 +84,33 @@
                     <input type="text" class="dateSelector form-control ms-2" name="end_date" id="end_date"
                         value="{{ date_range.end_date }}">
                 </div>
-
-                <!-- 조회 버튼 -->
-                <div class="text-end">
-                    <button type="submit" class="btn btn-primary me-2">조회하기</button>
-                    <button type="button" class="btn btn-secondary" onclick="resetDate()">기간 초기화</button>
-                </div>
             </form>
+
+            <!-- Billing Details Table -->
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>번호</th>
+                        <th>고객사명</th>
+                        <th>구분</th>
+                        <th>클라우드사</th>
+                        <th>기간</th>
+                        <th>사용 금액</th>
+                        <th>청구 금액</th>
+                        <th>상세</th>
+                    </tr>
+                </thead>
+                <tbody id="user-info-table">
+                    <!-- 서버 데이터로 동적 렌더링 -->
+                </tbody>
+
+            </table>
+            <nav>
+                <ul class="pagination" id="pagination">
+                    <!-- JavaScript로 페이지네이션 버튼 동적 생성 -->
+                </ul>
+            </nav>
         </div>
-
-        <!-- Billing Details Table -->
-        <table class="table table-bordered">
-            <thead class="table-light">
-                <tr>
-                    <th>번호</th>
-                    <th>고객사명</th>
-                    <th>구분</th>
-                    <th>클라우드사</th>
-                    <th>기간</th>
-                    <th>사용 금액</th>
-                    <th>할인 금액</th>
-                    <th>청구 금액</th>
-                    <th>상세</th>
-                </tr>
-            </thead>
-            <tbody id="user-info-table">
-                <!-- 서버 데이터로 동적 렌더링 -->
-            </tbody>
-
-        </table>
-        <nav>
-            <ul class="pagination" id="pagination">
-                <!-- JavaScript로 페이지네이션 버튼 동적 생성 -->
-            </ul>
-        </nav>
     </div>
 </body>
 
@@ -182,6 +120,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr@latest/dist/plugins/monthSelect/index.js"></script>
 <script src="/js/common.js"></script>
+<script src="/js/pagination.js"></script>
+<script src="/js/filtering.js"></script>
 <script>
     // 서버에서 전달된 users 데이터 (템플릿 엔진에서 렌더링된 데이터로 가정)
     const pagenation_list = {{ billing_history | tojson | safe }}; // JSON 데이터로 변환
@@ -204,8 +144,7 @@
                     <td>${item.CLOUD_NAME}</td>
                     <td>${item.BILL_MONTH_STR}</td>
                     <td>${item.TOTAL_USE_AMT_STR}</td>
-                    <td>${item.TOTAL_DISCOUNT_AMT_STR}</td>
-                    <td>${item.TOTAL_PAY_AMT_STR}</td>
+                    <td>${item.TOTAL_USER_PAY_AMT_STR}</td>
                     <td><button class="btn btn-info btn-sm" onclick="ViewBillingInfo('${item.TOTAL_CHARGE_ID}')">상세
                             보기</button></td>
                 </tr>

@@ -229,8 +229,8 @@
           {% for third_party_charge in third_party_charge_list %}
           {% set third_party_index = loop.index %}
           <tr class="detail-row">
-            <td class="text-center">{{ third_party_charge.THIRD_PARTY_SERVICE_NAME }}</td>
-            <td class="text-center">{{ third_party_charge.THIRD_PARTY_PRODUCT_NAME }}</td>
+            <td class="text-center">{{ third_party_charge.CHARGE_THIRD_PARTY_CATEGORY }}</td>
+            <td class="text-center">{{ third_party_charge.CHARGE_THIRD_PARTY_PRODUCT_NAME }}</td>
             <td class="text-right"> {{ third_party_charge.THIRD_PARTY_SERVICE_USE_AMT_STR }}</td>
             <td> </td>
           </tr>
@@ -264,9 +264,9 @@
           {% for managed_service_charge in managed_service_charge_list %}
           {% set managed_service_index = loop.index %}
           <tr class="detail-row">
-            <td class="text-center">{{ managed_service_charge.MANAGED_SERVICE_NAME }}</td>
-            <td class="text-center">{{ managed_service_charge.MANAGED_PRODUCT_NAME }}</td>
-            <td class="text-right"> {{ managed_service_charge.MANAGED_SERVICE_USE_AMT_STR }}</td>
+            <td class="text-center">{{ managed_service_charge.CHARGE_MANAGED_SERVICE_CATEGORY }}</td>
+            <td class="text-center">{{ managed_service_charge.CHARGE_MANAGED_SERVICE_PRODUCT_NAME }}</td>
+            <td class="text-right"> {{ managed_service_charge.CHARGE_MANAGED_SERVICE_USE_AMT_STR }}</td>
             <td> </td>
           </tr>
           {% endfor %}
@@ -315,32 +315,32 @@
             <tr class="detail-row">
               <td class="text-center">
                 <input type="checkbox" class="row-select">
-                <input type="hidden" name="OTHER_SERVICE_CHARGE_ID_UPDATE_{{other_service_index}}"
-                  value="{{other_service_charge.OTHER_SERVICE_CHARGE_ID}}">
+                <input type="hidden" name="CHARGE_OTHER_SERVICE_ID_UPDATE_{{other_service_index}}"
+                  value="{{other_service_charge.CHARGE_OTHER_SERVICE_ID}}">
               </td>
               <td class="text-center">
-                <div id="other_service_value_data">{{ other_service_charge.OTHER_SERVICE_NAME }}</div>
+                <div id="other_service_value_data">{{ other_service_charge.CHARGE_OTHER_SERVICE_CATEGORY }}</div>
                 <input type="text" class="form-control form-control-sm"
-                  name="OTHER_SERVICE_NAME_UPDATE_{{other_service_index}}" id="other_service_input_data"
-                  value="{{ other_service_charge.OTHER_SERVICE_NAME }}" style="display:none;">
+                  name="CHARGE_OTHER_SERVICE_CATEGORY_UPDATE_{{other_service_index}}" id="other_service_input_data"
+                  value="{{ other_service_charge.CHARGE_OTHER_SERVICE_CATEGORY }}" style="display:none;">
               </td>
               <td class="text-center">
-                <div id="other_service_value_data">{{ other_service_charge.OTHER_PRODUCT_NAME }}</div>
+                <div id="other_service_value_data">{{ other_service_charge.CHARGE_OTHER_SERVICE_PRODUCT_NAME }}</div>
                 <input type="text" class="form-control form-control-sm"
-                  name="OTHER_PRODUCT_NAME_UPDATE_{{other_service_index}}" id="other_service_input_data"
-                  value="{{ other_service_charge.OTHER_PRODUCT_NAME }}" style="display:none;">
+                  name="CHARGE_OTHER_SERVICE_PRODUCT_NAME_UPDATE_{{other_service_index}}" id="other_service_input_data"
+                  value="{{ other_service_charge.CHARGE_OTHER_SERVICE_PRODUCT_NAME }}" style="display:none;">
               </td>
               <td class="text-right">
-                <div id="other_service_value_data">{{ other_service_charge.OTHER_SERVICE_USE_AMT_STR }}</div>
+                <div id="other_service_value_data">{{ other_service_charge.CHARGE_OTHER_SERVICE_USE_AMT_STR }}</div>
                 <input type="text" class="form-control form-control-sm"
-                  name="OTHER_SERVICE_USE_AMT_UPDATE_{{other_service_index}}" id="other_service_input_data"
-                  value="{{ other_service_charge.OTHER_SERVICE_USE_AMT }}" style="display:none;">
+                  name="CHARGE_OTHER_SERVICE_USE_AMT_UPDATE_{{other_service_index}}" id="other_service_input_data"
+                  value="{{ other_service_charge.CHARGE_OTHER_SERVICE_USE_AMT }}" style="display:none;">
               </td>
               <td>
-                <div id="other_service_value_data">{{ other_service_charge.OTHER_SERVICE_NOTES }}</div>
+                <div id="other_service_value_data">{{ other_service_charge.CHARGE_OTHER_SERVICE_NOTES }}</div>
                 <input type="text" class="form-control form-control-sm"
-                  name="OTHER_SERVICE_NOTES_UPDATE_{{other_service_index}}" id="other_service_input_data"
-                  value="{{ other_service_charge.OTHER_SERVICE_NOTES }}" style="display:none;">
+                  name="CHARGE_OTHER_SERVICE_NOTES_UPDATE_{{other_service_index}}" id="other_service_input_data"
+                  value="{{ other_service_charge.CHARGE_OTHER_SERVICE_NOTES }}" style="display:none;">
               </td>
             </tr>
             {% endfor %}
@@ -350,19 +350,19 @@
                 <input type="checkbox" class="row-select" style="display:none;">
               </td>
               <td class="text-center">
-                <input type="text" class="form-control form-control-sm" name="OTHER_SERVICE_NAME_NEW_1"
+                <input type="text" class="form-control form-control-sm" name="CHARGE_OTHER_SERVICE_CATEGORY_NEW_1"
                   id="other_service_input_data" style="display:none;">
               </td>
               <td class="text-center">
-                <input type="text" class="form-control form-control-sm" name="OTHER_PRODUCT_NAME_NEW_1"
+                <input type="text" class="form-control form-control-sm" name="CHARGE_OTHER_SERVICE_PRODUCT_NAME_NEW_1"
                   id="other_service_input_data" style="display:none;">
               </td>
               <td class="text-right">
-                <input type="text" class="form-control form-control-sm" name="OTHER_SERVICE_USE_AMT_NEW_1"
+                <input type="text" class="form-control form-control-sm" name="CHARGE_OTHER_SERVICE_USE_AMT_NEW_1"
                   id="other_service_input_data" style="display:none;">
               </td>
               <td class="text-right">
-                <input type="text" class="form-control form-control-sm" name="OTHER_SERVICE_NOTES_NEW_1"
+                <input type="text" class="form-control form-control-sm" name="CHARGE_OTHER_SERVICE_NOTES_NEW_1"
                   id="other_service_input_data" style="display:none;">
               </td>
             </tr>
@@ -516,16 +516,16 @@
         <input type="checkbox" class="row-select" style="display:block;">
       </td>
       <td class="text-center">
-        <input type="text" class="form-control form-control-sm" name="OTHER_SERVICE_NAME_NEW_${rowCounter}" id="other_service_input_data">
+        <input type="text" class="form-control form-control-sm" name="CHARGE_OTHER_SERVICE_CATEGORY_NEW_${rowCounter}" id="other_service_input_data">
       </td>
       <td class="text-center">
-        <input type="text" class="form-control form-control-sm" name="OTHER_PRODUCT_NAME_NEW_${rowCounter}" id="other_service_input_data">
+        <input type="text" class="form-control form-control-sm" name="CHARGE_OTHER_SERVICE_PRODUCT_NAME_NEW_${rowCounter}" id="other_service_input_data">
       </td>
       <td class="text-right">
-        <input type="text" class="form-control form-control-sm" name="OTHER_SERVICE_USE_AMT_NEW_${rowCounter}" id="other_service_input_data">
+        <input type="text" class="form-control form-control-sm" name="CHARGE_OTHER_SERVICE_USE_AMT_NEW_${rowCounter}" id="other_service_input_data">
       </td>
       <td class="text-right">
-        <input type="text" class="form-control form-control-sm" name="OTHER_SERVICE_NOTES_NEW_${rowCounter}" id="other_service_input_data">
+        <input type="text" class="form-control form-control-sm" name="CHARGE_OTHER_SERVICE_NOTES_NEW_${rowCounter}" id="other_service_input_data">
       </td>
     `;
 
