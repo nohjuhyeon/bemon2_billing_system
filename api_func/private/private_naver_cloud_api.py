@@ -30,8 +30,8 @@ def make_signature(signature_uri, current_timestamp, access_key, secret_key):
 def call_api(command_uri, params_list):
     # API URL 및 쿼리 파라미터
     current_timestamp = str(int(time.time() * 1000))
-    access_key = os.environ.get("NAVER_CLOUD_GOV_API_KEY")
-    secret_key = os.environ.get("NAVER_CLOUD_GOV_SECRET_KEY")
+    access_key = os.getenv("NAVER_CLOUD_GOV_API_KEY")
+    secret_key = os.getenv("NAVER_CLOUD_GOV_SECRET_KEY")
 
     base_url = "https://billingapi.apigw.gov-ntruss.com"
     query_params = {"responseFormatType": "json"}
