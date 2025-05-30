@@ -43,7 +43,6 @@ class BillingDatabaseUpdater:
         self.user=os.environ.get("MYSQL_USER")
         self.password=os.environ.get("MYSQL_PASSWORD")
         self.database=os.environ.get("MYSQL_DATABASE")
-        print(f"Connecting to MySQL with host={self.host}, user={self.user}, port={self.port}")
 
 
     def api_select(self, cloud_info):
@@ -295,6 +294,7 @@ class BillingDatabaseUpdater:
                         other_managed_service_use_amt,other_service_user_pay_amt = self.service_to_charge_update("OTHER_SERVICE",cloud_element["CLOUD_ID"],total_charge_id,"")
                         total_charge_dict['TOTAL_USE_AMT'] += other_managed_service_use_amt
                         total_charge_dict['TOTAL_USER_PAY_AMT'] += other_service_user_pay_amt
+                        total_charge_update_condition = {"TOTAL_CHARGE_ID": current_total_charge_info["TOTAL_CHARGE_ID"]}                
                         self.db.update("TOTAL_CHARGE_LIST", total_charge_dict, total_charge_update_condition)
                         
                 elif bill_month == self.end_date:
