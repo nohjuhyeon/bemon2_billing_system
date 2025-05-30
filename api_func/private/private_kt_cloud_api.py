@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 # API 호출 함수
 def call_api(command, param_list):
-    reseller_key = os.getenv("KT_CLOUD_RESELLER_KEY")
+    reseller_key = os.environ.get("KT_CLOUD_RESELLER_KEY")
 
     # API URL 및 쿼리 파라미터
     uri = "https://api.ucloudbiz.olleh.com/reseller/v1/client/api"

@@ -4,11 +4,11 @@ import os
 class MySQLDatabase:
     def __init__(self):
         self.connection = mysql.connector.connect(
-            host=os.getenv("MYSQL_HOST"),
-            port=os.getenv("MYSQL_PORT"),
-            user=os.getenv("MYSQL_USER"),
-            password=os.getenv("MYSQL_PASSWORD"),
-            database=os.getenv("MYSQL_DATABASE"),
+            host=os.environ.get("MYSQL_HOST"),
+            port=os.environ.get("MYSQL_PORT"),
+            user=os.environ.get("MYSQL_USER"),
+            password=os.environ.get("MYSQL_PASSWORD"),
+            database=os.environ.get("MYSQL_DATABASE"),
         )
         self.cursor = self.connection.cursor(dictionary=True)
 

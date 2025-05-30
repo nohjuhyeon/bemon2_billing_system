@@ -145,9 +145,9 @@ def delete_tokens(user_access_key_id, token):
 
 # Main 실행
 if __name__ == "__main__":
-    user_access_key_id = os.getenv("NHN_CLOUD_API_KEY")
-    secret_access_key = os.getenv("NHN_CLOUD_SECRET_KEY")
-    token = os.getenv("NHN_CLOUD_ACCESS_TOKEN")
+    user_access_key_id = os.environ.get("NHN_CLOUD_API_KEY")
+    secret_access_key = os.environ.get("NHN_CLOUD_SECRET_KEY")
+    token = os.environ.get("NHN_CLOUD_ACCESS_TOKEN")
     # 환경 변수 확인
     if not user_access_key_id or not secret_access_key:
         print("API Key 또는 Secret Key가 설정되지 않았습니다. 환경 변수를 확인하세요.")

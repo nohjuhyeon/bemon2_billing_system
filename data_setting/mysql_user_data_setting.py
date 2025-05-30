@@ -38,11 +38,11 @@ class BillingDatabaseUpdater:
         self.db = MySQLDatabase()
         self.end_date = int(datetime.today().strftime("%Y%m"))
         self.file_path='data_setting/bemon2.sql'
-        self.host=os.getenv("MYSQL_HOST")
-        self.port=os.getenv("MYSQL_PORT")
-        self.user=os.getenv("MYSQL_USER")
-        self.password=os.getenv("MYSQL_PASSWORD")
-        self.database=os.getenv("MYSQL_DATABASE")
+        self.host=os.environ.get("MYSQL_HOST")
+        self.port=os.environ.get("MYSQL_PORT")
+        self.user=os.environ.get("MYSQL_USER")
+        self.password=os.environ.get("MYSQL_PASSWORD")
+        self.database=os.environ.get("MYSQL_DATABASE")
         print(f"Connecting to MySQL with host={self.host}, user={self.user}, port={self.port}")
 
 
