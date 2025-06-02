@@ -116,15 +116,14 @@
         <table class="table table-bordered">
             <thead class="table-light">
                 <tr>
-                    <th>번호</th>
-                    <th>고객사명</th>
-                    <th>구분</th>
-                    <th>클라우드사</th>
-                    <th>기간</th>
-                    <th>사용 금액</th>
-                    <th>할인 금액</th>
-                    <th>청구 금액</th>
-                    <th>상세</th>
+                        <th>번호</th>
+                        <th>고객사명</th>
+                        <th>구분</th>
+                        <th>클라우드사</th>
+                        <th>기간</th>
+                        <th>사용 금액</th>
+                        <th>청구 금액</th>
+                        <th>상세</th>
                 </tr>
             </thead>
             <tbody id="billing-table">
@@ -169,7 +168,6 @@
                     <td>${item.CLOUD_NAME}</td>
                     <td>${item.BILL_MONTH_STR}</td>
                     <td>${item.TOTAL_USE_AMT_STR}</td>
-                    <td>${item.TOTAL_DISCOUNT_AMT_STR}</td>
                     <td>${item.TOTAL_PAY_AMT_STR}</td>
                     <td><button class="btn btn-info btn-sm" onclick="ViewBillingInfo('${item.TOTAL_CHARGE_ID}')">상세
                             보기</button>
