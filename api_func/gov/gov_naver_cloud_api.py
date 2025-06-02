@@ -170,7 +170,7 @@ def service_charge_list(memberNoList, bill_month):
         "memberNoList": memberNoList,
     }
 
-    with open("api_func/demand_product_category.json", "r", encoding="utf-8") as file:
+    with open("/app/bemon2_billing_system/api_func/demand_product_category.json", "r", encoding="utf-8") as file:
         demand_product_category = json.load(file)
 
     # API 호출 및 결과 처리
