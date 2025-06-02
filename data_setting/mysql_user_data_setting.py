@@ -467,7 +467,7 @@ class BillingDatabaseUpdater:
 
         서비스 목록, 총 사용 요금 목록, 서비스 사용 요금 목록을 업데이트하고, 데이터베이스 연결을 종료합니다.
         """
-        logging.basicConfig(filename='/app/bemon2_billing_systemdata_setting/scheduler_log.txt', level=logging.INFO, format='%(asctime)s - %(message)s')
+        logging.basicConfig(filename='/app/bemon2_billing_system/data_setting/scheduler_log.txt', level=logging.INFO, format='%(asctime)s - %(message)s')
 
         self.service_list_update()
         self.total_charge_list_update()
