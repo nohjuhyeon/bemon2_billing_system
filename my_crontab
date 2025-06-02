@@ -1,0 +1,1 @@
+00 * * * * /usr/local/bin/python /app/bemon2_billing_system/bemon_db_update.py >> /app/bemon2_billing_system/bemon_update_log.txt
