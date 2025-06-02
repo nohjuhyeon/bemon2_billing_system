@@ -39,7 +39,7 @@ charge_manager = ChargeInfoManager()
 async def init_scheduler():
     billing_data_updater = BillingDatabaseUpdater()
     scheduler = BackgroundScheduler()
-    scheduler.add_job(billing_data_updater.update_database, trigger="cron", minute=0)
+    scheduler.add_job(billing_data_updater.update_database(), trigger="cron", minute=8)
 
     # 스케줄러 시작
     scheduler.start()
