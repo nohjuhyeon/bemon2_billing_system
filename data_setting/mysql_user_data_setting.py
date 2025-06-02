@@ -37,7 +37,7 @@ class BillingDatabaseUpdater:
         """
         self.db = MySQLDatabase()
         self.end_date = int(datetime.today().strftime("%Y%m"))
-        self.file_path='data_setting/bemon2.sql'
+        self.file_path='/app/bemon2_billing_system/data_setting/bemon2.sql'
         self.host=os.environ.get("MYSQL_HOST")
         self.port=os.environ.get("MYSQL_PORT")
         self.user=os.environ.get("MYSQL_USER")
@@ -467,7 +467,7 @@ class BillingDatabaseUpdater:
 
         서비스 목록, 총 사용 요금 목록, 서비스 사용 요금 목록을 업데이트하고, 데이터베이스 연결을 종료합니다.
         """
-        logging.basicConfig(filename='data_setting/scheduler_log.txt', level=logging.INFO, format='%(asctime)s - %(message)s')
+        logging.basicConfig(filename='/app/bemon2_billing_system/data_setting/scheduler_log.txt', level=logging.INFO, format='%(asctime)s - %(message)s')
 
         self.service_list_update()
         self.total_charge_list_update()
