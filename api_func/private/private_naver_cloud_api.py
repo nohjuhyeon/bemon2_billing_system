@@ -98,7 +98,7 @@ def service_list(memberNoList, contractMonth):
         "memberNoList": memberNoList,
     }
 
-    with open("/api_func/contract_product_category.json", "r", encoding="utf-8") as file:
+    with open("/app/bemon2_billing_system/api_func/contract_product_category.json", "r", encoding="utf-8") as file:
         contract_dict = json.load(file)
 
     # API 호출 및 결과 처리
