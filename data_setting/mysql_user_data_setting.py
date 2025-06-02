@@ -43,7 +43,7 @@ class BillingDatabaseUpdater:
         self.user=os.environ.get("MYSQL_USER")
         self.password=os.environ.get("MYSQL_PASSWORD")
         self.database=os.environ.get("MYSQL_DATABASE")
-        self.private_kt_cloud_api = private_kt_cloud_api.PrivateKTCloudAPI()
+
 
     def api_select(self, cloud_info):
         """
@@ -467,7 +467,7 @@ class BillingDatabaseUpdater:
 
         서비스 목록, 총 사용 요금 목록, 서비스 사용 요금 목록을 업데이트하고, 데이터베이스 연결을 종료합니다.
         """
-        logging.basicConfig(filename='/app/bemon2_billing_system/data_setting/scheduler_log.txt', level=logging.INFO, format='%(asctime)s - %(message)s')
+        logging.basicConfig(filename='/app/bemon2_billing_systemdata_setting/scheduler_log.txt', level=logging.INFO, format='%(asctime)s - %(message)s')
 
         self.service_list_update()
         self.total_charge_list_update()
