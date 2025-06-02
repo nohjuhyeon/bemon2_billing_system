@@ -35,14 +35,14 @@ app.mount("/js", StaticFiles(directory="resources/js/"), name="static_js")
 templates = Jinja2Templates(directory="templates")
 
 charge_manager = ChargeInfoManager()
-@app.on_event("startup")
-async def init_scheduler():
-    billing_data_updater = BillingDatabaseUpdater()
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(billing_data_updater.update_database(), trigger="cron", minute=8)
+# @app.on_event("startup")
+# async def init_scheduler():
+#     billing_data_updater = BillingDatabaseUpdater()
+#     scheduler = BackgroundScheduler()
+#     scheduler.add_job(billing_data_updater.update_database, trigger="cron", minute=0)
 
-    # 스케줄러 시작
-    scheduler.start()
+#     # 스케줄러 시작
+#     scheduler.start()
 
 
 # Routes
