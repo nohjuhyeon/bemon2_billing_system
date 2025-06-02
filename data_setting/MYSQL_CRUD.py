@@ -31,7 +31,6 @@ class MySQLDatabase:
         if columns is None:
             columns = "*"
         query = f"SELECT {columns} FROM {table_name}"
-        print("conntection 정보:",self.host,self.port,self.user,self.password,self.database)
         if conditions:
             condition_statements = []
             condition_values = []
