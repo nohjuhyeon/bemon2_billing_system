@@ -43,7 +43,7 @@ class BillingDatabaseUpdater:
         self.user=os.environ.get("MYSQL_USER")
         self.password=os.environ.get("MYSQL_PASSWORD")
         self.database=os.environ.get("MYSQL_DATABASE")
-
+        self.private_kt_cloud_api = private_kt_cloud_api.PrivateKTCloudAPI()
 
     def api_select(self, cloud_info):
         """
