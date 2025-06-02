@@ -16,7 +16,6 @@ def call_api(command, param_list):
 
     # GET 요청 보내기
     response = requests.get(uri, params=query_params)
-    response_url = requests.Request("GET", uri, params=query_params).prepare().url
     if response.status_code == 200:
         # JSON 문자열을 딕셔너리로 변환
         json_data = json.loads(response.text)
@@ -25,21 +24,6 @@ def call_api(command, param_list):
     else:
         print("Error occurred while calling the API.")
         return None
-
-
-def save_json(data, filename):
-    """
-    JSON 데이터를 파일로 저장합니다.
-    :param data: JSON 데이터 (문자열 또는 딕셔너리)
-    :param filename: 저장할 파일 이름
-    """
-    try:
-        # 파일로 저장
-        with open(filename, "w", encoding="utf-8") as file:
-            json.dump(data, file, indent=4, ensure_ascii=False)
-        print(f"JSON 데이터가 {filename} 파일에 저장되었습니다.")
-    except Exception as e:
-        print(f"JSON 파일 저장 중 오류 발생: {e}")
 
 
 def member_list():
@@ -141,7 +125,6 @@ def service_charge_list(user_id, bill_month):
                 "type_list": type_list,
             }
         )
-    result_list = []
     for kt_service_charge_element in kt_service_charge_list:
         type_list = []
         for type_element in kt_service_charge_element['type_list']:

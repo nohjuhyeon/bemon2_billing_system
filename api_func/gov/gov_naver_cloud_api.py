@@ -98,14 +98,10 @@ def service_list(memberNoList, contractMonth):
         "memberNoList": memberNoList,
     }
 
-    with open("/app/bemon2_billing_system/api_func/contract_product_category.json", "r", encoding="utf-8") as file:
-        contract_dict = json.load(file)
-
     # API 호출 및 결과 처리
     data_dict = call_api(command_uri, params_list)
     naver_service_list = []
     for i in data_dict["getContractSummaryListResponse"]["contractSummaryList"]:
-        i["contractTypeCode"] = contract_dict[i["contractType"]["codeName"]]
         naver_service_list.append(
             {
                 "code_name": i["contractType"]["codeName"],
@@ -114,6 +110,37 @@ def service_list(memberNoList, contractMonth):
         )
     # 결과를 XML 파일로 저장
     return naver_service_list
+
+
+def get_service_list():
+    command_uri = "/billing/v1/cost/getCostRelationCodeList"
+    params_list = {}
+
+    with open(
+        "/app/bemon2_billing_system/api_func/contract_product_category.json",
+        "r",
+        encoding="utf-8",
+    ) as file:
+        contract_dict = json.load(file)
+
+    # API 호출 및 결과 처리
+    data_dict = call_api(command_uri, params_list)
+    dict_category = {}
+    for i in data_dict["getCostRelationCodeListResponse"]["costRelationCodeList"]:
+        if i["contractType"]["codeName"] not in dict_category.keys():
+            dict_category[i["contractType"]["codeName"]] = {
+                    "type_name": i["productItemKind"]["codeName"],
+                    "type_code": i["productItemKind"]["code"],                    
+                    "service_name": i["productCategory"]["codeName"],
+                    "service_code": i["productCategory"]["code"],
+                }
+        elif (dict_category[i["contractType"]["codeName"]]['type_name'] !=  i["productItemKind"]["codeName"] or 
+        dict_category[i["contractType"]["codeName"]]['service_name'] !=  i["productCategory"]["codeName"]):
+            pass
+
+    # 결과를 XML 파일로 저장
+    save_json(dict_category, "contract_product_category.json")
+    return dict_category
 
 
 def total_charge_info(memberNoList, bill_month):
@@ -170,8 +197,12 @@ def service_charge_list(memberNoList, bill_month):
         "memberNoList": memberNoList,
     }
 
-    with open("/app/bemon2_billing_system/api_func/demand_product_category.json", "r", encoding="utf-8") as file:
-        demand_product_category = json.load(file)
+    with open(
+        "/app/bemon2_billing_system/api_func/demand_product_category.json",
+        "r",
+        encoding="utf-8",
+    ) as file:
+        product_item_kind = json.load(file)
 
     # API 호출 및 결과 처리
     data_dict = call_api(command_uri, params_list)
@@ -182,44 +213,37 @@ def service_charge_list(memberNoList, bill_month):
             + i["etcDiscountAmount"]
             + i["promiseDiscountAmount"]
         )
-        try:
-            if i["contract"]["instanceName"] == i["demandType"]["codeName"]:
-                name = i["demandTypeDetail"]["codeName"]
-            else:
-                name = i["contract"]["instanceName"]
-            naver_service_charge_list.append(
-                {
-                    "cloud_key": i["memberNo"],
-                    "mdcode": demand_product_category[i["demandType"]["codeName"]]["code"],
-                    "service": demand_product_category[i["demandType"]["codeName"]]["codeName"],
-                    "bill_month": int(i["demandMonth"]),
-                    "type": i["demandType"]["codeName"],
-                    "name": name,
-                    "region": i["regionCode"],
-                    "use_amt": i["useAmount"],
-                    "total_discount_amt": total_discount_amt,
-                    "pay_amt": i["demandAmount"],
-                    "contract_start_date": i["contract"]["contractStartDate"],
-                    "contract_end_date": i["contract"]["contractEndDate"],
-                }
-            )
-
-        except:
-            naver_service_charge_list.append(
-                {
-                    "cloud_key": i["memberNo"],
-                    "mdcode": i["demandType"]["code"],
-                    "service": i["demandType"]["codeName"],
-                    "bill_month": int(i["demandMonth"]),
-                    "name": i["demandTypeDetail"]["codeName"],
-                    "region": i["regionCode"],
-                    "use_amt": i["useAmount"],
-                    "total_discount_amt": total_discount_amt,
-                    "pay_amt": i["demandAmount"],
-                    "contract_start_date": "",
-                    "contract_end_date": "",
-                }
-            )
+        if "instanceName" in i["contract"].keys():
+            name = i["contract"]["instanceName"]
+            start_date = i['contract']['contractStartDate']
+            end_date = i["contract"]["contractEndDate"]
+        else:
+            name = i["demandTypeDetail"]["codeName"]
+            start_date = ''
+            end_date = ''
+        type_name = product_item_kind[i["demandType"]["codeName"]]["type"]
+        service_name = product_item_kind[i["demandType"]["codeName"]][
+            "service_name"
+        ]
+        service_code = product_item_kind[i["demandType"]["codeName"]][
+            "service_code"
+        ]
+        naver_service_charge_list.append(
+            {
+                "cloud_key": i["memberNo"],
+                "mdcode": service_code,
+                "service": service_name,
+                "bill_month": int(i["demandMonth"]),
+                "type": type_name,
+                "name": name,
+                "region": i["regionCode"],
+                "use_amt": i["useAmount"],
+                "total_discount_amt": total_discount_amt,
+                "pay_amt": i["demandAmount"],
+                "contract_start_date": start_date,
+                "contract_end_date": end_date,
+            }
+        )
     service_charge_df = pd.DataFrame(naver_service_charge_list)
     unique_df = service_charge_df.groupby(
         [
@@ -240,15 +264,18 @@ def service_charge_list(memberNoList, bill_month):
     type_result_list = []
     service_result_list = []
     for unique_element in unique_list:
-        if unique_element['contract_start_date'] == '':
-            unique_element['contract_start_date'] = None
+        if unique_element["contract_start_date"] == "":
+            unique_element["contract_start_date"] = None
         else:
-            date_format = '%Y-%m-%dT%H:%M:%S%z'
-            unique_element['contract_start_date'] = datetime.strptime(unique_element['contract_start_date'], date_format)
+            date_format = "%Y-%m-%dT%H:%M:%S%z"
+            unique_element["contract_start_date"] = datetime.strptime(
+                unique_element["contract_start_date"], date_format
+            )
 
             # 년-월-일 형식으로 변환
-            unique_element['contract_start_date'] = unique_element['contract_start_date'].strftime('%Y-%m-%d')
-
+            unique_element["contract_start_date"] = unique_element[
+                "contract_start_date"
+            ].strftime("%Y-%m-%d")
 
         type_list = [i["type"] for i in type_result_list]
         if unique_element["type"] not in type_list:
@@ -270,9 +297,7 @@ def service_charge_list(memberNoList, bill_month):
                             "region": unique_element["region"],
                             "use_amt": unique_element["use_amt"],
                             "pay_amt": unique_element["pay_amt"],
-                            "start_date": unique_element[
-                                "contract_start_date"
-                            ],
+                            "start_date": unique_element["contract_start_date"],
                         }
                     ],
                 }
@@ -307,7 +332,7 @@ def service_charge_list(memberNoList, bill_month):
                             "type": type_element["type"],
                             "type_use_amt": type_element["type_use_amt"],
                             "type_pay_amt": type_element["type_pay_amt"],
-                            "type_list": type_element["type_list"]
+                            "type_list": type_element["type_list"],
                         }
                     ],
                 }
@@ -321,14 +346,13 @@ def service_charge_list(memberNoList, bill_month):
             service_result_list[list_index]["pay_amt"] += type_element["pay_amt"]
             service_result_list[list_index]["service_list"].append(
                 {
-                            "type": type_element["type"],
-                            "type_use_amt": type_element["type_use_amt"],
-                            "type_pay_amt": type_element["type_pay_amt"],
-                            "type_list": type_element["type_list"]
+                    "type": type_element["type"],
+                    "type_use_amt": type_element["type_use_amt"],
+                    "type_pay_amt": type_element["type_pay_amt"],
+                    "type_list": type_element["type_list"],
                 }
             )
 
-            
     return service_result_list
 
 # Main 실행
@@ -341,3 +365,4 @@ if __name__ == "__main__":
     service_list(memberNoList, contractMonth)
     total_charge_info(memberNoList, bill_month)
     service_charge_list(memberNoList, bill_month)
+    # get_service_list()

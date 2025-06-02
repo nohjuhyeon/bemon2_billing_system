@@ -1,358 +1,542 @@
 {
     "API Gateway": {
-        "code": "APP-SERVICES",
-        "codeName": "Application Services"
+        "type_name": "API Gateway",
+        "type_code": "APIGW",
+        "service_name": "Application Services",
+        "service_code": "APP-SERVICES"
     },
     "Archive Storage": {
-        "code": "NETWORKING",
-        "codeName": "Networking"
+        "type_name": "Archive Storage",
+        "type_code": "ARCST",
+        "service_name": "Storage",
+        "service_code": "STORAGE"
     },
     "App Security Checker (Deprecated)": {
-        "code": "SECURITY",
-        "codeName": "Security"
+        "type_name": "App Security Checker (Deprecated)",
+        "type_code": "ASCCK",
+        "service_name": "Security",
+        "service_code": "SECURITY"
     },
     "Backup": {
-        "code": "STORAGE",
-        "codeName": "Storage"
+        "type_name": "Backup",
+        "type_code": "BAKUP",
+        "service_name": "Storage",
+        "service_code": "STORAGE"
     },
     "Backup (Managed)": {
-        "code": "STORAGE",
-        "codeName": "Storage"
+        "type_name": "Backup (Managed)",
+        "type_code": "BKUP",
+        "service_name": "Storage",
+        "service_code": "STORAGE"
     },
     "Blockchain Service": {
-        "code": "BLOCKCHAIN",
-        "codeName": "Blockchain"
+        "type_name": "Blockchain Service",
+        "type_code": "BLCHN",
+        "service_name": "Blockchain",
+        "service_code": "BLOCKCHAIN"
     },
     "Block Storage": {
-        "code": "STORAGE",
-        "codeName": "Storage"
+        "type_name": "Block storage",
+        "type_code": "BST",
+        "service_name": "Storage",
+        "service_code": "STORAGE"
     },
     "Cloud Activity Tracer": {
-        "code": "MANAGE-GOVERNANCE",
-        "codeName": "Management & Governance"
+        "type_name": "Cloud Activity Tracer",
+        "type_code": "CAT",
+        "service_name": "Management & Governance",
+        "service_code": "MANAGE-GOVERNANCE"
     },
     "Cloud Desktop": {
-        "code": "BUSINESS-APP",
-        "codeName": "Business Applications"
+        "type_name": "Cloud Desktop",
+        "type_code": "CDKTP",
+        "service_name": "Business Applications",
+        "service_code": "BUSINESS-APP"
     },
     "CDN+": {
-        "code": "CONTENT-DELIVERY",
-        "codeName": "Content Delivery"
+        "type_name": "CDN+",
+        "type_code": "CDN3",
+        "service_name": "Content Delivery",
+        "service_code": "CONTENT-DELIVERY"
     },
     "Cloud Functions": {
-        "code": "COMPUTE",
-        "codeName": "Compute"
+        "type_name": "Cloud Functions",
+        "type_code": "CF",
+        "service_name": "Compute",
+        "service_code": "COMPUTE"
     },
     "Cloud Hadoop": {
-        "code": "NETWORKING",
-        "codeName": "Networking"
+        "type_name": "Cloud Hadoop",
+        "type_code": "CHADP",
+        "service_name": "Big Data & Analytics",
+        "service_code": "BIG-DATA-ANALYTICS"
     },
     "CLOVA Chatbot": {
-        "code": "AI-SERVICES",
-        "codeName": "AI Services"
+        "type_name": "CLOVA Chatbot",
+        "type_code": "CHTBT",
+        "service_name": "AI Services",
+        "service_code": "AI-SERVICES"
     },
     "Cloud Log Analytics": {
-        "code": "MANAGE-GOVERNANCE",
-        "codeName": "Management & Governance"
+        "type_name": "Cloud Log Analytics",
+        "type_code": "CLA",
+        "service_name": "Management & Governance",
+        "service_code": "MANAGE-GOVERNANCE"
     },
     "Cloud Connect": {
-        "code": "NETWORKING",
-        "codeName": "Networking"
+        "type_name": "Cloud Connect",
+        "type_code": "CLCON",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "CLOVA OCR": {
-        "code": "AI-SERVICES",
-        "codeName": "AI Services"
+        "type_name": "CLOVA OCR",
+        "type_code": "CLOCR",
+        "service_name": "AI Services",
+        "service_code": "AI-SERVICES"
     },
     "CLOVA Studio": {
-        "code": "AI-SERVICES",
-        "codeName": "AI Services"
+        "type_name": "CLOVA Studio",
+        "type_code": "CLSTD",
+        "service_name": "AI Services",
+        "service_code": "AI-SERVICES"
     },
     "Cloud Insight": {
-        "code": "MANAGE-GOVERNANCE",
-        "codeName": "Management & Governance"
+        "type_name": "Cloud Insight",
+        "type_code": "CLWAT",
+        "service_name": "Management & Governance",
+        "service_code": "MANAGE-GOVERNANCE"
     },
     "Certificate Manager": {
-        "code": "SECURITY",
-        "codeName": "Security"
+        "type_name": "Certificate Manager",
+        "type_code": "CM",
+        "service_name": "Security",
+        "service_code": "SECURITY"
     },
     "Classic Path": {
-        "code": "NETWORKING",
-        "codeName": "Networking"
+        "type_name": "Classic Path",
+        "type_code": "CPATH",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Cloud Security Watcher": {
-        "code": "SECURITY",
-        "codeName": "Security"
+        "type_name": "Cloud Security Watcher",
+        "type_code": "CSWAT",
+        "service_name": "Security",
+        "service_code": "SECURITY"
     },
     "Container Registry": {
-        "code": "CONTAINERS",
-        "codeName": "Containers"
+        "type_name": "Container Registry",
+        "type_code": "CTNRR",
+        "service_name": "Containers",
+        "service_code": "CONTAINERS"
     },
     "Data Teleporter": {
-        "code": "STORAGE",
-        "codeName": "Storage"
+        "type_name": "Data Teleporter",
+        "type_code": "DT",
+        "service_name": "Storage",
+        "service_code": "STORAGE"
     },
     "Search Engine Service": {
-        "code": "NETWORKING",
-        "codeName": "Networking"
+        "type_name": "Network",
+        "type_code": "NET",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Cloud Outbound Mailer": {
-        "code": "APP-SERVICES",
-        "codeName": "Application Services"
+        "type_name": "Cloud Outbound Mailer",
+        "type_code": "EMAIL",
+        "service_name": "Application Services",
+        "service_code": "APP-SERVICES"
     },
     "File Safer": {
-        "code": "SECURITY",
-        "codeName": "Security"
+        "type_name": "File Safer",
+        "type_code": "FILSF",
+        "service_name": "Security",
+        "service_code": "SECURITY"
     },
     "Global CDN": {
-        "code": "CONTENT-DELIVERY",
-        "codeName": "Content Delivery"
+        "type_name": "Global CDN",
+        "type_code": "GCDN",
+        "service_name": "Content Delivery",
+        "service_code": "CONTENT-DELIVERY"
     },
     "Global DNS": {
-        "code": "NETWORKING",
-        "codeName": "Networking"
+        "type_name": "Global DNS",
+        "type_code": "GDNS",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
-    "GeoLocation": {
-        "code": "APP-SERVICES",
-        "codeName": "Application Services"
+    "GeoLocation (Deprecated) (Deprecated)": {
+        "type_name": "GeoLocation (Deprecated)",
+        "type_code": "GEOLC",
+        "service_name": "Application Services",
+        "service_code": "APP-SERVICES"
     },
     "Global Traffic Manager": {
-        "code": "NETWORKING",
-        "codeName": "Networking"
+        "type_name": "Global Traffic Manager",
+        "type_code": "GTM",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Hardware Security Module": {
-        "code": "SECURITY",
-        "codeName": "Security"
+        "type_name": "Hardware Security Module",
+        "type_code": "HSM",
+        "service_name": "Security",
+        "service_code": "SECURITY"
+    },
+    "IPsec VPN Rental": {
+        "type_name": "IPsec VPN Rental",
+        "type_code": "IPVRT",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Key Management Service": {
-        "code": "SECURITY",
-        "codeName": "Security"
+        "type_name": "Key Management Service",
+        "type_code": "KMS",
+        "service_name": "Security",
+        "service_code": "SECURITY"
     },
     "Load Balancer": {
-        "code": "NETWORKING",
-        "codeName": "Networking"
+        "type_name": "Load Balancer",
+        "type_code": "LOADB",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Managed IPsec VPN": {
-        "code": "NETWORKING",
-        "codeName": "Networking"
+        "type_name": "Managed IPsec VPN",
+        "type_code": "MIPSC",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Monitoring": {
-        "code": "MANAGE-GOVERNANCE",
-        "codeName": "Management & Governance"
+        "type_name": "Monitoring",
+        "type_code": "MONTR",
+        "service_name": "Management & Governance",
+        "service_code": "MANAGE-GOVERNANCE"
     },
     "One Click Multi DRM": {
-        "code": "MEDIA",
-        "codeName": "Media"
+        "type_name": "One Click Multi DRM",
+        "type_code": "MTDRM",
+        "service_name": "Media",
+        "service_code": "MEDIA"
     },
     "Cloud DB for MySQL": {
-        "code": "NETWORKING",
-        "codeName": "Networking"
+        "type_name": "Cloud DB for MySQL",
+        "type_code": "MYSQL",
+        "service_name": "Database",
+        "service_code": "DATABASE"
     },
     "NAS": {
-        "code": "STORAGE",
-        "codeName": "Storage"
+        "type_name": "NAS",
+        "type_code": "NAS",
+        "service_name": "Storage",
+        "service_code": "STORAGE"
     },
     "NAT Gateway": {
-        "code": "NETWORKING",
-        "codeName": "Networking"
+        "type_name": "NAT Gateway",
+        "type_code": "NATGW",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Cloud Search": {
-        "code": "BIG-DATA-ANALYTICS",
-        "codeName": "Big Data & Analytics"
+        "type_name": "Cloud Search",
+        "type_code": "NCLOS",
+        "service_name": "Big Data & Analytics",
+        "service_code": "BIG-DATA-ANALYTICS"
     },
     "Ncloud Kubernetes Service": {
-        "code": "NETWORKING",
-        "codeName": "Networking"
+        "type_name": "Network",
+        "type_code": "NET",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Simple & Easy Notification Service": {
-        "code": "APP-SERVICES",
-        "codeName": "Application Services"
+        "type_name": "Simple & Easy Notification Service",
+        "type_code": "NOTIF",
+        "service_name": "Application Services",
+        "service_code": "APP-SERVICES"
     },
     "Ncloud Single Sign-On": {
-        "code": "MANAGE-GOVERNANCE",
-        "codeName": "Management & Governance"
+        "type_name": "Ncloud Single Sign-On",
+        "type_code": "NSSO",
+        "service_name": "Management & Governance",
+        "service_code": "MANAGE-GOVERNANCE"
     },
     "Object Storage": {
-        "code": "STORAGE",
-        "codeName": "Storage"
+        "type_name": "Network",
+        "type_code": "NET",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "AI·NAVER API": {
-        "code": "AI-NAVER-API",
-        "codeName": "AI·NAVER API"
+        "type_name": "AI·NAVER API",
+        "type_code": "OPAPI",
+        "service_name": "AI·NAVER API",
+        "service_code": "AI-NAVER-API"
     },
     "PaaS-TA on Ncloud (VPC) (Deprecated)": {
-        "code": "HYBRID-PRIV-CLOUD",
-        "codeName": "Hybrid & Private Cloud"
+        "type_name": "PaaS-TA on Ncloud (VPC) (Deprecated)",
+        "type_code": "PASTA",
+        "service_name": "Hybrid & Private Cloud",
+        "service_code": "HYBRID-PRIV-CLOUD"
     },
     "Public IP": {
-        "code": "COMPUTE",
-        "codeName": "Compute"
+        "type_name": "Public IP",
+        "type_code": "PBLIP",
+        "service_name": "Compute",
+        "service_code": "COMPUTE"
     },
     "Private CA": {
-        "code": "SECURITY",
-        "codeName": "Security"
+        "type_name": "Private CA",
+        "type_code": "PCA",
+        "service_name": "Security",
+        "service_code": "SECURITY"
     },
     "Packet Mirroring": {
-        "code": "NETWORKING",
-        "codeName": "Networking"
+        "type_name": "Packet Mirroring",
+        "type_code": "PKMRR",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Papago Translation": {
-        "code": "AI-SERVICES",
-        "codeName": "AI Services"
+        "type_name": "Papago Translation",
+        "type_code": "PPGTS",
+        "service_name": "AI Services",
+        "service_code": "AI-SERVICES"
     },
     "Private Subnet": {
-        "code": "COMPUTE",
-        "codeName": "Compute"
+        "type_name": "Private Subnet",
+        "type_code": "PRSBN",
+        "service_name": "Compute",
+        "service_code": "COMPUTE"
     },
     "Private Link": {
-        "code": "NETWORKING",
-        "codeName": "Networking"
+        "type_name": "Private Link",
+        "type_code": "PRVLK",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "SourceBuild": {
-        "code": "DEV-TOOLS",
-        "codeName": "Developer Tools"
+        "type_name": "SourceBuild",
+        "type_code": "SCBLD",
+        "service_name": "Developer Tools",
+        "service_code": "DEV-TOOLS"
     },
     "SourceCommit": {
-        "code": "DEV-TOOLS",
-        "codeName": "Developer Tools"
+        "type_name": "SourceCommit",
+        "type_code": "SCCOM",
+        "service_name": "Developer Tools",
+        "service_code": "DEV-TOOLS"
     },
     "SourceDeploy": {
-        "code": "DEV-TOOLS",
-        "codeName": "Developer Tools"
+        "type_name": "SourceDeploy",
+        "type_code": "SCDEP",
+        "service_name": "Developer Tools",
+        "service_code": "DEV-TOOLS"
     },
     "Security Monitoring": {
-        "code": "SECURITY",
-        "codeName": "Security"
+        "type_name": "Security Monitoring",
+        "type_code": "SCMTR",
+        "service_name": "Security",
+        "service_code": "SECURITY"
     },
     "SourcePipeline": {
-        "code": "DEV-TOOLS",
-        "codeName": "Developer Tools"
+        "type_name": "SourcePipeline",
+        "type_code": "SCPIP",
+        "service_name": "Developer Tools",
+        "service_code": "DEV-TOOLS"
     },
     "Secure Access": {
-        "code": "SECURITY",
-        "codeName": "Security"
+        "type_name": "Secure Access",
+        "type_code": "SECAS",
+        "service_name": "Security",
+        "service_code": "SECURITY"
     },
     "Secure Zone": {
-        "code": "SECURITY",
-        "codeName": "Security"
+        "type_name": "Secure Zone",
+        "type_code": "SECZF",
+        "service_name": "Security",
+        "service_code": "SECURITY"
     },
     "Site Safer (Deprecated)": {
-        "code": "SECURITY",
-        "codeName": "Security"
+        "type_name": "Site Safer",
+        "type_code": "SITSF",
+        "service_name": "Security",
+        "service_code": "SECURITY"
     },
     "SSL VPN": {
-        "code": "SECURITY",
-        "codeName": "Security"
+        "type_name": "SSL VPN",
+        "type_code": "SLVPN",
+        "service_name": "Security",
+        "service_code": "SECURITY"
     },
     "System Security Checker": {
-        "code": "SECURITY",
-        "codeName": "Security"
+        "type_name": "System Security Checker",
+        "type_code": "SSCHK",
+        "service_name": "Security",
+        "service_code": "SECURITY"
     },
     "Single Sign-On (Deprecated)": {
-        "code": "MANAGE-GOVERNANCE",
-        "codeName": "Management & Governance"
+        "type_name": "Single Sign-On (Deprecated)",
+        "type_code": "SSO",
+        "service_name": "Management & Governance",
+        "service_code": "MANAGE-GOVERNANCE"
     },
     "File Storage": {
-        "code": "NETWORKING",
-        "codeName": "Networking"
+        "type_name": "Network",
+        "type_code": "NET",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Server": {
-        "code": "COMPUTE",
-        "codeName": "Compute"
+        "type_name": "Network",
+        "type_code": "NET",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Software": {
-        "code": "COMPUTE",
-        "codeName": "Compute"
+        "type_name": "Softwre",
+        "type_code": "SW",
+        "service_name": "Compute",
+        "service_code": "COMPUTE"
     },
     "Transit VPC Connect": {
-        "code": "NETWORKING",
-        "codeName": "Networking"
+        "type_name": "Transit VPC Connect",
+        "type_code": "TVPCC",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Cloud Data Streaming Service (VPC)": {
-        "code": "BIG-DATA-ANALYTICS",
-        "codeName": "Big Data & Analytics"
+        "type_name": "Network",
+        "type_code": "NET",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Cloud Hadoop (VPC)": {
-        "code": "BIG-DATA-ANALYTICS",
-        "codeName": "Big Data & Analytics"
+        "type_name": "Network",
+        "type_code": "NET",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Search Engine Service (VPC)": {
-        "code": "BIG-DATA-ANALYTICS",
-        "codeName": "Big Data & Analytics"
+        "type_name": "Network",
+        "type_code": "NET",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "IPsec VPN (VPC)": {
-        "code": "NETWORKING",
-        "codeName": "Networking"
+        "type_name": "Network",
+        "type_code": "NET",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Load Balancer (VPC)": {
-        "code": "NETWORKING",
-        "codeName": "Networking"
+        "type_name": "Network",
+        "type_code": "NET",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Cloud DB for MongoDB (VPC)": {
-        "code": "DATABASE",
-        "codeName": "Database"
+        "type_name": "Network",
+        "type_code": "NET",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Cloud DB For MSSQL (VPC)": {
-        "code": "DATABASE",
-        "codeName": "Database"
+        "type_name": "Network",
+        "type_code": "NET",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Cloud DB for MySQL (VPC)": {
-        "code": "DATABASE",
-        "codeName": "Database"
+        "type_name": "Network",
+        "type_code": "NET",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Ncloud Kubernetes Service (VPC)": {
-        "code": "CONTAINERS",
-        "codeName": "Containers"
+        "type_name": "Network",
+        "type_code": "NET",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "VOD Station": {
-        "code": "MEDIA",
-        "codeName": "Media"
+        "type_name": "VOD Station",
+        "type_code": "VODSN",
+        "service_name": "Media",
+        "service_code": "MEDIA"
     },
     "Video Player Enhancement": {
-        "code": "MEDIA",
-        "codeName": "Media"
+        "type_name": "Video Player Enhancement",
+        "type_code": "VOPRE",
+        "service_name": "Media",
+        "service_code": "MEDIA"
     },
     "Virtual Private Cloud": {
-        "code": "NETWORKING",
-        "codeName": "Networking"
+        "type_name": "Virtual Private Cloud",
+        "type_code": "VPC",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "VPC Peering": {
-        "code": "NETWORKING",
-        "codeName": "Networking"
+        "type_name": "VPC Peering",
+        "type_code": "VPCPR",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Cloud DB for PostgreSQL(VPC)": {
-        "code": "DATABASE",
-        "codeName": "Database"
+        "type_name": "Network",
+        "type_code": "NET",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Cloud DB for Redis (VPC)": {
-        "code": "DATABASE",
-        "codeName": "Database"
+        "type_name": "Network",
+        "type_code": "NET",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "Ncloud Simple RabbitMQ (VPC)": {
-        "code": "COMPUTE",
-        "codeName": "Compute"
+        "type_name": "Network",
+        "type_code": "NET",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
     },
     "SSL VPN (VPC)": {
-        "code": "SECURITY",
-        "codeName": "Security"
+        "type_name": "SSL VPN (VPC)",
+        "type_code": "VSVPN",
+        "service_name": "Security",
+        "service_code": "SECURITY"
     },
     "Server (VPC)": {
-        "code": "COMPUTE",
-        "codeName": "Compute"
+        "type_name": "Block storage",
+        "type_code": "BST",
+        "service_name": "Storage",
+        "service_code": "STORAGE"
     },
     "Webshell Behavior Detector": {
-        "code": "SECURITY",
-        "codeName": "Security"
+        "type_name": "Webshell Behavior Detector",
+        "type_code": "WBD",
+        "service_name": "Security",
+        "service_code": "SECURITY"
     },
     "Web service Monitoring System": {
-        "code": "MANAGE-GOVERNANCE",
-        "codeName": "Management & Governance"
+        "type_name": "Web Service Monitoring System",
+        "type_code": "WMS",
+        "service_name": "Management & Governance",
+        "service_code": "MANAGE-GOVERNANCE"
     },
     "NAVER WORKS": {
-        "code": "BUSINESS-APP",
-        "codeName": "Business Applications"
+        "type_name": "NAVER WORKS",
+        "type_code": "WORKS",
+        "service_name": "Business Applications",
+        "service_code": "BUSINESS-APP"
     },
     "Web Security Checker": {
-        "code": "SECURITY",
-        "codeName": "Security"
+        "type_name": "Web Security Checker",
+        "type_code": "WSCCK",
+        "service_name": "Security",
+        "service_code": "SECURITY"
     }
 }
