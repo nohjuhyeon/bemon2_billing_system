@@ -3,12 +3,18 @@ import os
 
 class MySQLDatabase:
     def __init__(self):
+        self.host=os.environ.get("MYSQL_HOST")
+        self.port=os.environ.get("MYSQL_PORT")
+        self.user=os.environ.get("MYSQL_USER")
+        self.password=os.environ.get("MYSQL_PASSWORD")
+        self.database=os.environ.get("MYSQL_DATABASE")
+        
         self.connection = mysql.connector.connect(
-            host=os.environ.get("MYSQL_HOST"),
-            port=os.environ.get("MYSQL_PORT"),
-            user=os.environ.get("MYSQL_USER"),
-            password=os.environ.get("MYSQL_PASSWORD"),
-            database=os.environ.get("MYSQL_DATABASE"),
+            host=self.host,
+            port=self.port,
+            user=self.user,
+            password=self.password,
+            database=self.database,
         )
         self.cursor = self.connection.cursor(dictionary=True)
 
@@ -24,9 +30,8 @@ class MySQLDatabase:
     def select_many(self, table_name, columns=None, conditions=None):
         if columns is None:
             columns = "*"
-
         query = f"SELECT {columns} FROM {table_name}"
-
+        print("conntection 정보:",self.host,self.port,self.user,self.password,self.database)
         if conditions:
             condition_statements = []
             condition_values = []
