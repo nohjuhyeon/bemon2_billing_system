@@ -5,6 +5,7 @@ from datetime import datetime
 db = MySQLDatabase()
 try:
     database_updater = BillingDatabaseUpdater()
+    database_updater.user_list_insert()
     database_updater.update_database()
     print(f"CSP Billing data updated successfully at: {datetime.now()}")
 except Exception as e:
