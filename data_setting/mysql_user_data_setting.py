@@ -151,26 +151,26 @@ class BillingDatabaseUpdater:
         user_list = self.load_json("data_setting/member_info.json")
         current_user_list = self.db.select_many("USER_LIST", 'USER_NAME')
         current_user_name_list = [current_user_element['USER_NAME'] for current_user_element in current_user_list]
-        current_cloud_list = self.db.select_many("CLOUD_LIST", 'CLOUD_USER_ID')
-        current_cloud_user_id_list = [current_cloud_element['CLOUD_USER_ID'] for current_cloud_element in current_cloud_list]
         for user_dict in user_list:
             user_data_dict = {"USER_NAME": user_dict["user_name"]}
             if user_dict['user_name'] not in current_user_name_list:
                 self.db.insert("USER_LIST", user_data_dict)
 
             selected_user_dict = self.db.select_one("USER_LIST", None, user_data_dict)
+            cloud_column = 'USER_ID,CLOUD_NAME,CLOUD_CLASS,CLOUD_USER_ID,CLOUD_USER_NUM,START_DATE'
+            current_cloud_list = self.db.select_many("CLOUD_LIST",cloud_column, {'USER_ID':selected_user_dict['USER_ID']})
             for cloud_dict in user_dict["cloud_list"]:
-                if cloud_dict['cloud_user_id'] not in current_cloud_user_id_list:
-                    cloud_dict["user_id"] = selected_user_dict["USER_ID"]
-                    cloud_dict["user_name"] = selected_user_dict["USER_NAME"]
-                    cloud_data_dict = {
-                        "USER_ID": cloud_dict["user_id"],
-                        "CLOUD_NAME": cloud_dict["cloud_name"],
-                        "CLOUD_CLASS": cloud_dict["cloud_class"],
-                        "CLOUD_USER_ID": cloud_dict["cloud_user_id"],
-                        "CLOUD_USER_NUM": cloud_dict["cloud_user_num"],
-                        "START_DATE": cloud_dict["start_date"],
-                    }
+                cloud_dict["user_id"] = selected_user_dict["USER_ID"]
+                cloud_dict["user_name"] = selected_user_dict["USER_NAME"]
+                cloud_data_dict = {
+                    "USER_ID": cloud_dict["user_id"],
+                    "CLOUD_NAME": cloud_dict["cloud_name"],
+                    "CLOUD_CLASS": cloud_dict["cloud_class"],
+                    "CLOUD_USER_ID": cloud_dict["cloud_user_id"],
+                    "CLOUD_USER_NUM": cloud_dict["cloud_user_num"],
+                    "START_DATE": cloud_dict["start_date"],
+                }
+                if cloud_data_dict not in current_cloud_list:
                     self.db.insert("CLOUD_LIST", cloud_data_dict)
 
     def service_list_update(self):
