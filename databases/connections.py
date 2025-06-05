@@ -41,10 +41,19 @@ class AsyncDatabase:
             f"@{settings.MYSQL_HOST}:{settings.MYSQL_PORT}/{settings.MYSQL_DATABASE}?charset=utf8"
         )
 
-        engine = create_async_engine(DB_URL, echo=False)
-        self.SessionLocal = sessionmaker(
-            bind=engine, class_=AsyncSession, expire_on_commit=False
+        # 수정된 엔진 생성
+        engine = create_async_engine(
+            DB_URL,
+            echo=False,
+            pool_pre_ping=True,  # 연결 상태를 미리 확인
+            pool_recycle=3600,   # 연결 재활용 시간 (1시간)
+            pool_size=10,        # 연결 풀 최대 크기
+            max_overflow=5       # 추가 연결 허용 수
         )
+
+        # 수정된 세션 생성
+        self.SessionLocal = sessionmaker(bind=engine,class_=AsyncSession,expire_on_commit=False)
+
         self.model = model
 
     async def get_all(self):
