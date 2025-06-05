@@ -30,10 +30,10 @@ def make_signature(signature_uri, current_timestamp, access_key, secret_key):
 def call_api(command_uri, params_list):
     # API URL 및 쿼리 파라미터
     current_timestamp = str(int(time.time() * 1000))
-    access_key = os.environ.get("NAVER_CLOUD_GOV_API_KEY")
-    secret_key = os.environ.get("NAVER_CLOUD_GOV_SECRET_KEY")
+    access_key = os.environ.get("NAVER_CLOUD_API_KEY")
+    secret_key = os.environ.get("NAVER_CLOUD_SECRET_KEY")
 
-    base_url = "https://billingapi.apigw.gov-ntruss.com"
+    base_url = "https://billingapi.apigw.ntruss.com"
     query_params = {"responseFormatType": "json"}
     for i in params_list.keys():
         query_params[i] = params_list[i]
@@ -222,6 +222,9 @@ def service_charge_list(memberNoList, bill_month):
             start_date = ''
             end_date = ''
         type_name = product_item_kind[i["demandType"]["codeName"]]["type"]
+        if type_name == 'Server (VPC)' and  i['demandTypeDetail']['codeName'] == 'Server (VPC) Stop Usage':
+            print(i['demandType']['codeName'], i['demandTypeDetail']['codeName'],i['contract']['contractType']['codeName'],i['contract']['contractProductList'][0]['productItemKind']['codeName'])
+            pass
         service_name = product_item_kind[i["demandType"]["codeName"]][
             "service_name"
         ]
@@ -358,11 +361,11 @@ def service_charge_list(memberNoList, bill_month):
 # Main 실행
 if __name__ == "__main__":
     # Access Key와 Secret Key 설정
-    bill_month = 202503
-    contractMonth = 202503
+    bill_month = 202506
+    contractMonth = 202506
     memberNoList = ["10395"]
     member_list(bill_month, bill_month)
-    service_list(memberNoList, contractMonth)
-    total_charge_info(memberNoList, bill_month)
+    # service_list(memberNoList, contractMonth)
+    # total_charge_info(memberNoList, bill_month)
     service_charge_list(memberNoList, bill_month)
     # get_service_list()
