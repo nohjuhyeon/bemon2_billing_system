@@ -394,6 +394,11 @@
         "service_name": "Networking",
         "service_code": "NETWORKING"
     },
+    "VPC (Virtual Private Cloud)": {
+        "type": "Virtual Private Cloud",
+        "service_name": "Networking",
+        "service_code": "NETWORKING"
+    },
     "VPC Peering": {
         "type": "VPC Peering",
         "service_name": "Networking",
