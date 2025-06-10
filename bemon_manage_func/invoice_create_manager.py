@@ -148,7 +148,7 @@ class InvoiceCreateManager:
             cell.alignment = self.center_alignment
             cell.fill = self.middle_sum_fill
             cell.font = Font(bold=True,size=9)        
-        if cell_key in ['USER_NAME','CLOUD_USER_ID','CLOUD_USER_NUM']:
+        if cell_key in ['USER_NAME','CLOUD_USER_ID','CLOUD_USER_NUM'] or 'NOTE' in cell_key:
             cell.alignment = self.left_alignment
         pass
 
