@@ -85,6 +85,7 @@ class InvoiceCreateManager:
         self.middle_sum_fill = PatternFill(start_color="E8E8E8",end_color="E8E8E8",fill_type="solid")
         self.border_style = Border(left=Side(style="thin"), right=Side(style="thin"), top=Side(style="thin"), bottom=Side(style="thin"))
         self.center_alignment = Alignment(horizontal="center", vertical="center")
+        self.left_alignment = Alignment(horizontal="left", vertical="center")
 
     def image_size_modify(self,image_path,targe_width):
         img = Image(image_path)
@@ -147,6 +148,8 @@ class InvoiceCreateManager:
             cell.alignment = self.center_alignment
             cell.fill = self.middle_sum_fill
             cell.font = Font(bold=True,size=9)        
+        if cell_key in ['USER_NAME','CLOUD_USER_ID','CLOUD_USER_NUM']:
+            cell.alignment = self.left_alignment
         pass
 
     def date_format(self,billing_month):
