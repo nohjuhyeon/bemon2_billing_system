@@ -117,7 +117,7 @@ class InvoiceCreateManager:
             cloud_img = self.image_size_modify(cloud_image_path,200)
             self.ws.add_image(cloud_img, "AC2")
         elif self.billing_dict['user']['CLOUD_NAME'] == 'NAVER':
-            cloud_image_path = "resources/image/nhn_logo.png"  # 삽입할 이미지 파일 경로
+            cloud_image_path = "resources/image/naver_logo.png"  # 삽입할 이미지 파일 경로
             cloud_img = self.image_size_modify(cloud_image_path,300)
             self.ws.add_image(cloud_img, "Y2")
         elif self.billing_dict['user']['CLOUD_NAME'] == 'NHN':
@@ -141,13 +141,12 @@ class InvoiceCreateManager:
 
 
     def cell_format_setting(self,cell,cell_key,cell_value):
-        cell.alignment = self.center_alignment
         if 'AMT' in cell_key:
             self.charge_amount_format(cell,cell_value)
         if cell_key == 'MIDDLE_SUM' or 'TOTAL_SERVICE' in cell_key:
+            cell.alignment = self.center_alignment
             cell.fill = self.middle_sum_fill
-            cell.font = Font(bold=True,size=9)
-        
+            cell.font = Font(bold=True,size=9)        
         pass
 
     def date_format(self,billing_month):
